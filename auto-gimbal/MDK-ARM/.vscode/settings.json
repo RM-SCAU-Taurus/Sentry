@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "bsp_can.h": "c",
+        "comm_task.h": "c",
+        "chassis_task.h": "c",
+        "protocol_camp.h": "c"
+    }
+}

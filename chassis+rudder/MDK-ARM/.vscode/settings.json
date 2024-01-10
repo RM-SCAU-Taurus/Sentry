@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "bsp_can.h": "c",
+        "comm_task.h": "c",
+        "chassis_task.h": "c",
+        "bsp_judge.h": "c",
+        "bsp_powerlimit.h": "c"
+    }
+}

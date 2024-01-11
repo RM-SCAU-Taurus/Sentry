@@ -123,7 +123,9 @@ void PowerParam_Update(void)
     }
     else  //步兵功率规则外
     {
-        chassis.wheel_max = SPEED_50W;
+        
+//				chassis.wheel_max = SPEED_50W;
+			  chassis.wheel_max = SPEED_120W;//无裁判系统时导航调试速度
         chassis.keyboard_input = 40.0f;
     }
 }

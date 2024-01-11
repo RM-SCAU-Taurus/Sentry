@@ -44,7 +44,7 @@ void gimbal_param_init(void)
                    pid_pit_spd_P ,pid_pit_spd_I, pid_pit_spd_D);
     /* YAW 轴 */
     PID_struct_init(&pid_yaw_angle, POSITION_PID, 8000, 0,
-                   15 0.0f, 0.0f, 0.0f);
+                   150.0f, 0.0f, 0.0f);
     PID_struct_init(&pid_yaw_spd, POSITION_PID, 28000, 20000,
                     12.0f, 0.1f, 0.0f);
 

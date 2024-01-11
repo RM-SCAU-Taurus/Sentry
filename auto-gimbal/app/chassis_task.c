@@ -205,13 +205,13 @@ void chassis_task(void const *argu)
                 {
                     if( chassis.wheel_max <= 8000 )
 										{ 
-											//chassis.spd_input.vw = chassis.spin_dir * chassis.wheel_max;
-										chassis.spd_input.vw = chassis.spin_dir * 5000;
+											chassis.spd_input.vw = chassis.spin_dir * chassis.wheel_max;
+//										chassis.spd_input.vw = chassis.spin_dir * 5000;
 										}
                     else   
 										{			
-											//chassis.spd_input.vw = chassis.spin_dir * chassis.wheel_max;
-												chassis.spd_input.vw = chassis.spin_dir * 5000;
+											chassis.spd_input.vw = chassis.spin_dir * chassis.wheel_max;
+//												chassis.spd_input.vw = chassis.spin_dir * 5000;
 										}
                 }
             }

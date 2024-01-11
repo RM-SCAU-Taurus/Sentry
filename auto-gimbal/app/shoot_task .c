@@ -59,7 +59,7 @@ void shoot_init(void)
     shoot.house_mode    = HOUSE_MODE_PROTECT;  
 	/* 枪管参数初始化 */
     shoot.trigger_period = TRIGGER_PERIOD;
-	 shoot.barrel.cooling_rate   = 25;
+	  shoot.barrel.cooling_rate   = 25;
     shoot.barrel.heat_max       = 240;
     shoot.shoot_speed           = 30;
 }

@@ -1,6 +1,6 @@
 .\rm_main\bsp_judge.o: ..\bsp\bsp_judge.c
 .\rm_main\bsp_judge.o: ..\bsp\bsp_judge.h
-.\rm_main\bsp_judge.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
+.\rm_main\bsp_judge.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 .\rm_main\bsp_judge.o: ../Inc/crc.h
 .\rm_main\bsp_judge.o: ../Inc/main.h
 .\rm_main\bsp_judge.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
@@ -17,7 +17,7 @@
 .\rm_main\bsp_judge.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
 .\rm_main\bsp_judge.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 .\rm_main\bsp_judge.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-.\rm_main\bsp_judge.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
+.\rm_main\bsp_judge.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
 .\rm_main\bsp_judge.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
 .\rm_main\bsp_judge.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
 .\rm_main\bsp_judge.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
@@ -39,7 +39,7 @@
 .\rm_main\bsp_judge.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 .\rm_main\bsp_judge.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 .\rm_main\bsp_judge.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
-.\rm_main\bsp_judge.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\string.h
+.\rm_main\bsp_judge.o: B:\Keil5\ARM\ARMCC\Bin\..\include\string.h
 .\rm_main\bsp_judge.o: ../Inc/usart.h
 .\rm_main\bsp_judge.o: ..\bsp\bsp_usart.h
 .\rm_main\bsp_judge.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

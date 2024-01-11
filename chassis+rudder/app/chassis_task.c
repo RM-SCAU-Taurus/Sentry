@@ -127,7 +127,7 @@ void chassis_task(void const *argu)
     for(;;)
     {
         taskENTER_CRITICAL();
-		//	HAL_IWDG_Refresh(&hiwdg);//看门狗
+		   	HAL_IWDG_Refresh(&hiwdg);//看门狗
         chassis_mode_switch();
         switch( chassis.mode )
         {

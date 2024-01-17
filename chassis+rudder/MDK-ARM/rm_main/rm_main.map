@@ -5249,13 +5249,13 @@ Image component sizes
 
       1382        130          0         40        344       9375   bsp_can.o
        640         14          0         40        323       9064   bsp_judge.o
-      1020        200          0         16         80       5936   bsp_powerlimit.o
+      1020        200          0         16         80       5940   bsp_powerlimit.o
         72         10          0         16         24       1943   bsp_t_imu.o
        270         38          0          0        138       2657   bsp_usart.o
        484         40          0          4         80       2462   can.o
       3728        272          0         28        272      12286   chassis_task.o
        290          4          0          0          0      31002   cmsis_os.o
-       324         22          0          4         22       2698   comm_task.o
+       324         22          0          4         22       2686   comm_task.o
         76         18          0          8          0       1463   crc.o
        170         16        768          2          0       3567   crc8_crc16.o
         20          0          0          0          0       1530   datascope_dp.o
@@ -5270,7 +5270,7 @@ Image component sizes
        144          0          0          0          0       3550   list.o
        276         16          0          0          0      50669   main.o
        112          4          0          0          0       1396   math_calcu.o
-         0          0          0          4          0       5846   modeswitch_task.o
+         0          0          0          4          0       1314   modeswitch_task.o
        580         14          0          0       1344       5739   pid.o
        814         92          0         12          0      11937   port.o
       1586         24          0          0         64      17552   queue.o
@@ -5298,7 +5298,7 @@ Image component sizes
       1548        130          0          0       1560       6183   usart.o
 
     ----------------------------------------------------------------------
-     31686       2244       1430        696      28792    1138181   Object Totals
+     31686       2244       1430        696      28792    1133641   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         40          0          2          3         11          0   (incl. Padding)
 
@@ -5404,8 +5404,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     45858       3372       1758        696      28888    1134448   Grand Totals
-     45858       3372       1758         56      28888    1134448   ELF Image Totals (compressed)
+     45858       3372       1758        696      28888    1129908   Grand Totals
+     45858       3372       1758         56      28888    1129908   ELF Image Totals (compressed)
      45858       3372       1758         56          0          0   ROM Totals
 
 ==============================================================================

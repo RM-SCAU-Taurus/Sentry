@@ -147,6 +147,9 @@ typedef struct
 	float robot_vy;
 	float robot_vw;
 	float robot_yaw;
+	float speed_mode;
+	float speed_yaw;
+	float speed_pit;
 }vision_ctrl_info_t;
 
 typedef struct

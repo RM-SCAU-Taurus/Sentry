@@ -382,9 +382,19 @@ void vsn_gimbal_ref_calc(void) {
                // gimbal.pid.pit_ecd_ref   += rc.ch2 * scale.ch2;
                   gimbal.pid.pit_ecd_ref  +=rc.ch2 * 0.0008f;
                 gimbal.pid.yaw_angle_ref += rc.ch1 * scale.ch1;
-            } else {
-                gimbal.pid.yaw_angle_ref= vision.yaw_angle_error;//由导航控制
-                gimbal.pid.pit_ecd_ref  = vision.pit_angle_error;
+            } else 
+						{
+								if(vision_ctrl.speed_mode == 1 && (vision_ctrl.speed_yaw !=0 || vision_ctrl.speed_pit)){
+								
+                gimbal.pid.yaw_spd_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
+//                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要
+								gimbal.pid.pit_ecd_ref  = vision.pit_angle_error;	
+								}
+								else{
+								gimbal.pid.yaw_angle_ref= vision.yaw_angle_error;//由导航控制
+                gimbal.pid.pit_ecd_ref  = vision.pit_angle_error;	
+									
+								}
             }
             break;
         }

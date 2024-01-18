@@ -256,8 +256,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-
-extern void HAL_UARTEx_RxEventCallback_dbus(UART_HandleTypeDef *huart, uint16_t Size);
+extern void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size);
 /** @addtogroup STM32F4xx_HAL_Driver
   * @{
   */
@@ -2381,11 +2380,11 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
   /* If some errors occur */
   if (0)
   {
-//    /* UART parity error interrupt occurred ----------------------------------*/
-//    if (((isrflags & USART_SR_PE) != RESET) && ((cr1its & USART_CR1_PEIE) != RESET))
-//    {
-//      huart->ErrorCode |= HAL_UART_ERROR_PE;
-//    }
+    /* UART parity error interrupt occurred ----------------------------------*/
+    if (((isrflags & USART_SR_PE) != RESET) && ((cr1its & USART_CR1_PEIE) != RESET))
+    {
+      huart->ErrorCode |= HAL_UART_ERROR_PE;
+    }
 
     /* UART noise error interrupt occurred -----------------------------------*/
     if (((isrflags & USART_SR_NE) != RESET) && ((cr3its & USART_CR3_EIE) != RESET))
@@ -2393,21 +2392,21 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
       huart->ErrorCode |= HAL_UART_ERROR_NE;
     }
 
-//    /* UART frame error interrupt occurred -----------------------------------*/
-//    if (((isrflags & USART_SR_FE) != RESET) && ((cr3its & USART_CR3_EIE) != RESET))
-//    {
-//      huart->ErrorCode |= HAL_UART_ERROR_FE;
-//    }
+    /* UART frame error interrupt occurred -----------------------------------*/
+    if (((isrflags & USART_SR_FE) != RESET) && ((cr3its & USART_CR3_EIE) != RESET))
+    {
+      huart->ErrorCode |= HAL_UART_ERROR_FE;
+    }
 
-//    /* UART Over-Run interrupt occurred --------------------------------------*/
-//    if (((isrflags & USART_SR_ORE) != RESET) && (((cr1its & USART_CR1_RXNEIE) != RESET)
-//                                                 || ((cr3its & USART_CR3_EIE) != RESET)))
-//    {
-//      huart->ErrorCode |= HAL_UART_ERROR_ORE;
-//    }
+    /* UART Over-Run interrupt occurred --------------------------------------*/
+    if (((isrflags & USART_SR_ORE) != RESET) && (((cr1its & USART_CR1_RXNEIE) != RESET)
+                                                 || ((cr3its & USART_CR3_EIE) != RESET)))
+    {
+      huart->ErrorCode |= HAL_UART_ERROR_ORE;
+    }
 
     /* Call UART Error Call back function if need be --------------------------*/
-		if (huart->ErrorCode != HAL_UART_ERROR_NONE)
+    if (huart->ErrorCode != HAL_UART_ERROR_NONE)
     {
       /* UART in mode Receiver -----------------------------------------------*/
       if (((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET))
@@ -2500,7 +2499,8 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
          (DMA cplt callback will be called).
          Otherwise, if at least one data has already been received, IDLE event is to be notified to user */
       uint16_t nb_remaining_rx_data = (uint16_t) __HAL_DMA_GET_COUNTER(huart->hdmarx);
-      if (1)
+      if ((nb_remaining_rx_data > 0U)
+          && (nb_remaining_rx_data < huart->RxXferSize))
       {
         /* Reception is not complete */
         huart->RxXferCount = nb_remaining_rx_data;
@@ -2531,7 +2531,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
 #else
         /*Call legacy weak Rx Event callback*/
 //        HAL_UARTEx_RxEventCallback(huart, (huart->RxXferSize - huart->RxXferCount));
-					HAL_UARTEx_RxEventCallback_dbus(huart, (huart->RxXferSize - huart->RxXferCount));
+				USER_HAL_UARTEx_RxEventCallback(huart, (huart->RxXferSize - huart->RxXferCount));
 #endif /* USE_HAL_UART_REGISTER_CALLBACKS */
       }
       return;

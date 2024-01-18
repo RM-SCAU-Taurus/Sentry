@@ -4,9 +4,7 @@
 #include "usart.h"
 
 typedef struct {
-   uint8_t buffer1[36];
-   uint8_t buffer2[36];
-  uint16_t receivedBytes;
+    uint16_t receivedBytes;
     uint8_t *current_buffer;  // 指向当前使用的缓冲区
     uint8_t *last_buffer;     // 指向上次使用的缓冲区
 } DoubleBuffer_t,*p_DoubleBuffer_t;
@@ -24,7 +22,6 @@ typedef struct {
 void USER_UART_Init(void);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart);
 void USER_UART_IDLECallback(UART_HandleTypeDef *huart);
-void HAL_UARTEx_RxEventCallback_dbus(UART_HandleTypeDef *huart, uint16_t Size);
-extern uint8_t dma_dbus_buf[DMA_DBUS_LEN];
+void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size);
 #endif
 

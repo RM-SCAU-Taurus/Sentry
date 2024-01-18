@@ -170,18 +170,34 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>92</LineNumber>
+          <LineNumber>0</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134260506</Address>
+          <Address>134249754</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\app\gimbal_task.c</Filename>
+          <Filename></Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\rm_main\../app/gimbal_task.c\92</Expression>
+          <Expression>0x08007D1A</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>359</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134240450</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>../Src/stm32f4xx_it.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\rm_main\../Src/stm32f4xx_it.c\359</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>

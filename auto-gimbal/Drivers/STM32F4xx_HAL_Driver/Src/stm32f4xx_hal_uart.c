@@ -2499,8 +2499,9 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
          (DMA cplt callback will be called).
          Otherwise, if at least one data has already been received, IDLE event is to be notified to user */
       uint16_t nb_remaining_rx_data = (uint16_t) __HAL_DMA_GET_COUNTER(huart->hdmarx);
-      if ((nb_remaining_rx_data > 0U)
-          && (nb_remaining_rx_data < huart->RxXferSize))
+//      if ((nb_remaining_rx_data > 0U)
+//          && (nb_remaining_rx_data < huart->RxXferSize))
+			 if (1)
       {
         /* Reception is not complete */
         huart->RxXferCount = nb_remaining_rx_data;

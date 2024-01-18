@@ -125,17 +125,6 @@ void gimbal_task(void const *argu)
             }
              case AUTO_MODE:
             {
-//							  if(goback_flag == 0)
-//								{
-//									choose_pid_flag = 1;
-//									gimbal.pid.yaw_mecd_ref = GIMBAL_YAW_CENTER_OFFSET;
-//								}
-//								if(fabs(moto_yaw.ecd - gimbal.pid.yaw_mecd_ref) < 5 && goback_flag == 0)
-//								{
-//									vision_ctrl.yaw = imu_data.yaw;
-//									goback_flag = 1;
-//									choose_pid_flag = 0;
-//								}
 							vsn_gimbal_ref_calc();	
 							vsn_calc();			
                     

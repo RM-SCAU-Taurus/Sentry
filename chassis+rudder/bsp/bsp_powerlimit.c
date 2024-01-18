@@ -117,7 +117,7 @@ void PowerParam_Update(void)
     }
     else  //功率规则外
     {
-        chassis.wheel_max = SPEED_100W;
+        chassis.wheel_max = SPEED_80W;
         chassis.keyboard_input = 40.0f;
     }
 }

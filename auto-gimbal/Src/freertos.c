@@ -156,44 +156,44 @@ void MX_FREERTOS_Init(void) {
 
 
 /***************************High priority task***************************/
-    osThreadDef(canTask, can_msg_send_task, osPriorityHigh, 0, 512);
-    can_msg_send_task_t = osThreadCreate(osThread(canTask), NULL);
-		
-		osThreadDef(USBTask, usb_task, osPriorityHigh, 0, 128);
-    usb_task_handle = osThreadCreate(osThread(USBTask), NULL);
-	
-    osThreadDef(DecodeTask, decode_task, osPriorityHigh, 0, 128);
-    decode_task_handle = osThreadCreate(osThread(DecodeTask), NULL);
-		    
-		osThreadDef(Vision_send_task, vision_send_task, osPriorityHigh, 0, 128);
-    vision_send_task_handle = osThreadCreate(osThread(Vision_send_task), NULL);
-		
-		osThreadDef(testTask, gimbal_to_chassic_task, osPriorityHigh, 0, 256);
-    test_task_t = osThreadCreate(osThread(testTask),NULL);
-		
-		osThreadDef(statusTask, status_task, osPriorityHigh, 0, 128);
-	status_task_t = osThreadCreate(osThread(statusTask),NULL);
-    /***********************AboveNormal priority task***********************/
-    osThreadDef(chassisTask, chassis_task, osPriorityAboveNormal, 0, 512);
-   chassis_task_t = osThreadCreate(osThread(chassisTask),NULL);
+//    osThreadDef(canTask, can_msg_send_task, osPriorityHigh, 0, 512);
+//    can_msg_send_task_t = osThreadCreate(osThread(canTask), NULL);
+//		
+//		osThreadDef(USBTask, usb_task, osPriorityHigh, 0, 128);
+//    usb_task_handle = osThreadCreate(osThread(USBTask), NULL);
+//	
+//    osThreadDef(DecodeTask, decode_task, osPriorityHigh, 0, 128);
+//    decode_task_handle = osThreadCreate(osThread(DecodeTask), NULL);
+//		    
+//		osThreadDef(Vision_send_task, vision_send_task, osPriorityHigh, 0, 128);
+//    vision_send_task_handle = osThreadCreate(osThread(Vision_send_task), NULL);
+//		
+//		osThreadDef(testTask, gimbal_to_chassic_task, osPriorityHigh, 0, 256);
+//    test_task_t = osThreadCreate(osThread(testTask),NULL);
+//		
+//		osThreadDef(statusTask, status_task, osPriorityHigh, 0, 128);
+//	status_task_t = osThreadCreate(osThread(statusTask),NULL);
+//    /***********************AboveNormal priority task***********************/
+//    osThreadDef(chassisTask, chassis_task, osPriorityAboveNormal, 0, 512);
+//   chassis_task_t = osThreadCreate(osThread(chassisTask),NULL);
 
-    osThreadDef(gimbalTask, gimbal_task, osPriorityAboveNormal, 0, 512);
-   gimbal_task_t = osThreadCreate(osThread(gimbalTask),NULL);
+//    osThreadDef(gimbalTask, gimbal_task, osPriorityAboveNormal, 0, 512);
+//   gimbal_task_t = osThreadCreate(osThread(gimbalTask),NULL);
 
-    osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);
-    shoot_task_t = osThreadCreate(osThread(shootTask),NULL);
+//    osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);
+//    shoot_task_t = osThreadCreate(osThread(shootTask),NULL);
 
-    /**************************Normal priority task**************************/
-    osThreadDef(modeswTask, mode_switch_task, osPriorityNormal, 0, 128);
-    mode_sw_task_t = osThreadCreate(osThread(modeswTask),NULL);
+//    /**************************Normal priority task**************************/
+//    osThreadDef(modeswTask, mode_switch_task, osPriorityNormal, 0, 128);
+//    mode_sw_task_t = osThreadCreate(osThread(modeswTask),NULL);
 
-    osThreadDef(judgesendTask, judge_send_task, osPriorityNormal, 0, 128);
-    judge_send_task_t = osThreadCreate(osThread(judgesendTask),NULL);
-    
+//    osThreadDef(judgesendTask, judge_send_task, osPriorityNormal, 0, 128);
+//    judge_send_task_t = osThreadCreate(osThread(judgesendTask),NULL);
+//    
 
-    /* low priority task */
+//    /* low priority task */
 
-		 CDC_send_queue = xQueueCreate(1, 128); // 串口消息队列
+//		 CDC_send_queue = xQueueCreate(1, 128); // 串口消息队列
     taskEXIT_CRITICAL();
   /* USER CODE END RTOS_THREADS */
 

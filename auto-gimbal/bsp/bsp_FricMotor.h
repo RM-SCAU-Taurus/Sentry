@@ -25,8 +25,6 @@ typedef struct
 } FricMotor_Pid_Control;
 
 
-
-void FricMotor_init(void);
 void FricMotor_Control(void);
 void FricGunControl_PID(uint16_t pwm);
 #endif

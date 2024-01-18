@@ -16,8 +16,6 @@
 extern vision_ctrl_info_t  vision_ctrl;
 static void ShootParam_Update(void);
 static void shoot_mode_sw(void);
-static void house_init(void);
-static void house_control(void);
 fric_t fric;
 void shoot_task(void const *argu)
 {
@@ -28,18 +26,16 @@ void shoot_task(void const *argu)
 			taskENTER_CRITICAL();
 			/* 电调初始化 */
 				  static uint8_t last_fric_enable, fric_enable;
-        fric_enable = !!Game_Robot_Status.mains_power_shooter_output;
+					fric_enable = !!Game_Robot_Status.mains_power_shooter_output;
         if (fric_enable && !last_fric_enable) {
             fric.init_cnt = 0;
             fric.init_flag = 0;
 						fric.acc_flag =0;
         }
-				last_fric_enable = fric_enable;
-				 FricMotor_init();   
+				last_fric_enable = fric_enable;  
         shoot_mode_sw();  /* 发射器模式切换 */
         FricMotor_Control();	/* 摩擦轮电机控制 */
         TriggerMotor_control();	/* 拨弹电机控制 */
-        house_control();         /* 弹舱盖控制 */
 				taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, SHOOT_PERIOD);
     }
@@ -50,9 +46,7 @@ int cnt=0;
 void shoot_init(void)
 {
     /* 发射器底层初始化 */
-    FricMotor_init();  //摩擦轮初始化 在任务中控制初始化
     TriggerMotor_init();//拨盘初始化
-		house_init();       ////弹舱初始化
 	
     shoot.firc_mode     = FIRC_MODE_STOP;
     shoot.stir_mode     = STIR_MODE_PROTECT;
@@ -173,34 +167,5 @@ static void ShootParam_Update(void)
 //		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用
 }
 
-static void house_init(void)
-{
-    //HAL_TIM_PWM_Start(Magazine_Time_CH);
-	Magazine_PWM = COVER_PWM_CLOSE;
-}
 
-//uint16_t test_pwm_open = 600;
-static void house_control(void)
-{
-    switch( shoot.house_mode )
-    {
-        case HOUSE_MODE_OPEN: //打开弹舱盖       
-					{
-            HAL_TIM_PWM_Start(Magazine_Time_CH);
-            Magazine_PWM = COVER_PWM_OPEN;
-        }
-        break;
-        case HOUSE_MODE_CLOSE:  //使能pwm
-					{
-            HAL_TIM_PWM_Start(Magazine_Time_CH);
-            Magazine_PWM = COVER_PWM_CLOSE;
-        }            
-        break;
-        case HOUSE_MODE_PROTECT:  //弹舱盖无力
-					{
-            HAL_TIM_PWM_Stop(Magazine_Time_CH);
-            Magazine_PWM = COVER_PWM_CLOSE;
-        }
-        default: break;
-    }
-}
+

@@ -4,8 +4,8 @@
 #include "usart.h"
 
 typedef struct {
-   uint8_t buffer1[36u];
-   uint8_t buffer2[36u];
+   uint8_t buffer1[36];
+   uint8_t buffer2[36];
   uint16_t receivedBytes;
     uint8_t *current_buffer;  // 指向当前使用的缓冲区
     uint8_t *last_buffer;     // 指向上次使用的缓冲区

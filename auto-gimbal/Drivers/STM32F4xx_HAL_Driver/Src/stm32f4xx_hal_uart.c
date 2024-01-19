@@ -2378,6 +2378,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
   }
 
   /* If some errors occur */
+
   if (0)
   {
     /* UART parity error interrupt occurred ----------------------------------*/
@@ -2531,8 +2532,8 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
         huart->RxEventCallback(huart, (huart->RxXferSize - huart->RxXferCount));
 #else
         /*Call legacy weak Rx Event callback*/
-//        HAL_UARTEx_RxEventCallback(huart, (huart->RxXferSize - huart->RxXferCount));
-				USER_HAL_UARTEx_RxEventCallback(huart, (huart->RxXferSize - huart->RxXferCount));
+       HAL_UARTEx_RxEventCallback(huart, (huart->RxXferSize - huart->RxXferCount));
+				
 #endif /* USE_HAL_UART_REGISTER_CALLBACKS */
       }
       return;

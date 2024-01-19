@@ -22,6 +22,6 @@ typedef struct {
 void USER_UART_Init(void);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart);
 void USER_UART_IDLECallback(UART_HandleTypeDef *huart);
-void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size);
+void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart);
 #endif
 

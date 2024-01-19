@@ -166,10 +166,9 @@ void chassis_task(void const *argu)
 								chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET; 
 								chassis.position_error = circle_error(chassis.position_ref,moto_yaw.ecd,8191);
 								chassis.angle_error_degree = chassis.position_error * (360.0f/8191.0f);
-	//		g .yaw_imu_offset = imu_data.yaw - chassis.angle_error_degree;
 								
 							
-							chassis.spd_input.vx = 0;
+							  chassis.spd_input.vx = 0;
                 chassis.spd_input.vy = 0;
                 chassis.spd_input.vw = 0;
             } 

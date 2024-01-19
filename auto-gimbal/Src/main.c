@@ -125,7 +125,7 @@ int main(void)
     PowerControl_Init();
     USER_UART_Init();
 		vsn_init();
-		//ust_tim_start();//微妙延时函数tim
+		ust_tim_start();//微妙延时函数tim
     HAL_Delay(2000);
 		
 

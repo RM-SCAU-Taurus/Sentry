@@ -87,7 +87,8 @@ void gimbal_task(void const *argu)
     uint32_t mode_wake_time = osKernelSysTick();
     for(;;)
     {
-        taskENTER_CRITICAL();
+					ust_interval_test_start(&ust_user);
+         taskENTER_CRITICAL();
         
         switch( ctrl_mode )
         {
@@ -159,6 +160,7 @@ void gimbal_task(void const *argu)
         osSignalSet(can_msg_send_task_t, GIMBAL_MOTOR_MSG_SEND);
 //				DataWave(&huart3);
 				taskEXIT_CRITICAL();
+				ust_interval_test_end(&ust_user);
         osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
     }
 }

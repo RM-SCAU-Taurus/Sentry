@@ -54,54 +54,56 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 */
 void USER_UART_Init()
 {
-		__HAL_UART_CLEAR_IDLEFLAG(&huart1); 
-		__HAL_UART_CLEAR_IDLEFLAG(&huart2); 
+
+	
+
 		/*********************** DBUS INIT ***************************/
+	  __HAL_UART_CLEAR_IDLEFLAG(&DBUS_HUART); 
+		__HAL_UART_ENABLE_IT(&DBUS_HUART, UART_IT_IDLE);
 		DoubleBuffer_dbus.current_buffer = dma_dbus_buf[0];
 		DoubleBuffer_dbus.last_buffer    = dma_dbus_buf[1];	
-		HAL_UARTEx_ReceiveToIdle_DMA(&DBUS_HUART, DoubleBuffer_dbus.current_buffer, DMA_DBUS_LEN);
-	  __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+		HAL_UART_Receive_DMA(&DBUS_HUART, DoubleBuffer_dbus.current_buffer, DMA_DBUS_LEN);
 		/*********************** GYRO INIT ***************************/
 
 		/*********************** JUDGE INIT ***************************/	
-		DoubleBuffer_judge.current_buffer = dma_judge_buf[0];
-		DoubleBuffer_judge.last_buffer    = dma_judge_buf[1];	
-    HAL_UART_Receive_DMA(&JUDGE_HUART, DoubleBuffer_judge.current_buffer, DMA_JUDGE_LEN);
-		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+//		DoubleBuffer_judge.current_buffer = dma_judge_buf[0];
+//		DoubleBuffer_judge.last_buffer    = dma_judge_buf[1];	
+//    HAL_UART_Receive_DMA(&JUDGE_HUART, DoubleBuffer_judge.current_buffer, DMA_JUDGE_LEN);
+//		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
 
 }
 
-void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size){
-	
+void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart){
+    if(RESET != __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE)) {
+			__HAL_UART_CLEAR_IDLEFLAG(huart); 
+			 HAL_UART_DMAStop(huart);	
 			/* re-use dma+idle to recv */
 			if(huart->Instance == USART1){
 				if (DoubleBuffer_dbus.current_buffer == dma_dbus_buf[0]) 		{
 					DoubleBuffer_dbus.current_buffer = dma_dbus_buf[1];   // 当前buf切换到buffer2
 					DoubleBuffer_dbus.last_buffer    = dma_dbus_buf[0];   // 记录上次buf为buffer1
-					HAL_UARTEx_ReceiveToIdle_DMA(&DBUS_HUART, DoubleBuffer_dbus.current_buffer, DMA_DBUS_LEN);					// 以当前buf再次开启DMA接收
-					__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+					HAL_UART_Receive_DMA(&DBUS_HUART, DoubleBuffer_dbus.current_buffer, DMA_DBUS_LEN);
 				} 
 				else if(DoubleBuffer_dbus.current_buffer == dma_dbus_buf[1]) {		
 					DoubleBuffer_dbus.current_buffer = dma_dbus_buf[0];   // 当前buf切换到buffer1
 					DoubleBuffer_dbus.last_buffer    = dma_dbus_buf[1];   // 记录上次buf为buffer2
-					HAL_UARTEx_ReceiveToIdle_DMA(&DBUS_HUART, DoubleBuffer_dbus.current_buffer, DMA_DBUS_LEN);		// 以当前buf再次开启DMA接收	
-					__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);	
+					HAL_UART_Receive_DMA(&DBUS_HUART, DoubleBuffer_dbus.current_buffer, DMA_DBUS_LEN);		// 以当前buf再次开启DMA接收	
 				}
 		}
-			if(huart->Instance == USART2){
-				if (DoubleBuffer_judge.current_buffer == dma_judge_buf[0]){
-					DoubleBuffer_judge.current_buffer = dma_judge_buf[1];   // 当前buf切换到buffer2
-					DoubleBuffer_judge.last_buffer    = dma_judge_buf[0];    // 记录上次buf为buffer1
-					HAL_UARTEx_ReceiveToIdle_DMA(&JUDGE_HUART, DoubleBuffer_judge.current_buffer, DMA_JUDGE_LEN);   // 以当前buf再次开启DMA接收
-					__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
-				} 
-				else if(DoubleBuffer_judge.current_buffer == dma_judge_buf[1]){
-					DoubleBuffer_judge.current_buffer = dma_judge_buf[0];   // 当前buf切换到buffer1
-					DoubleBuffer_judge.last_buffer    = dma_judge_buf[1];   // 记录上次buf为buffer2
-					HAL_UARTEx_ReceiveToIdle_DMA(&JUDGE_HUART, DoubleBuffer_judge.current_buffer, DMA_JUDGE_LEN);		// 以当前buf再次开启DMA接收
-					__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
-				}
-		}
+//			if(huart->Instance == USART2){
+//				if (DoubleBuffer_judge.current_buffer == dma_judge_buf[0]){
+//					DoubleBuffer_judge.current_buffer = dma_judge_buf[1];   // 当前buf切换到buffer2
+//					DoubleBuffer_judge.last_buffer    = dma_judge_buf[0];    // 记录上次buf为buffer1
+//					HAL_UARTEx_ReceiveToIdle_DMA(&JUDGE_HUART, DoubleBuffer_judge.current_buffer, DMA_JUDGE_LEN);   // 以当前buf再次开启DMA接收
+//					__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+//				} 
+//				else if(DoubleBuffer_judge.current_buffer == dma_judge_buf[1]){
+//					DoubleBuffer_judge.current_buffer = dma_judge_buf[0];   // 当前buf切换到buffer1
+//					DoubleBuffer_judge.last_buffer    = dma_judge_buf[1];   // 记录上次buf为buffer2
+//					HAL_UARTEx_ReceiveToIdle_DMA(&JUDGE_HUART, DoubleBuffer_judge.current_buffer, DMA_JUDGE_LEN);		// 以当前buf再次开启DMA接收
+//					__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+//				}
+//		}
 		USER_UART_IDLECallback(huart);  	//调用串口功能回调函数
-	
+	}
 }

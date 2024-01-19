@@ -1,7 +1,7 @@
 #include "us_tim.h"
 
 prv_ust_t prv_ust;
-
+ust_t ust_user;
 static UST_TYPE ust_tim_get(void) {
     return UST_HTIM.Instance->CNT;
 }

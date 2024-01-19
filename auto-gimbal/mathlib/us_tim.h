@@ -79,7 +79,7 @@ typedef struct
  * @brief 模块内部变量外部声明
  */
 extern prv_ust_t prv_ust;
-
+extern ust_t ust_user;
 /**
  * @brief 模块内部使用的定时器句柄外部声明
  */

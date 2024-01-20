@@ -1,24 +1,31 @@
+/**********C库****************/
+#include "string.h"
+/**********任务库*************/
+#include "cmsis_os.h"
+#include "usb_task.h"
+#include "shoot_task.h"
+#include "modeswitch_task.h"
 #include "chassis_task.h"
 #include "gimbal_task.h"
-#include "cmsis_os.h"
 #include "comm_task.h"
-#include "string.h"
-#include "modeswitch_task.h"
-#include "remote_msg.h"
-#include "pid.h"
-#include "bsp_can.h"
+/**********数学库*************/
 #include "math_calcu.h"
 #include "math.h"
-#include "control_def.h"
-#include "bsp_powerlimit.h"
+#include "pid.h"
+#include "func_generator.h"
+/**********数据处理库**********/
+#include "remote_msg.h"
 #include "usart.h"
 #include "DataScope_DP.h"
+/**********类型定义库**********/
+#include "control_def.h"
 #include "protocol_camp.h"
-#include "func_generator.h"
-#include "usb_task.h"
-#include "bsp_can.h"
-#include "shoot_task.h"
+/**********板级支持库**********/
 #include "bsp_T_imu.h"
+#include "bsp_powerlimit.h"
+#include "bsp_can.h"
+#include "bsp_can.h"
+
 extern TaskHandle_t can_msg_send_task_t;
 int vx_test;
 uint8_t imu_offset_flag = 1;
@@ -96,7 +103,7 @@ void chassis_task(void const *argu)
 
             chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET;
             chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
-            chassis.angle_error_degree = chassis.position_error * (360.0f / 8191.0f);
+            chassis.angle_dif_degree = chassis.position_error * (360.0f / 8191.0f);
 
             chassis.spd_input.vx = 0;
             chassis.spd_input.vy = 0;
@@ -109,7 +116,8 @@ void chassis_task(void const *argu)
             chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET;
             chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
             chassis.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
-
+						chassis.angle_dif_degree = chassis.position_error * (360.0f / 8191.0f);
+					
             chassis.spd_input.vx = 1.0f * (float)(rc.ch4 * scale.ch4 * cos(chassis.angle_error) - (-1.0f) * rc.ch3 * scale.ch3 * sin(chassis.angle_error));
             chassis.spd_input.vy = 1.0f * (float)(-rc.ch4 * scale.ch4 * sin(chassis.angle_error) - (-1.0f) * rc.ch3 * scale.ch3 * cos(chassis.angle_error));
             chassis.spd_input.vy = chassis.spd_input.vy; // 换模式加-
@@ -142,8 +150,8 @@ void chassis_task(void const *argu)
             chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET;
             chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
             chassis.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
-            chassis.angle_error_degree = chassis.position_error * (360.0f / 8191.0f);
-            gimbal.yaw_imu_offset = imu_data.yaw - chassis.angle_error_degree;
+            chassis.angle_dif_degree = chassis.position_error * (360.0f / 8191.0f);
+            gimbal.yaw_imu_offset = imu_data.yaw - chassis.angle_dif_degree;
             /////
 
             chassis.spd_input.vx = chassis_ctrl.vx / 0.375f * 19.0f * 57.3f;

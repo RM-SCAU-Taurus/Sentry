@@ -67,7 +67,7 @@ typedef struct
     int16_t   position_ref;
     float 	  position_error;
     float     angle_error;
-	  float     angle_error_degree;
+	  float     angle_dif_degree;
 
     float     wheel_max;
     float     keyboard_input;

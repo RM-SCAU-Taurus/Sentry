@@ -780,11 +780,6 @@
               <FileType>1</FileType>
               <FilePath>..\app\uart_decode.c</FilePath>
             </File>
-            <File>
-              <FileName>uart_decode.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\app\uart_decode.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>

@@ -162,7 +162,7 @@ void MX_FREERTOS_Init(void) {
     can_msg_send_task_t = osThreadCreate(osThread(canTask), NULL);
 		
 		
-    osThreadDef(UARTTask, uart_decode_task, osPriorityHigh, 0, 512);
+    osThreadDef(UARTTask, uart_decode_task, osPriorityHigh, 0, 256);
     uart_decode_task_t = osThreadCreate(osThread(UARTTask), NULL);		
 		
 		osThreadDef(USBTask, usb_task, osPriorityHigh, 0, 128);
@@ -186,7 +186,7 @@ void MX_FREERTOS_Init(void) {
     osThreadDef(gimbalTask, gimbal_task, osPriorityAboveNormal, 0, 512);
    gimbal_task_t = osThreadCreate(osThread(gimbalTask),NULL);
 
-    osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);
+    osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);                                       
     shoot_task_t = osThreadCreate(osThread(shootTask),NULL);
 
     /**************************Normal priority task**************************/
@@ -214,8 +214,8 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void const * argument)
 {
-  /* init code for USB_DEVICE */
-  MX_USB_DEVICE_Init();
+//  /* init code for USB_DEVICE */
+//  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN StartDefaultTask */
     /* Infinite loop */
     for(;;)

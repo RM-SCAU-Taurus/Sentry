@@ -98,7 +98,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
             /* 当机械零点在pit轴运动范围内,拓展编码值范围 */
 //            if( gimbal.pid.pit_ecd_fdb < 5000 )  //确定电机编码值在零点附近时，当正向越界，从8191到1阶跃
 //            {
-//                gimbal.pid.pit_ecd_fdb += 8191;
+//                gimbal.pid.pit_ecd_fdb += 8191;	
 //            }
             break;
         }

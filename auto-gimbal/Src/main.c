@@ -117,7 +117,7 @@ int main(void)
   MX_USART6_UART_Init();
   MX_UART4_Init();
   MX_CRC_Init();
-  MX_TIM5_Init();
+//  MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
     status_init();
     can_device_init();
@@ -126,7 +126,7 @@ int main(void)
     PowerControl_Init();
     USER_UART_Init();
 		vsn_init();
-		ust_tim_start();//Œ¢√Ó—” ±∫Ø ˝tim
+//		ust_tim_start();//Œ¢√Ó—” ±∫Ø ˝tim
     HAL_Delay(2000);
 		
 

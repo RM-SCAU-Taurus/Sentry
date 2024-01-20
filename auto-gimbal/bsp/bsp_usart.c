@@ -14,6 +14,9 @@ extern TaskHandle_t uart_decode_task_t;
 static void Memory_change(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer, DoubleBufferArrayPtr D_buf, uint16_t LEN);
 static void UARTX_init(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer, DoubleBufferArrayPtr D_buf, uint16_t LEN);
 
+volatile int uartDecodeSignal = 0;
+
+
 static uint8_t dma_dbus_buf[2][DMA_DBUS_LEN];
 static uint8_t dma_judge_buf[2][DMA_JUDGE_LEN];
 uint8_t dma_vision_buf[DMA_VISION_LEN];
@@ -27,8 +30,11 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 {
 	if (huart->Instance == USART1) // DBUS
 	{
-//		fifo_s_puts(&DBUS_fifo, (char*)DBUS_fifo_buf, DMA_DBUS_LEN);
-		osSignalSet(uart_decode_task_t, UART_DECODE_DBUS_SEND);
+		rc_callback_handler(&rc, DoubleBuffer_judge.last_buffer);
+    memset(DoubleBuffer_judge.last_buffer, 0, DMA_DBUS_LEN);
+//		fifo_s_puts(&DBUS_fifo, (char*)DoubleBuffer_judge.last_buffer, DMA_DBUS_LEN);
+//		uartDecodeSignal = 1;
+		
 	}
 
 	else if (huart->Instance == USART2) // JUDGE

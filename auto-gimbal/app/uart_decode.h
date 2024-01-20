@@ -20,9 +20,11 @@
 #include "bsp_usart.h"
 #include "fifo.h"
 
+#define been_written 1
+#define Data_processing_completed 0
 void uart_decode_task(void const *argu);
 
-
+extern volatile int uartDecodeSignal;
 extern fifo_s_t DBUS_fifo;
 extern uint8_t DBUS_fifo_buf[5*DMA_DBUS_LEN];
 #endif

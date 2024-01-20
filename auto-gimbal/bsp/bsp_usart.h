@@ -1,3 +1,17 @@
+/**
+ *  @file  bsp_usart.h 
+ *	@author 	ZGH         
+ *	@brief    串口底层驱动       
+ *	@version 1.0        
+ *	@date    2024-01-19       
+ *	@param          
+ *	@return          
+ *	@exception      
+ *	@warning         
+ *	@remarks         
+ *	@note     1.要在.c文件定义双缓冲区数组，然后传入 uint8_t (*DoubleBufferArrayPtr)[2] 类型指针进行调用。 
+ */
+ 
 #ifndef __BSP_USART_H__
 #define __BSP_USART_H__
 

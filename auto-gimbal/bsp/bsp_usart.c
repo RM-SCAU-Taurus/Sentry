@@ -1,9 +1,15 @@
+
 #include "bsp_usart.h"
 #include "remote_msg.h"
 #include "string.h"
 #include "bsp_judge.h"
 #include "status_task.h"
 #include "bsp_JY901.h"
+#include "uart_decode.h"
+#include "cmsis_os.h"
+#include "comm_task.h"
+
+extern TaskHandle_t uart_decode_task_t;
 
 static void Memory_change(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer, DoubleBufferArrayPtr D_buf, uint16_t LEN);
 static void UARTX_init(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer, DoubleBufferArrayPtr D_buf, uint16_t LEN);
@@ -21,8 +27,8 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 {
 	if (huart->Instance == USART1) // DBUS
 	{
-		rc_callback_handler(&rc, DoubleBuffer_dbus.last_buffer);
-		memset(DoubleBuffer_dbus.last_buffer, 0, DMA_DBUS_LEN);
+//		fifo_s_puts(&DBUS_fifo, (char*)DBUS_fifo_buf, DMA_DBUS_LEN);
+		osSignalSet(uart_decode_task_t, UART_DECODE_DBUS_SEND);
 	}
 
 	else if (huart->Instance == USART2) // JUDGE
@@ -82,7 +88,6 @@ static void Memory_change(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuff
 
 static void UARTX_init(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer, DoubleBufferArrayPtr D_buf, uint16_t LEN)
 {
-
 	__HAL_UART_CLEAR_IDLEFLAG(huart);
 	__HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);
 	DoubleBuffer->current_buffer = &D_buf[Memory0][Memory0];

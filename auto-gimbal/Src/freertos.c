@@ -36,6 +36,7 @@
 #include "test_task.h"
 #include "vision_send_task.h"
 #include "usb_task.h"
+#include "uart_decode.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,6 +64,7 @@ osThreadId shoot_task_t;
 osThreadId judge_send_task_t;
 osThreadId usart_msg_send_task_t;
 osThreadId can_msg_send_task_t;
+osThreadId uart_decode_task_t;
 
 osThreadId status_task_t;
 osThreadId test_task_t;
@@ -158,6 +160,10 @@ void MX_FREERTOS_Init(void) {
 /***************************High priority task***************************/
     osThreadDef(canTask, can_msg_send_task, osPriorityHigh, 0, 512);
     can_msg_send_task_t = osThreadCreate(osThread(canTask), NULL);
+		
+		
+    osThreadDef(UARTTask, uart_decode_task, osPriorityHigh, 0, 512);
+    uart_decode_task_t = osThreadCreate(osThread(UARTTask), NULL);		
 		
 		osThreadDef(USBTask, usb_task, osPriorityHigh, 0, 128);
     usb_task_handle = osThreadCreate(osThread(USBTask), NULL);

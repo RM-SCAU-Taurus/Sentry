@@ -31,6 +31,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "bsp_can.h"
+#include "uart_decode.h"
 #include "chassis_task.h"
 #include "gimbal_task.h"
 #include "status_task.h"

@@ -18,6 +18,7 @@
 #define SHOOT_PERIOD      2
 #define USART_SEND_PERIOD 2
 #define MODESWITCH_PERIOD 6
+#define UARTDECODE_MODESWITCH_PERIOD 14
 #define STATUS_PERIOD     500
 
 // gimbal test pid param

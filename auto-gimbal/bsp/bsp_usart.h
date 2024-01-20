@@ -10,6 +10,7 @@
  *	@warning         
  *	@remarks         
  *	@note     1.要在.c文件定义双缓冲区数组，然后传入 uint8_t (*DoubleBufferArrayPtr)[2] 类型指针进行调用。 
+							2. 注意在传入形参时，传入的格式和source的正确性	
  */
  
 #ifndef __BSP_USART_H__

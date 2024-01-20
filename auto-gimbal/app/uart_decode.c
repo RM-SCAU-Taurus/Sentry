@@ -28,10 +28,10 @@ void uart_decode_task(void const *argu)
   {
     if (uartDecodeSignal == been_written)
     {   
-//      fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, DMA_DBUS_LEN);
-//      rc_callback_handler(&rc, DBUS_de_buf);
-//      memset(DBUS_de_buf, 0, DMA_DBUS_LEN);
-//			uartDecodeSignal = Data_processing_completed;
+      fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, DMA_DBUS_LEN);
+      rc_callback_handler(&rc, DBUS_de_buf);
+      memset(DBUS_de_buf, 0, DMA_DBUS_LEN);
+			uartDecodeSignal = Data_processing_completed;
     }
 
     osDelay(5);

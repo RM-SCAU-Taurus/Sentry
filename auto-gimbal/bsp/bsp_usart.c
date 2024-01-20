@@ -30,10 +30,8 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 {
 	if (huart->Instance == USART1) // DBUS
 	{
-		rc_callback_handler(&rc, DoubleBuffer_judge.last_buffer);
-    memset(DoubleBuffer_judge.last_buffer, 0, DMA_DBUS_LEN);
-//		fifo_s_puts(&DBUS_fifo, (char*)DoubleBuffer_judge.last_buffer, DMA_DBUS_LEN);
-//		uartDecodeSignal = 1;
+		fifo_s_puts(&DBUS_fifo, (char*)DoubleBuffer_dbus.last_buffer, DMA_DBUS_LEN);
+		uartDecodeSignal = 1;
 		
 	}
 

@@ -26,18 +26,20 @@ uint8_t dma_gyro_buf[DMA_GYRO_LEN];
 
 DoubleBuffer_t DoubleBuffer_dbus;
 DoubleBuffer_t DoubleBuffer_judge;
-
+uint16_t enter_times = 0 ;
 
 void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 {
 	if (huart->Instance == USART1) // DBUS
 	{
-//		fifo_s_puts(&DBUS_fifo, (char*)DoubleBuffer_dbus.last_buffer, DMA_DBUS_LEN);
-//		memset(DoubleBuffer_dbus.last_buffer,0,DMA_DBUS_LEN);
-//		uartDecodeSignal = 1 ;
-		
-		        rc_callback_handler(&rc,DoubleBuffer_dbus.last_buffer);
-				memset(DoubleBuffer_dbus.last_buffer,0,DMA_DBUS_LEN);
+		enter_times++;
+		if(enter_times <=50){
+		fifo_s_puts(&DBUS_fifo, (char*)DoubleBuffer_dbus.last_buffer, DMA_DBUS_LEN);
+		memset(DoubleBuffer_dbus.last_buffer,0,DMA_DBUS_LEN);
+		uartDecodeSignal = 1 ;
+		}
+//		        rc_callback_handler(&rc,DoubleBuffer_dbus.last_buffer);
+//				memset(DoubleBuffer_dbus.last_buffer,0,DMA_DBUS_LEN);
 	}
 
 	else if (huart->Instance == USART2) // JUDGE

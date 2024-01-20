@@ -30,6 +30,7 @@ fifo_s_t DBUS_fifo;// DBUS FIFO控制结构体
 uint8_t DBUS_fifo_buf[3 * DMA_DBUS_LEN];// DBUS FIFO环形缓存区
 uint8_t DBUS_de_buf[DMA_DBUS_LEN];// DBUS 缓存区
 
+static uint8_t text_buf[18];				//发送缓冲区
 /**********测试变量声明*******/
 
 // FIFO初始化函数
@@ -45,11 +46,27 @@ void uart_decode_task(void const *argu)
 //	BaseType_t xReturn_JUDGE;
   for (;;)
   {
-			if(uartDecodeSignal == 1){
-      fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, DMA_DBUS_LEN);
-      rc_callback_handler(&rc, DBUS_de_buf);
-			uartDecodeSignal = 0;
-			}
-			osDelayUntil(&mode_wake_time, 10);
+//			if(uartDecodeSignal == 1){
+//      fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, DMA_DBUS_LEN);
+//      rc_callback_handler(&rc, DBUS_de_buf);
+//			uartDecodeSignal = 0;
+//			}
+		uint8_t len = fifo_s_used(&DBUS_fifo);
+		if(len != 0 && HAL_DMA_GetState(&hdma_usart3_tx) == HAL_DMA_STATE_READY && uartDecodeSignal == 1 )
+		{
+			fifo_s_gets(&DBUS_fifo, (char *)text_buf, len);	//从 FIFO 取数据
+			HAL_UART_Transmit_DMA(&huart3, text_buf, len);		//发送
+			uartDecodeSignal = 0 ;
+		}
+			osDelayUntil(&mode_wake_time, 14);
   }
+}
+
+void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
+{
+			// 在F7系列是可以不写的，F1必须写
+//		__HAL_DMA_CLEAR_FLAG(&hdma_usart3_tx, DMA_FLAG_TC4); //清除DMA2_Steam7传输完成标志
+		HAL_UART_DMAStop(&huart3);		//传输完成以后关闭串口DMA,缺了这一句会死机
+
+
 }

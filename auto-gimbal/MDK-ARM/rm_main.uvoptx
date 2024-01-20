@@ -221,175 +221,170 @@
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis.angle_error_degree</ItemText>
+          <ItemText>gimbal.pid.pit_ecd_ref</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal.pid.pit_ecd_ref</ItemText>
+          <ItemText>gimbal.yaw_imu_offset</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal.yaw_imu_offset</ItemText>
+          <ItemText>chassis,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis,0x0A</ItemText>
+          <ItemText>moto_yaw.ecd,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>moto_yaw.ecd,0x0A</ItemText>
+          <ItemText>gimbal.pid</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal.pid</ItemText>
+          <ItemText>pid_yaw_spd</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pid_yaw_spd</ItemText>
+          <ItemText>pid_yaw_angle</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pid_yaw_angle</ItemText>
+          <ItemText>chassis.spd_input</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis.spd_input</ItemText>
+          <ItemText>vw_test</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>vw_test</ItemText>
+          <ItemText>chassis_odom.vw_fdb</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis_odom.vw_fdb</ItemText>
+          <ItemText>chassis.spd_fdb</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis.spd_fdb</ItemText>
+          <ItemText>powercontrol.max_power</ItemText>
         </Ww>
         <Ww>
           <count>22</count>
           <WinNumber>1</WinNumber>
-          <ItemText>powercontrol.max_power</ItemText>
+          <ItemText>chassis.wheel_max</ItemText>
         </Ww>
         <Ww>
           <count>23</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis.wheel_max</ItemText>
+          <ItemText>chassis.spd_input.vw</ItemText>
         </Ww>
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis.spd_input.vw</ItemText>
+          <ItemText>chassis.spd_fdb.vw</ItemText>
         </Ww>
         <Ww>
           <count>25</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis.spd_fdb.vw</ItemText>
+          <ItemText>distribution_temp </ItemText>
         </Ww>
         <Ww>
           <count>26</count>
           <WinNumber>1</WinNumber>
-          <ItemText>distribution_temp </ItemText>
+          <ItemText>chassis.wheel_spd_input,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>27</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis.wheel_spd_input,0x0A</ItemText>
+          <ItemText>chassis_ctrl</ItemText>
         </Ww>
         <Ww>
           <count>28</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis_ctrl</ItemText>
+          <ItemText>gimbal.pid.yaw_spd_ref</ItemText>
         </Ww>
         <Ww>
           <count>29</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal.pid.yaw_spd_ref</ItemText>
+          <ItemText>gimbal.current[0],0x0A</ItemText>
         </Ww>
         <Ww>
           <count>30</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal.current[0],0x0A</ItemText>
+          <ItemText>gimbal.pid.yaw_spd_fdb</ItemText>
         </Ww>
         <Ww>
           <count>31</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal.pid.yaw_spd_fdb</ItemText>
+          <ItemText>moto_yaw</ItemText>
         </Ww>
         <Ww>
           <count>32</count>
           <WinNumber>1</WinNumber>
-          <ItemText>moto_yaw</ItemText>
+          <ItemText>dma_gyro_buf</ItemText>
         </Ww>
         <Ww>
           <count>33</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dma_gyro_buf</ItemText>
+          <ItemText>dma_dbus_buf</ItemText>
         </Ww>
         <Ww>
           <count>34</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dma_dbus_buf</ItemText>
+          <ItemText>huart</ItemText>
         </Ww>
         <Ww>
           <count>35</count>
           <WinNumber>1</WinNumber>
-          <ItemText>huart</ItemText>
+          <ItemText>isrflags</ItemText>
         </Ww>
         <Ww>
           <count>36</count>
           <WinNumber>1</WinNumber>
-          <ItemText>isrflags</ItemText>
+          <ItemText>cr1its</ItemText>
         </Ww>
         <Ww>
           <count>37</count>
           <WinNumber>1</WinNumber>
-          <ItemText>cr1its</ItemText>
+          <ItemText>huart1</ItemText>
         </Ww>
         <Ww>
           <count>38</count>
           <WinNumber>1</WinNumber>
-          <ItemText>huart1</ItemText>
+          <ItemText>dmarequest</ItemText>
         </Ww>
         <Ww>
           <count>39</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dmarequest</ItemText>
+          <ItemText>__HAL_UART_GET_FLAG</ItemText>
         </Ww>
         <Ww>
           <count>40</count>
           <WinNumber>1</WinNumber>
-          <ItemText>__HAL_UART_GET_FLAG</ItemText>
+          <ItemText>isrflags</ItemText>
         </Ww>
         <Ww>
           <count>41</count>
           <WinNumber>1</WinNumber>
-          <ItemText>isrflags</ItemText>
+          <ItemText>DoubleBuffer_dbus.last_buffer</ItemText>
         </Ww>
         <Ww>
           <count>42</count>
           <WinNumber>1</WinNumber>
-          <ItemText>DoubleBuffer_dbus.last_buffer</ItemText>
-        </Ww>
-        <Ww>
-          <count>43</count>
-          <WinNumber>1</WinNumber>
           <ItemText>DoubleBuffer_dbus</ItemText>
         </Ww>
         <Ww>
-          <count>44</count>
+          <count>43</count>
           <WinNumber>1</WinNumber>
           <ItemText>uartDecodeSignal</ItemText>
         </Ww>
@@ -509,6 +504,11 @@
           <count>22</count>
           <WinNumber>2</WinNumber>
           <ItemText>DBUS_fifo,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>23</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>xReturn_DBUS</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

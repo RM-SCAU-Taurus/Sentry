@@ -59,7 +59,7 @@ void gimbal_param_init(void)
     PID_struct_init(&pid_yaw_angle, POSITION_PID, 8000, 0,
                     pid_yaw_angle_P, pid_yaw_angle_I, pid_yaw_angle_D);
     PID_struct_init(&pid_yaw_spd, POSITION_PID, 28000, 20000,
-                    pid_yaw_spd_P, pid_yaw_spd_P, pid_yaw_spd_P);
+                    pid_yaw_spd_P, pid_yaw_spd_I, pid_yaw_spd_D);
 
     scale.ch1 = RC_CH1_SCALE;
     scale.ch2 = RC_CH2_SCALE;
@@ -98,7 +98,7 @@ void gimbal_task(void const *argu)
         {
         case PROTECT_MODE:
         {
-            gimbal.pid.pit_ecd_ref = GIMBAL_PIT_CENTER_OFFSET; // 云台默认俯仰水平
+            gimbal.pid.pit_angle_ref = GIMBAL_PIT_CENTER_OFFSET; // 云台默认俯仰水平
             gimbal.pid.yaw_angle_ref = imu_data.yaw;           // 云台默认当前水平朝向
             vision_ctrl.yaw = imu_data.yaw;
             for (uint8_t i = 0; i < 2; i++)
@@ -107,7 +107,7 @@ void gimbal_task(void const *argu)
         break;
         case REMOTER_MODE:
         {
-            gimbal.pid.pit_ecd_ref += rc.ch2 * scale.ch2;
+            gimbal.pid.pit_angle_ref += rc.ch2 * scale.ch2;
             gimbal.pid.yaw_angle_ref += rc.ch1 * scale.ch1;
             //							  goback_flag = 0;
             vision_ctrl.yaw = imu_data.yaw;
@@ -119,12 +119,12 @@ void gimbal_task(void const *argu)
             /* 由于云台与系统状态几乎重叠，仅多一个补给，故暂时不单设置云台状态机 */
             if (chassis.mode == CHASSIS_MODE_KEYBOARD_SUPPLY)
             {
-                gimbal.pid.pit_ecd_ref = GIMBAL_PIT_CENTER_OFFSET; // 补给模式，头保持水平
+                gimbal.pid.pit_angle_ref = GIMBAL_PIT_CENTER_OFFSET; // 补给模式，头保持水平
                 gimbal.pid.yaw_angle_ref += rc.mouse.x * KEYBOARD_SCALE_YAW_SUPPLY;
             }
             else
             {
-                gimbal.pid.pit_ecd_ref += rc.mouse.y * KEYBOARD_SCALE_PIT;
+                gimbal.pid.pit_angle_ref += rc.mouse.y * KEYBOARD_SCALE_PIT;
                 gimbal.pid.yaw_angle_ref += rc.mouse.x * KEYBOARD_SCALE_YAW;
             }
         }
@@ -172,12 +172,12 @@ void gimbal_pid_calcu(void)
     /*------------------------pit轴串级pid计算------------------------*/
     // 位置反馈：编码器位置
     // 速度反馈：陀螺仪速度
-    gimbal.pid.pit_ecd_ref = data_limit(gimbal.pid.pit_ecd_ref, 31, -18); // 目标值限幅
-    gimbal.pid.pit_ecd_fdb = imu_data.pitch;
-    gimbal.pid.pit_ecd_err = gimbal.pid.pit_ecd_ref - gimbal.pid.pit_ecd_fdb;
-    pid_calc(&pid_pit_ecd, gimbal.pid.pit_ecd_fdb, gimbal.pid.pit_ecd_fdb + gimbal.pid.pit_ecd_err);
+    gimbal.pid.pit_angle_ref = data_limit(gimbal.pid.pit_angle_ref, 31, -18); // 目标值限幅
+    gimbal.pid.pit_angle_fdb = imu_data.pitch;
+    gimbal.pid.pit_angle_err = gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb;
+    pid_calc(&pid_pit_angle, gimbal.pid.pit_angle_fdb,gimbal.pid.pit_angle_fdb + gimbal.pid.pit_angle_err);
 
-    gimbal.pid.pit_spd_ref = pid_pit_ecd.pos_out; // PID外环目标值
+    gimbal.pid.pit_spd_ref = pid_pit_angle.pos_out; // PID外环目标值
     gimbal.pid.pit_spd_fdb = imu_data.wy;         // pit角速度反馈传进PID结构体
     pid_calc(&pid_pit_spd, gimbal.pid.pit_spd_fdb, gimbal.pid.pit_spd_ref);
 

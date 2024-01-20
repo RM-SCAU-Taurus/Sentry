@@ -30,20 +30,22 @@ DoubleBuffer_t DoubleBuffer_judge;
 
 void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 {
-	BaseType_t pxHigherPriorityTaskWoken;
 	if (huart->Instance == USART1) // DBUS
 	{
-		fifo_s_puts(&DBUS_fifo, (char*)DoubleBuffer_dbus.last_buffer, DMA_DBUS_LEN);
-		xSemaphoreGiveFromISR(Decode_DBUS_Handle, &pxHigherPriorityTaskWoken);
-		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
+//		fifo_s_puts(&DBUS_fifo, (char*)DoubleBuffer_dbus.last_buffer, DMA_DBUS_LEN);
+//		memset(DoubleBuffer_dbus.last_buffer,0,DMA_DBUS_LEN);
+//		uartDecodeSignal = 1 ;
+		
+		        rc_callback_handler(&rc,DoubleBuffer_dbus.last_buffer);
+				memset(DoubleBuffer_dbus.last_buffer,0,DMA_DBUS_LEN);
 	}
 
 	else if (huart->Instance == USART2) // JUDGE
 	{
 //		judge_data_handler(DoubleBuffer_judge.last_buffer);
 //		memset(DoubleBuffer_judge.last_buffer, 0, sizeof(DMA_JUDGE_LEN));
-		xSemaphoreGiveFromISR(Decode_JUDGE_Handle, &pxHigherPriorityTaskWoken);
-		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
+//		xSemaphoreGiveFromISR(Decode_JUDGE_Handle, &pxHigherPriorityTaskWoken);
+//		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
 	}
 }
 
@@ -64,8 +66,10 @@ void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart)
 	if (RESET != __HAL_UART_GET_FLAG(huart,
 									 UART_FLAG_IDLE))
 	{
-		__HAL_UART_CLEAR_IDLEFLAG(huart);
-		HAL_UART_DMAStop(huart);
+		 __HAL_UART_CLEAR_IDLEFLAG(huart);
+	 	  HAL_UART_DMAStop(huart);
+//		 HAL_DMA_Abort(huart->hdmarx);
+		__HAL_DMA_DISABLE(huart->hdmarx);
 		/* re-use dma+idle to recv */
 		if (huart->Instance == USART1)
 		{
@@ -86,6 +90,7 @@ static void Memory_change(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuff
 		DoubleBuffer->current_buffer = &D_buf[Memory1][Memory0]; 
 		DoubleBuffer->last_buffer = &D_buf[Memory0][Memory0];	  
 		HAL_UART_Receive_DMA(huart, DoubleBuffer->current_buffer, LEN);
+		__HAL_DMA_ENABLE(huart->hdmarx);
 	}
 	else if (DoubleBuffer->current_buffer == &D_buf[Memory1][Memory0])
 	{

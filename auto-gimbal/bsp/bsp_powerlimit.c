@@ -80,12 +80,6 @@ void PowerParam_Update(void)
         chassis.wheel_max = SPEED_SUPPLY;
         chassis.keyboard_input = 10.0f;
     }
-//    else
-//    {
-//        powercontrol.limit_kp = test_kp;
-//        chassis.wheel_max = test_power;
-//        chassis.keyboard_input = test_input;
-//    }
     else if(powercontrol.max_power == 45 )
     {
         chassis.wheel_max = SPEED_45W;

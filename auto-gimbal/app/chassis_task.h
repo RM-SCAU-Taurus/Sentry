@@ -83,8 +83,5 @@ void can_msg_read(uint32_t can_id,uint8_t * data);
 void chassis_init(void);
 void mecanum_calc(float vx, float vy, float vw, int16_t speed[]);
 void sparate_move(void);
-void chassis_ramp(void);
-void chassis_spd_distribution(void);
-void chassis_sigmoid(void);
-void yaw_imu_offset(void);
+
 #endif

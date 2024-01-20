@@ -66,6 +66,8 @@ static void chassis_mode_switch(void)
     break;
     case AUTO_MODE:
     {
+			if(last_ctrl_mode != AUTO_MODE )
+			memset(&chassis_ctrl,0,sizeof(chassis_ctrl_info_t));
         chassis.mode = CHASSIS_MODE_AUTO;
     }
     default:

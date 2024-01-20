@@ -103,6 +103,7 @@ static void chassis_mode_switch(void)
         break;
         case AUTO_MODE:
         {
+
             chassis.mode = CHASSIS_MODE_AUTO;
 
         }

@@ -39,7 +39,7 @@ void uart_decode_task(void const *argu)
       memset(DBUS_de_buf, 0, DMA_DBUS_LEN);
 			uartDecodeSignal = Data_processing_completed;
     }//end of if(pdPASS = xReturn)
-
+		
     osDelay(5);
   }
 }

@@ -14,8 +14,8 @@
 
 
 
-#ifndef __UART_DECODE_H__
-#define __UART_DECODE_H__
+#ifndef __UART_DECODE_TASK_H__
+#define __UART_DECODE_TASK_H__
 
 #include "bsp_usart.h"
 #include "fifo.h"

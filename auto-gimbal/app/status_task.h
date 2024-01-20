@@ -17,6 +17,6 @@ typedef struct
 
 extern status_t status;
 void status_task(void const *argu);
-void status_init(void);
+
 
 #endif

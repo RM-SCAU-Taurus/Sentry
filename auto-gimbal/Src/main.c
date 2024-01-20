@@ -119,7 +119,6 @@ int main(void)
   MX_CRC_Init();
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
-    status_init();
     can_device_init();
     chassis_init();
     gimbal_param_init();

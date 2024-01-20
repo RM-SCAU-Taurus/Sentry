@@ -1,5 +1,7 @@
 /**********C库****************/
 
+/**********硬件外设库*********/
+#include "usart.h"
 /**********任务库*************/
 #include "gimbal_task.h"
 #include "chassis_task.h"
@@ -16,7 +18,6 @@
 /**********数据处理库**********/
 #include "vision_predict.h"
 #include "ubf.h"
-#include "usart.h"
 #include "DataScope_DP.h"
 #include "remote_msg.h"
 /**********类型定义库**********/
@@ -35,35 +36,30 @@ extern Game_Status_t Game_Status;
 /**********外部函数声明********/
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
 extern vision_tx_msg_t vision_tx_msg;
-/**********测试变量声明********/
-int8_t choose_pid_flag = 0, goback_flag = 0;
+/**********静态函数声明********/
+static void gimbal_pid_calcu(void);
 /**********宏定义声明**********/
 #define __GIMBAL_TASK_GLOBALS
 /**********结构体定义**********/
 gimbal_t gimbal;
 ubf_t gim_msg_ubf; /* 云台姿态历史数据 */
-/**********静态函数声明********/
-static void gimbal_pid_calcu(void);
+
+/**********测试变量声明********/
+int8_t choose_pid_flag = 0, goback_flag = 0;
 
 void gimbal_param_init(void)
 {
     memset(&gimbal, 0, sizeof(gimbal_t));
     /* pit 轴 */
-    PID_struct_init(&pid_pit_ecd, POSITION_PID, 8000, 0,
-                    pid_pit_ecd_P, pid_pit_ecd_I, pid_pit_ecd_D);
+    PID_struct_init(&pid_pit_angle, POSITION_PID, 8000, 0,
+                    pid_pit_angle_P, pid_pit_angle_I, pid_pit_angle_D);
     PID_struct_init(&pid_pit_spd, POSITION_PID, 28000, 10000,
                     pid_pit_spd_P, pid_pit_spd_I, pid_pit_spd_D);
     /* YAW 轴 */
     PID_struct_init(&pid_yaw_angle, POSITION_PID, 8000, 0,
-                    150.0f, 0.0f, 0.0f);
+                    pid_yaw_angle_P, pid_yaw_angle_I, pid_yaw_angle_D);
     PID_struct_init(&pid_yaw_spd, POSITION_PID, 28000, 20000,
-                    12.0f, 0.1f, 0.0f);
-
-    /* 测试用 YAW PID参数 */
-    PID_struct_init(&pid_yaw_mecd, POSITION_PID, 5000, 0,
-                    pid_yaw_mecd_P, pid_yaw_mecd_I, pid_yaw_mecd_D);
-    PID_struct_init(&pid_yaw_mspd, POSITION_PID, 28000, 20000,
-                    pid_yaw_mspd_P, pid_yaw_mspd_I, pid_yaw_mspd_D);
+                    pid_yaw_spd_P, pid_yaw_spd_P, pid_yaw_spd_P);
 
     scale.ch1 = RC_CH1_SCALE;
     scale.ch2 = RC_CH2_SCALE;
@@ -164,7 +160,7 @@ void gimbal_task(void const *argu)
         gimbal_pid_calcu();
         memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current));
         osSignalSet(can_msg_send_task_t, GIMBAL_MOTOR_MSG_SEND);
-        //				DataWave(&huart3);
+        //DataWave(&huart3);
         taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
     }

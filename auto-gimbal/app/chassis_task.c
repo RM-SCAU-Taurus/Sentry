@@ -1,5 +1,7 @@
 /**********C库****************/
 #include "string.h"
+/**********硬件外设库*********/
+#include "usart.h"
 /**********任务库*************/
 #include "cmsis_os.h"
 #include "usb_task.h"
@@ -15,7 +17,6 @@
 #include "func_generator.h"
 /**********数据处理库**********/
 #include "remote_msg.h"
-#include "usart.h"
 #include "DataScope_DP.h"
 /**********类型定义库**********/
 #include "control_def.h"

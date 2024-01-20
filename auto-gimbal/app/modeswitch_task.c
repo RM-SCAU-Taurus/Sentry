@@ -1,26 +1,43 @@
-#include "modeswitch_task.h"
-#include "control_def.h"
+
+/**********C库****************/
+
+/**********硬件外设库*********/
+#include "usart.h"
+/**********任务库*************/
 #include "cmsis_os.h"
-
-#include "remote_msg.h"
-#include "bsp_can.h"
-#include "bsp_TriggerMotor.h"
-
 #include "chassis_task.h"
 #include "gimbal_task.h"
 #include "shoot_task.h"
 #include "status_task.h"
+#include "modeswitch_task.h"
+/**********数学库*************/
+
+/**********数据处理库**********/
 #include "vision_predict.h"
+#include "remote_msg.h"
+/**********类型定义库**********/
+#include "control_def.h"
+/**********板级支持库**********/
+#include "bsp_can.h"
+#include "bsp_TriggerMotor.h"
+/**********外部变量声明********/
+
+/**********外部函数声明********/
+
+/**********宏定义声明**********/
+
+/**********测试变量声明********/
+
+/**********变量声明********/
+uint8_t lock_flag = 0;/* 解锁标志 */
+/**********结构体定义**********/
+ctrl_mode_e ctrl_mode; /* 系统状态机 */
+/**********静态函数声明********/
 static uint8_t rc_normal_check(void);
 static void unlock_init(void);
 static void sw1_mode_handler(void);
 static void rc_abnormal_proess(void);
 
-/* 系统状态机 */
-ctrl_mode_e ctrl_mode;
-
-/* 解锁标志 */
-uint8_t lock_flag = 0;
 
 /* 系统模式切换任务函数 */
  void mode_switch_task(void const *argu)

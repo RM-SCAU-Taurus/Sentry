@@ -170,9 +170,15 @@ void MX_FREERTOS_Init(void) {
 /***************************High priority task***************************/
     osThreadDef(canTask, can_msg_send_task, osPriorityHigh, 0, 512);
     can_msg_send_task_t = osThreadCreate(osThread(canTask), NULL);
+<<<<<<< HEAD
 	 
 	  osThreadDef(UARTTask, uart_decode_task, osPriorityHigh, 0, 384);
     uart_decode_task_t = osThreadCreate(osThread(UARTTask), NULL);	
+=======
+
+    osThreadDef(UARTTask, uart_decode_task, osPriorityHigh, 0, 512);
+    uart_decode_task_t = osThreadCreate(osThread(UARTTask), NULL);		
+>>>>>>> parent of 51913b3 (又改了一版dma)
 		
 		osThreadDef(USBTask, usb_task, osPriorityHigh, 0, 128);
     usb_task_handle = osThreadCreate(osThread(USBTask), NULL);

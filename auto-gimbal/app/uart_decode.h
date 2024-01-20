@@ -26,6 +26,10 @@ void uart_decode_task(void const *argu);
 
 extern volatile int uartDecodeSignal;
 extern fifo_s_t DBUS_fifo;
+<<<<<<< HEAD
 extern fifo_s_t JUDGE_fifo;
 extern uint8_t DBUS_fifo_buf[3*DMA_DBUS_LEN];
+=======
+extern uint8_t DBUS_fifo_buf[4*DMA_DBUS_LEN];
+>>>>>>> parent of 51913b3 (又改了一版dma)
 #endif

@@ -32,8 +32,10 @@ uint16_t enter_times = 0 ;
 
 void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 {
+	BaseType_t pxHigherPriorityTaskWoken;
 	if (huart->Instance == USART1) // DBUS
 	{
+<<<<<<< HEAD
 //		rc_callback_handler(&rc, DoubleBuffer_dbus.last_buffer);
 //		
 //		if(enter_times <=50){
@@ -46,6 +48,11 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 		
 //		}
 
+=======
+		fifo_s_puts(&DBUS_fifo, (char*)DoubleBuffer_dbus.last_buffer, DMA_DBUS_LEN);
+		xSemaphoreGiveFromISR(Decode_DBUS_Handle, &pxHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
+>>>>>>> parent of 51913b3 (又改了一版dma)
 	}
 
 	else if (huart->Instance == USART3) // JUDGE
@@ -59,8 +66,8 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 		
 //		judge_data_handler(DoubleBuffer_judge.last_buffer);
 //		memset(DoubleBuffer_judge.last_buffer, 0, sizeof(DMA_JUDGE_LEN));
-//		xSemaphoreGiveFromISR(Decode_JUDGE_Handle, &pxHigherPriorityTaskWoken);
-//		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
+		xSemaphoreGiveFromISR(Decode_JUDGE_Handle, &pxHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
 	}
 }
 
@@ -81,11 +88,16 @@ void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart)
 	if (RESET != __HAL_UART_GET_FLAG(huart,
 									 UART_FLAG_IDLE))
 	{
+<<<<<<< HEAD
 		 __HAL_UART_CLEAR_IDLEFLAG(huart);
 //	 	  HAL_UART_DMAStop(huart);
 		 MY_HAL_UART_DMAStop_RX(huart);
 //		 HAL_DMA_Abort(huart->hdmarx);
 		
+=======
+		__HAL_UART_CLEAR_IDLEFLAG(huart);
+		HAL_UART_DMAStop(huart);
+>>>>>>> parent of 51913b3 (又改了一版dma)
 		/* re-use dma+idle to recv */
 		if (huart->Instance == USART1)
 		{

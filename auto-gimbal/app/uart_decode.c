@@ -27,8 +27,12 @@ static void usb_fifo_init(fifo_s_t *fifo_s, uint8_t *buf, uint16_t size);
 
 /**********变量声明***********/
 fifo_s_t DBUS_fifo;// DBUS FIFO控制结构体
+<<<<<<< HEAD
 fifo_s_t JUDGE_fifo;
 uint8_t DBUS_fifo_buf[3 * DMA_DBUS_LEN];// DBUS FIFO环形缓存区
+=======
+uint8_t DBUS_fifo_buf[4 * DMA_DBUS_LEN];// DBUS FIFO环形缓存区
+>>>>>>> parent of 51913b3 (鍙堟敼浜嗕竴鐗坉ma)
 uint8_t DBUS_de_buf[DMA_DBUS_LEN];// DBUS 缓存区
 
 uint8_t JUDGE_fifo_buf[3 * DMA_JUDGE_LEN];// JUDGE FIFO环形缓存区
@@ -45,6 +49,7 @@ static void usb_fifo_init(fifo_s_t *fifo_s, uint8_t *buf, uint16_t size)
 
 void uart_decode_task(void const *argu)
 {
+<<<<<<< HEAD
 	uint32_t mode_wake_time = osKernelSysTick();
   usb_fifo_init(&DBUS_fifo, DBUS_fifo_buf, 3 * DMA_DBUS_LEN);
 	usb_fifo_init(&JUDGE_fifo, JUDGE_fifo_buf, 3 * DMA_JUDGE_LEN);
@@ -65,6 +70,25 @@ void uart_decode_task(void const *argu)
 			uartDecodeSignal = 0 ;
 		}
 			osDelayUntil(&mode_wake_time, 5);
+=======
+
+  usb_fifo_init(&DBUS_fifo, DBUS_fifo_buf, 4 * DMA_DBUS_LEN);
+	BaseType_t xReturn_DBUS;
+//	BaseType_t xReturn_JUDGE;
+  for (;;)
+  {
+		xReturn_DBUS  = xSemaphoreTake(Decode_DBUS_Handle,portMAX_DELAY);
+
+    if(pdTRUE == xReturn_DBUS)
+    {   
+      fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, DMA_DBUS_LEN);
+      rc_callback_handler(&rc, DBUS_de_buf);
+      memset(DBUS_de_buf, 0, DMA_DBUS_LEN);
+			uartDecodeSignal = Data_processing_completed;
+    }//end of if(pdPASS = xReturn)
+		
+    osDelay(5);
+>>>>>>> parent of 51913b3 (鍙堟敼浜嗕竴鐗坉ma)
   }
 }
 

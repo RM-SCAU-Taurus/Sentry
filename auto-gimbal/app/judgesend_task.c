@@ -126,7 +126,7 @@ void ui_sendmessage(void)
 	memcpy(CliendTxBuffer_message + 5, &cmd_id, 2);
 	memcpy(CliendTxBuffer_message + 7, (uint8_t *)&Sentry_map, sizeof(Sentry_map));
 	append_CRC16_check_sum(CliendTxBuffer_message, 9+sizeof(Sentry_map)); //写入数据段CRC16校验码
-	HAL_UART_Transmit_DMA(&JUDGE_HUART, CliendTxBuffer_message, 9+sizeof(Sentry_map));
+//	HAL_UART_Transmit_DMA(&JUDGE_HUART, CliendTxBuffer_message, 9+sizeof(Sentry_map));
 
 }
 

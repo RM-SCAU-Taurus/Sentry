@@ -27,8 +27,12 @@ static void usb_fifo_init(fifo_s_t *fifo_s, uint8_t *buf, uint16_t size);
 
 /**********变量声明***********/
 fifo_s_t DBUS_fifo;// DBUS FIFO控制结构体
+fifo_s_t JUDGE_fifo;
 uint8_t DBUS_fifo_buf[3 * DMA_DBUS_LEN];// DBUS FIFO环形缓存区
 uint8_t DBUS_de_buf[DMA_DBUS_LEN];// DBUS 缓存区
+
+uint8_t JUDGE_fifo_buf[3 * DMA_JUDGE_LEN];// JUDGE FIFO环形缓存区
+uint8_t JUDGE_de_buf[DMA_JUDGE_LEN];// JUDGE 缓存区
 
 static uint8_t text_buf[18];				//发送缓冲区
 /**********测试变量声明*******/
@@ -43,6 +47,7 @@ void uart_decode_task(void const *argu)
 {
 	uint32_t mode_wake_time = osKernelSysTick();
   usb_fifo_init(&DBUS_fifo, DBUS_fifo_buf, 3 * DMA_DBUS_LEN);
+	usb_fifo_init(&JUDGE_fifo, JUDGE_fifo_buf, 3 * DMA_JUDGE_LEN);
 //	BaseType_t xReturn_JUDGE;
   for (;;)
   {
@@ -51,14 +56,15 @@ void uart_decode_task(void const *argu)
 //      rc_callback_handler(&rc, DBUS_de_buf);
 //			uartDecodeSignal = 0;
 //			}
-		uint8_t len = fifo_s_used(&DBUS_fifo);
-		if(len != 0 && HAL_DMA_GetState(&hdma_usart3_tx) == HAL_DMA_STATE_READY && uartDecodeSignal == 1 )
+		uint8_t len = fifo_s_used(&JUDGE_fifo);
+		if(len != 0 && HAL_DMA_GetState(&hdma_usart3_tx) == HAL_DMA_STATE_READY)
 		{
-			fifo_s_gets(&DBUS_fifo, (char *)text_buf, len);	//从 FIFO 取数据
-			HAL_UART_Transmit_DMA(&huart3, text_buf, len);		//发送
+			fifo_s_gets(&JUDGE_fifo, (char *)text_buf, len);	//从 FIFO 取数据
+			HAL_UART_Transmit_DMA(&huart3, text_buf, len);			//发送
+			memset(text_buf,0,sizeof(text_buf));
 			uartDecodeSignal = 0 ;
 		}
-			osDelayUntil(&mode_wake_time, 14);
+			osDelayUntil(&mode_wake_time, 5);
   }
 }
 

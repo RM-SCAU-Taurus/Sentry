@@ -57,10 +57,10 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 
-SemaphoreHandle_t  Decode_DBUS_Handle;  // 信号量句柄
-SemaphoreHandle_t  Decode_JUDGE_Handle;  // 信号量句柄
+SemaphoreHandle_t  Decode_DBUS_Handle;  // 信号量句�?
+SemaphoreHandle_t  Decode_JUDGE_Handle;  // 信号量句�?
 
-// 在全局定义pxHigherPriorityTaskWoken
+// 在全�?定义pxHigherPriorityTaskWoken
 BaseType_t pxHigherPriorityTaskWoken;
 
 osThreadId mode_sw_task_t;
@@ -171,7 +171,7 @@ void MX_FREERTOS_Init(void) {
     osThreadDef(canTask, can_msg_send_task, osPriorityHigh, 0, 512);
     can_msg_send_task_t = osThreadCreate(osThread(canTask), NULL);
 	 
-	  osThreadDef(UARTTask, uart_decode_task, osPriorityHigh, 0, 256);
+	  osThreadDef(UARTTask, uart_decode_task, osPriorityHigh, 0, 384);
     uart_decode_task_t = osThreadCreate(osThread(UARTTask), NULL);	
 		
 		osThreadDef(USBTask, usb_task, osPriorityHigh, 0, 128);

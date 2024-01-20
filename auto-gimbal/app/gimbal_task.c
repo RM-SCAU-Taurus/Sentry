@@ -87,7 +87,6 @@ void gimbal_task(void const *argu)
     uint32_t mode_wake_time = osKernelSysTick();
     for(;;)
     {
-					ust_interval_test_start(&ust_user);
          taskENTER_CRITICAL();
         
         switch( ctrl_mode )
@@ -96,7 +95,6 @@ void gimbal_task(void const *argu)
             {
                 gimbal.pid.pit_ecd_ref   = GIMBAL_PIT_CENTER_OFFSET;  //云台默认俯仰水平
                 gimbal.pid.yaw_angle_ref = imu_data.yaw;  //云台默认当前水平朝向
-//							  goback_flag = 0;
 							vision_ctrl.yaw = imu_data.yaw;
                 for( uint8_t i=0; i<2; i++ )	gimbal.current[i] = 0;
             }    
@@ -160,7 +158,6 @@ void gimbal_task(void const *argu)
         osSignalSet(can_msg_send_task_t, GIMBAL_MOTOR_MSG_SEND);
 //				DataWave(&huart3);
 				taskEXIT_CRITICAL();
-				ust_interval_test_end(&ust_user);
         osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
     }
 }

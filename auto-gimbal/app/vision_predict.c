@@ -50,14 +50,14 @@ vsn_output_t  vision;
 void vsn_calc(void) {
     /* 数据量纲统一、方向统一 */
     vd.pit.vsn_agl_err.now   = vision_ctrl.pit;            /* 视觉PIT相对角度（°） */
-//    vd.yaw.vsn_agl_err.now   = vision_ctrl.yaw;            /* 视觉YAW相对角度（°） */
-    vd.yaw.vsn_agl_err.now   =  gimbal.yaw_imu_offset;            /* 视觉YAW相对角度（°） 做了修改，为了打导航头回正*/
+    vd.yaw.vsn_agl_err.now   = vision_ctrl.yaw;            /* 视觉YAW相对角度（°） */
+//    vd.yaw.vsn_agl_err.now   =  gimbal.yaw_imu_offset;            /* 视觉YAW相对角度（°） 做了修改，为了打导航头回正*/
     vd.dis.now               = vision_ctrl.dis * 1.0e-3f;  /* 距离（m） */
     vd.tof.now               = vision_ctrl.tof;    /* 去除视觉侧加的40ms的通信延时(s) */
-//    vd.pos.now               = imu_data.yaw
-//                             + vision_ctrl.yaw;            /* 子弹击打角 */
-	    vd.pos.now               = imu_data.yaw
-                             + gimbal.yaw_imu_offset;            /* 子弹击打角 做了修改，为了打导航头回正*/
+    vd.pos.now               = imu_data.yaw
+                             + vision_ctrl.yaw;            /* 子弹击打角 */
+//	    vd.pos.now               = imu_data.yaw
+//                             + gimbal.yaw_imu_offset;            /* 子弹击打角 做了修改，为了打导航头回正*/
 	
     
 	    if (vision_ctrl.aiming_flag) {

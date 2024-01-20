@@ -25,16 +25,22 @@
 #include "bsp_powerlimit.h"
 #include "bsp_can.h"
 #include "bsp_can.h"
-
+/**********外部变量声明********/
 extern TaskHandle_t can_msg_send_task_t;
-int vx_test;
-uint8_t imu_offset_flag = 1;
-float state_test;
 extern chassis_ctrl_info_t chassis_ctrl;
 extern chassis_odom_info_t chassis_odom;
 extern Game_Status_t Game_Status;
-chassis_t chassis;
+/**********外部函数声明********/
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
+/**********宏定义声明********/
+
+/**********测试变量声明********/
+float state_test;
+/**********结构体定义**********/
+chassis_t chassis;
+
+
+/**********静态函数定义********/
 static void chassis_mode_switch(void)
 {
     /* 系统历史状态机 */
@@ -83,6 +89,8 @@ static void chassis_mode_switch(void)
     /* 系统历史状态更新 */
     last_ctrl_mode = ctrl_mode;
 }
+
+/**********函数定义************/
 
 /**
  * @brief chassis_task

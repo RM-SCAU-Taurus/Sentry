@@ -14,6 +14,11 @@ typedef struct
 {
     /* ------------------------------- PIT ------------------------------- */
     /* ------------- position ------------- */
+	  /* yaw angle pid param */
+		float pit_angle_ref;
+    float pit_angle_fdb;
+    float pit_angle_err;
+	
     /* pit ecd pid param */
     float pit_ecd_ref;
     float pit_ecd_fdb;

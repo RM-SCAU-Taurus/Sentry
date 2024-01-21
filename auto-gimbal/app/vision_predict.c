@@ -361,7 +361,7 @@ void vsn_gimbal_ref_calc(void) {
 //                 gimbal.pid.pit_ecd_ref = vision.pit_angle_error+gimbal.pid.pit_ecd_fdb;
 //                gimbal.pid.yaw_angle_ref = vision.gimbal_yaw_angle+vision.yaw_angle_error+vision.yaw_predict_angle;
                 gimbal.pid.yaw_angle_ref= vision.yaw_angle_error;//视觉绝对角度
-                gimbal.pid.pit_ecd_ref  = vision.pit_angle_error;
+                gimbal.pid.pit_angle_ref  = vision.pit_angle_error;
                 
 //                gimbal.pid.pit_ecd_ref = vision.gimbal_pit_ecd + vision.pit_angle_error * 8191.0f / 360;
 //                gimbal.pid.yaw_angle_ref = vision.gimbal_yaw_angle + vision.yaw_angle_error;
@@ -373,14 +373,14 @@ void vsn_gimbal_ref_calc(void) {
         case vFIRST_LOST: {  /* 首次丢失目标 */
             vision.status = vUNAIMING;
           //  gimbal.pid.pit_ecd_ref   = gimbal.pid.pit_ecd_fdb;
-             gimbal.pid.pit_ecd_ref = gimbal.pid.pit_ecd_fdb;
+             gimbal.pid.pit_angle_ref = gimbal.pid.pit_angle_fdb;
             gimbal.pid.yaw_angle_ref = gimbal.pid.yaw_angle_fdb;
             break;
         }
         case vUNAIMING: {  /* 未识别到目标 */
             if (ctrl_mode == REMOTER_MODE) {
                // gimbal.pid.pit_ecd_ref   += rc.ch2 * scale.ch2;
-                  gimbal.pid.pit_ecd_ref  +=rc.ch2 * 0.0008f;
+                  gimbal.pid.pit_angle_ref  +=rc.ch2 * 0.0008f;
                 gimbal.pid.yaw_angle_ref += rc.ch1 * scale.ch1;
             } else 
 						{
@@ -388,11 +388,11 @@ void vsn_gimbal_ref_calc(void) {
 								
                 gimbal.pid.yaw_spd_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
 //                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要
-								gimbal.pid.pit_ecd_ref  = vision.pit_angle_error;	
+								gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
 								}
 								else{
 								gimbal.pid.yaw_angle_ref= vision.yaw_angle_error;//由导航控制
-                gimbal.pid.pit_ecd_ref  = vision.pit_angle_error;	
+                gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
 									
 								}
             }
@@ -410,13 +410,13 @@ static void vsn_shoot_enable(void) {
         case vMODE_AUTO:
         case vMODE_ANTISPIN: {
             if (ABSv(gimbal.pid.yaw_angle_ref - gimbal.pid.yaw_angle_fdb) <10.0f && 
-                ABSv(gimbal.pid.pit_ecd_ref - gimbal.pid.pit_ecd_fdb) < 5.0f) {
+                ABSv(gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb) < 5.0f) {
                 vision.shoot_enable = 1;
             } else {
                 vision.shoot_enable = 0;
             }
 						 cha_pitch=ABSv(gimbal.pid.yaw_angle_ref - gimbal.pid.yaw_angle_fdb);
-					 	cha_yaw=ABSv(gimbal.pid.pit_ecd_ref - gimbal.pid.pit_ecd_fdb);
+					 	cha_yaw=ABSv(gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb);
 					//vision.shoot_enable = 1;
 //						if(vd.dis.now>6)
 //						{
@@ -432,7 +432,7 @@ static void vsn_shoot_enable(void) {
         case vMODE_bENERGY:
         case vMODE_sENERGY: {
             if (ABSv(gimbal.pid.yaw_angle_ref - gimbal.pid.yaw_angle_fdb) < 1.0f && 
-                ABSv(gimbal.pid.pit_ecd_ref - gimbal.pid.pit_ecd_fdb) < 1.0f) {
+                ABSv(gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb) < 1.0f) {
                 vision.shoot_enable = 1;
             } else {
                 vision.shoot_enable = 0;

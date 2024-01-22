@@ -18,6 +18,7 @@ ramp_function_source_t chassis_y_ramp;
 ramp_function_source_t chassis_w_ramp;
 ramp_function_source_t chassis_super_x_ramp;
 ramp_function_source_t chassis_super_y_ramp;
+ramp_function_source_t chassis_rudder_ramp[4];
 /**
   * @brief          斜波函数计算，根据输入的值进行叠加，输入单位为 /s 即一秒后增加输入的值
   * @author         RM

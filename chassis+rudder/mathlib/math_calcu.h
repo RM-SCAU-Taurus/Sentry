@@ -52,6 +52,7 @@ extern ramp_function_source_t chassis_y_ramp;
 extern ramp_function_source_t chassis_w_ramp;
 extern ramp_function_source_t chassis_super_x_ramp;
 extern ramp_function_source_t chassis_super_y_ramp;
+extern ramp_function_source_t chassis_rudder_ramp[4];
 
 void ramp_calc(ramp_function_source_t *ramp_source_type, float frame_period, float input, float max, float min);
 void Bubble_Sort(float *a,uint8_t n);

@@ -94,8 +94,11 @@ __PID_EXT pid_t pid_pit_ecd;
 __PID_EXT pid_t pid_pit_angle;
 __PID_EXT pid_t pid_pit_spd;
 // YAW 轴 角度速度串级
-__PID_EXT pid_t pid_yaw_angle;
-__PID_EXT pid_t pid_yaw_spd;
+__PID_EXT pid_t pid_yaw_angle_above;
+__PID_EXT pid_t pid_yaw_spd_above;
+
+__PID_EXT pid_t pid_yaw_angle_under;
+__PID_EXT pid_t pid_yaw_spd_under;		
 
 //测试YAW轴 位置速度串级 使用YAW电机反馈
 __PID_EXT pid_t pid_yaw_mecd;

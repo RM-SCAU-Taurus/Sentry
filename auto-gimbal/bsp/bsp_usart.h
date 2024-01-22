@@ -23,6 +23,11 @@ typedef struct {
     uint8_t *last_buffer;     // 指向上次使用的缓冲区
 } DoubleBuffer_t,*p_DoubleBuffer_t;
 
+typedef struct {
+		int8_t rxlen_now;
+		int8_t rxlen_last;
+		int8_t rxlen_rx ;
+}rx_msg_t;
 typedef uint8_t (*DoubleBufferArrayPtr)[2]; // 定义一个指向二维数组的指针类型
 
 #define 	DBUS_HUART    huart1

@@ -1,4 +1,3 @@
-
 #include "bsp_usart.h"
 #include "remote_msg.h"
 #include "string.h"
@@ -9,7 +8,7 @@
 #include "cmsis_os.h"
 #include "comm_task.h"
 #include "cmsis_os.h"
-
+#include "stm32f4xx_hal_dma.h"
 /* 定义绝对值函数 */
 #ifndef ABS
     #define ABS(x)		((x>0)? (x): (-(x)))
@@ -18,12 +17,10 @@ extern TaskHandle_t uart_decode_task_t;
 extern SemaphoreHandle_t  Decode_DBUS_Handle;  // 信号量句柄
 extern SemaphoreHandle_t  Decode_JUDGE_Handle;  // 信号量句柄
 static void Memory_change(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer, DoubleBufferArrayPtr D_buf, uint16_t LEN);
-static void UARTX_init(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer, uint8_t  * D_buf, uint16_t LEN);
+static void UARTX_init(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer, uint8_t  * D_buf,uint16_t LEN,rx_msg_t *rx_msg);
 volatile int uartDecodeSignal = 0;
 
-int8_t rxlen_now;
-int8_t rxlen_last;
-int8_t rxlen_rx = 0;
+rx_msg_t rx_msg_dbus;
 static uint8_t dma_dbus_buf[2*DMA_DBUS_LEN];
 static uint8_t dma_judge_buf[2][DMA_JUDGE_LEN];
 uint8_t dma_vision_buf[DMA_VISION_LEN];
@@ -38,16 +35,13 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 	if (huart->Instance == USART1) // DBUS
 	{
 		if(uart_decode_task_t != NULL){
-		BaseType_t xHigherPriorityTaskWoken = pdFALSE;	
-		fifo_s_puts(&DBUS_fifo, (char*)dma_dbus_buf, 2*DMA_DBUS_LEN);
-		memset(DoubleBuffer_dbus.last_buffer,0,2*DMA_DBUS_LEN);
-			    // 通知任务
-    vTaskNotifyGiveFromISR(uart_decode_task_t,&xHigherPriorityTaskWoken);
-		
-		if(xHigherPriorityTaskWoken == pdTRUE)
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);    // 如果通知了任务，则请求上下文切换
-	}
-//		uartDecodeSignal = 1 ;
+			BaseType_t xHigherPriorityTaskWoken = pdFALSE;	
+			fifo_s_puts(&DBUS_fifo, (char*)dma_dbus_buf, 2*DMA_DBUS_LEN);
+			memset(DoubleBuffer_dbus.last_buffer,0,2*DMA_DBUS_LEN);
+			vTaskNotifyGiveFromISR(uart_decode_task_t,&xHigherPriorityTaskWoken);
+			if(xHigherPriorityTaskWoken == pdTRUE)
+			portYIELD_FROM_ISR(xHigherPriorityTaskWoken);    // 如果通知了任务，则请求上下文切换
+		}
 	}
 
 	else if (huart->Instance == USART2) // JUDGE
@@ -64,7 +58,7 @@ void USER_UART_Init()
 {
 	/*********************** DBUS INIT ***************************/
 
-	UARTX_init(&DBUS_HUART, &DoubleBuffer_dbus,dma_dbus_buf, 2*DMA_DBUS_LEN);
+	UARTX_init(&DBUS_HUART, &DoubleBuffer_dbus,dma_dbus_buf, 2*DMA_DBUS_LEN,&rx_msg_dbus);
 
 	/*********************** JUDGE INIT ***************************/
 	
@@ -77,18 +71,33 @@ void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart)
 									 UART_FLAG_IDLE))
 	{
 		 __HAL_UART_CLEAR_IDLEFLAG(huart);
-//		 HAL_UART_AbortReceive(huart);
-//		 __HAL_DMA_DISABLE(huart->hdmarx);
-//		huart->RxState = HAL_UART_STATE_READY;
-//		huart->hdmarx->State = HAL_DMA_STATE_READY; 
-		 rxlen_now = huart->hdmarx->Instance->NDTR;
-		 rxlen_rx = rxlen_last - rxlen_now;
-		 rxlen_last =rxlen_now;
+
 		/* re-use dma+idle to recv */
 		if (huart->Instance == USART1)
 		{
-			if (ABS(rxlen_rx) == DMA_DBUS_LEN)
- 			USER_UART_IDLECallback(huart); 
+		 rx_msg_dbus.rxlen_now  = huart->hdmarx->Instance->NDTR;
+		 rx_msg_dbus.rxlen_rx   = rx_msg_dbus.rxlen_last - rx_msg_dbus.rxlen_now;
+		 rx_msg_dbus.rxlen_last = rx_msg_dbus.rxlen_now;
+			if (ABS(rx_msg_dbus.rxlen_rx) != DMA_DBUS_LEN){
+				
+				__HAL_DMA_DISABLE(huart->hdmarx);
+				memset(dma_dbus_buf,0,2*DMA_DBUS_LEN);
+				huart->hdmarx->Instance->NDTR = (uint16_t)2*DMA_DBUS_LEN;
+				huart->hdmarx->Instance->M0AR = (uint32_t)dma_dbus_buf;
+				__HAL_DMA_ENABLE(huart->hdmarx);
+				
+//				memset(dma_dbus_buf,0,2*DMA_DBUS_LEN);
+//				HAL_UART_DMAStop(huart);	
+//				HAL_UART_Receive_DMA(huart,dma_dbus_buf, 2*DMA_DBUS_LEN);
+			}
+			else{
+								__HAL_DMA_DISABLE(huart->hdmarx);
+				memset(dma_dbus_buf,0,2*DMA_DBUS_LEN);
+				huart->hdmarx->Instance->NDTR = (uint16_t)2*DMA_DBUS_LEN;
+				huart->hdmarx->Instance->M0AR = (uint32_t)dma_dbus_buf;
+				__HAL_DMA_ENABLE(huart->hdmarx);
+				USER_UART_IDLECallback(huart); 
+			}
 		}
 		if (huart->Instance == USART2)
 		{
@@ -116,12 +125,12 @@ static void Memory_change(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuff
 	
 }
 
-static void UARTX_init(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer, uint8_t  * D_buf, uint16_t LEN)
+static void UARTX_init(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer, uint8_t  * D_buf,uint16_t LEN,rx_msg_t *rx_msg)
 {
 	__HAL_UART_CLEAR_IDLEFLAG(huart);
 	__HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);
-	rxlen_now = 0;
-	rxlen_last = 2*DMA_DBUS_LEN;
+	rx_msg->rxlen_now = 0;
+	rx_msg->rxlen_last = LEN;
 	HAL_UART_Receive_DMA(huart,D_buf, LEN);
 }
 

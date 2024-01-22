@@ -63,7 +63,7 @@ void chassis_init()
     chassis.Float_to_uint8 = Float2Byte;
     chassis.game_msg_send = can1_send_game_msg;
     chassis.spd_msg_send  = can1_send_spd_msg;
-    chassis.wheel_max = 9000;  /* 关掉功率控制时需要初始化 */
+    chassis.wheel_max = 8000;  /* 关掉功率控制时需要初始化 */
 		
 }
 static void chassis_mode_switch(void)
@@ -297,8 +297,6 @@ void chassis_spd_distribution(void)
     float  wheel_spd_total = 0;  //总轮速
     float  distribution_temp = 1.0f;	//限制比例
 
-    /* 麦轮逆运动学原设定速度解算 */
-    //mecanum_calc(chassis.spd_input.vx,chassis.spd_input.vy, chassis.spd_input.vw, chassis.wheel_spd_input);
 		steering_calc(chassis.spd_input.vx,chassis.spd_input.vy, chassis.spd_input.vw,chassis.rudder_angle_ref, chassis.wheel_spd_input);//舵轮
     /* 计算总速度 */
     for(int i=0; i<4; i++)
@@ -317,19 +315,6 @@ void chassis_spd_distribution(void)
         chassis.wheel_spd_ref[j] = chassis.wheel_spd_input[j] / distribution_temp ;
         chassis.wheel_spd_ref[j] = data_limit(chassis.wheel_spd_ref[j], 8900, -8900);  //电机转速最高到8900
     }
-//    /* 麦轮正运动学处理后设定速度解算 */
-//    chassis.spd_ref.vx = (+chassis.wheel_spd_ref[0] - chassis.wheel_spd_ref[1] + chassis.wheel_spd_ref[2] - chassis.wheel_spd_ref[3] )* 0.25f;
-//    chassis.spd_ref.vy = (+chassis.wheel_spd_ref[0] + chassis.wheel_spd_ref[1] - chassis.wheel_spd_ref[2] - chassis.wheel_spd_ref[3] )* 0.25f;
-//    chassis.spd_ref.vw = (-chassis.wheel_spd_ref[0] - chassis.wheel_spd_ref[1] - chassis.wheel_spd_ref[2] - chassis.wheel_spd_ref[3] )* 0.25f;
-//   
-//		
-//    chassis.spd_error = chassis.spd_ref.vx + chassis.spd_ref.vy + chassis.spd_ref.vw
-//                        - chassis.spd_fdb.vx - chassis.spd_fdb.vy - chassis.spd_fdb.vw;
-
-//    /* 麦轮正运动学反馈速度解算 */
-//    chassis.spd_fdb.vx = (+moto_chassis[0].speed_rpm - moto_chassis[1].speed_rpm + moto_chassis[2].speed_rpm - moto_chassis[3].speed_rpm )* 0.25f;
-//    chassis.spd_fdb.vy = (+moto_chassis[0].speed_rpm + moto_chassis[1].speed_rpm - moto_chassis[2].speed_rpm - moto_chassis[3].speed_rpm )* 0.25f;
-//    chassis.spd_fdb.vw = (-moto_chassis[0].speed_rpm - moto_chassis[1].speed_rpm - moto_chassis[2].speed_rpm - moto_chassis[3].speed_rpm )* 0.25f;
     
 					if(!status.chassis_status[0]&&!status.chassis_status[1]&&!status.chassis_status[2]&&!status.chassis_status[3])//4个全掉才发零
 					{

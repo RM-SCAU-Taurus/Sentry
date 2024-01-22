@@ -43,8 +43,6 @@ void status_task(void const *argu)
 {
   for (;;)
   {
-    static uint8_t led_status = 0;
-
     // rc.init_status = rc_FSM(status.rc_status);  //更新遥控器的初始状态
 
     /* 遥控器通信状态检查 */

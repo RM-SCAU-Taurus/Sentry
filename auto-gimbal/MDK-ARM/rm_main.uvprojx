@@ -850,6 +850,11 @@
               <FileType>1</FileType>
               <FilePath>..\bsp\bsp_JY901.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_Mf_Motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\bsp_Mf_Motor.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

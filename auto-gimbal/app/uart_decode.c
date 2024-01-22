@@ -44,11 +44,10 @@ void uart_decode_task(void const *argu)
   usb_fifo_init(&DBUS_fifo, DBUS_fifo_buf, 5 * DMA_DBUS_LEN);	
   for (;;)
   {
-			if(uartDecodeSignal == 1){
+			ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
       fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, 2*DMA_DBUS_LEN);
       rc_callback_handler(&rc, DBUS_de_buf);
-			uartDecodeSignal = 0;
-			}
-			osDelayUntil(&mode_wake_time, 7);
+			ulTaskNotifyTake(pdTRUE, 0);
+//			osDelayUntil(&mode_wake_time, 7);
   }
 }

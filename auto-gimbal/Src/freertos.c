@@ -57,12 +57,6 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 
-SemaphoreHandle_t  Decode_DBUS_Handle;  // 信号量句�?
-SemaphoreHandle_t  Decode_JUDGE_Handle;  // 信号量句�?
-
-// 在全�?定义pxHigherPriorityTaskWoken
-BaseType_t pxHigherPriorityTaskWoken;
-
 osThreadId mode_sw_task_t;
 osThreadId chassis_task_t;
 osThreadId gimbal_task_t;
@@ -80,7 +74,7 @@ osThreadId decode_task_handle;
 osThreadId vision_send_task_handle;
 osThreadId usb_task_handle;
 
- QueueHandle_t CDC_send_queue; // 新建CDC消息队列
+QueueHandle_t CDC_send_queue; // 新建CDC消息队列
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
@@ -134,7 +128,7 @@ void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer, Stack
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-
+		
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -143,9 +137,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
     /* add semaphores, ... */
-	 // 创建二进制信号量
-    Decode_DBUS_Handle   = xSemaphoreCreateBinary();
-		Decode_JUDGE_Handle  = xSemaphoreCreateBinary();
+	
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
@@ -154,7 +146,7 @@ void MX_FREERTOS_Init(void) {
 
 
   /* USER CODE END RTOS_TIMERS */
-
+	
   /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -225,6 +217,7 @@ void StartDefaultTask(void const * argument)
 {
   /* init code for USB_DEVICE */
 //  MX_USB_DEVICE_Init();
+//	   USER_UART_Init();
   /* USER CODE BEGIN StartDefaultTask */
     /* Infinite loop */
     for(;;)

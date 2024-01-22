@@ -37,9 +37,17 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart)
 {
 	if (huart->Instance == USART1) // DBUS
 	{
+		if(uart_decode_task_t != NULL){
+		BaseType_t xHigherPriorityTaskWoken = pdFALSE;	
 		fifo_s_puts(&DBUS_fifo, (char*)dma_dbus_buf, 2*DMA_DBUS_LEN);
 		memset(DoubleBuffer_dbus.last_buffer,0,2*DMA_DBUS_LEN);
-		uartDecodeSignal = 1 ;
+			    // 通知任务
+    vTaskNotifyGiveFromISR(uart_decode_task_t,&xHigherPriorityTaskWoken);
+		
+		if(xHigherPriorityTaskWoken == pdTRUE)
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);    // 如果通知了任务，则请求上下文切换
+	}
+//		uartDecodeSignal = 1 ;
 	}
 
 	else if (huart->Instance == USART2) // JUDGE

@@ -54,6 +54,8 @@ void can_msg_send_task(void const *argu)
 								}
                 if( event.value.signals & CHASSIS_MOTOR_MSG_SEND )
                 {
+									
+									
 								}
                // can1_send_supercap();
             }

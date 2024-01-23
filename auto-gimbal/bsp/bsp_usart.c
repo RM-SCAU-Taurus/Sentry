@@ -1,10 +1,12 @@
-/* C库 ---------------------------------------------------------------------------*/
-/* USER CODE BEGIN */
-#include "string.h"
-/* USER CODE END */
 /* HAL库 ---------------------------------------------------------------------------*/
 /* USER CODE BEGIN */
-#include "stm32f4xx_hal_dma.h"
+
+/* USER CODE END */
+
+/* C库 ---------------------------------------------------------------------------*/
+/* USER CODE BEGIN */
+#include "stm32f4xx_hal.h"
+#include "string.h"
 /* USER CODE END */
 
 /* 硬件外设库 --------------------------------------------------------------------*/
@@ -97,11 +99,11 @@ void USER_UART_IDLECallback(UART_HandleTypeDef *huart,uint8_t *buf)
 	if (huart->Instance == USART1) // DBUS
 	{
 		if(uart_decode_task_t != NULL){
-			BaseType_t xHigherPriorityTaskWoken = pdFALSE;	
+			
 			fifo_s_puts(&DBUS_fifo, (char*)buf, DMA_DBUS_LEN);
-			vTaskNotifyGiveFromISR(uart_decode_task_t,&xHigherPriorityTaskWoken);
-			if(xHigherPriorityTaskWoken == pdTRUE)
-			portYIELD_FROM_ISR(xHigherPriorityTaskWoken);    // 如果通知了任务，则请求上下文切换
+			
+			osSignalSet(uart_decode_task_t,DBUS_MSG_PUT);
+			
 		}
 	}
 
@@ -146,8 +148,6 @@ void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart)
 							{            
 									USER_UART_IDLECallback(huart,&dma_dbus_buf[0][0]);	//Memory_1
 							 }
-						else
-							error_times++;
 							
 				}
 				else{
@@ -160,8 +160,6 @@ void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart)
 							{                //处理遥控器数据
 							USER_UART_IDLECallback(huart,&dma_dbus_buf[1][0]);	//Memory_1
 							}
-							else
-							error_times++;
 				}
 
 		}
@@ -175,8 +173,6 @@ static void UARTX_init(UART_HandleTypeDef *huart, p_DoubleBuffer_t DoubleBuffer,
 	rx_msg->rxlen_last = LEN;
 	SET_BIT(huart->Instance->CR3, USART_CR3_DMAR);
 	HAL_DMAEx_MultiBufferStart(huart->hdmarx, (uint32_t)&(huart->Instance->DR),(uint32_t)&dma_dbus_buf[0][0],(uint32_t)&dma_dbus_buf[1][0],LEN);
-	
-//	HAL_UART_Receive_DMA(huart,&dma_dbus_buf[0][0], LEN);
-	
+
 }
 

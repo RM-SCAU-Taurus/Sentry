@@ -15,8 +15,8 @@
 /**********板级支持库*********/
 
 /**********外部变量声明*******/
-extern SemaphoreHandle_t  Decode_DBUS_Handle;  // 信号量句柄
-extern SemaphoreHandle_t  Decode_JUDGE_Handle;  
+extern SemaphoreHandle_t Decode_DBUS_Handle; // 信号量句柄
+extern SemaphoreHandle_t Decode_JUDGE_Handle;
 /**********外部函数声明*******/
 
 /**********静态函数声明*******/
@@ -26,28 +26,32 @@ static void usb_fifo_init(fifo_s_t *fifo_s, uint8_t *buf, uint16_t size);
 /**********结构体定义*********/
 
 /**********变量声明***********/
-fifo_s_t DBUS_fifo;// DBUS FIFO控制结构体
-uint8_t DBUS_fifo_buf[3 * DMA_DBUS_LEN];// DBUS FIFO环形缓存区
-uint8_t DBUS_de_buf[DMA_DBUS_LEN];// DBUS 缓存区
+fifo_s_t DBUS_fifo;						 // DBUS FIFO控制结构体
+uint8_t DBUS_fifo_buf[3 * DMA_DBUS_LEN]; // DBUS FIFO环形缓存区
+uint8_t DBUS_de_buf[DMA_DBUS_LEN];		 // DBUS 缓存区
 
 /**********测试变量声明*******/
 
 // FIFO初始化函数
 static void usb_fifo_init(fifo_s_t *fifo_s, uint8_t *buf, uint16_t size)
 {
-  fifo_s_init(fifo_s, buf, size);
+	fifo_s_init(fifo_s, buf, size);
 }
 
 void uart_decode_task(void const *argu)
 {
-	uint32_t mode_wake_time = osKernelSysTick();
-  usb_fifo_init(&DBUS_fifo, DBUS_fifo_buf,3 * DMA_DBUS_LEN);	
-  for (;;)
-  {
-			ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-      fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, DMA_DBUS_LEN);
-      rc_callback_handler(&rc, DBUS_de_buf);
-			ulTaskNotifyTake(pdTRUE, 0);
-//			osDelayUntil(&mode_wake_time, 7);
-  }
+	osEvent event;
+	usb_fifo_init(&DBUS_fifo, DBUS_fifo_buf, 3 * DMA_DBUS_LEN);
+	for (;;)
+	{
+		event = osSignalWait(DBUS_MSG_PUT, osWaitForever);
+		if (event.status == osEventSignal)
+		{
+			if (event.value.signals & CHASSIS_MOTOR_MSG_SEND)
+			{
+				fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, DMA_DBUS_LEN);
+				rc_callback_handler(&rc, DBUS_de_buf);
+			}
+		}
+	}
 }

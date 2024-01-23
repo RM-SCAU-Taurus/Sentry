@@ -160,7 +160,7 @@ void gimbal_task(void const *argu)
         gimbal_pid_calcu();
         memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current));
         osSignalSet(can_msg_send_task_t, GIMBAL_MOTOR_MSG_SEND);
-        //DataWave(&huart3);
+        DataWave(&huart3);
         taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
     }

@@ -26,6 +26,8 @@
 #include "DataScope_DP.h"
 #include "gimbal_task.h"
 #include "chassis_task.h"
+#include "bsp_usart.h"
+
 /* 定义示波器通道数 */
 #ifndef MINIBALANCE
     #define DATASCOPE_MAX_SEND_NUM MAX_SEND_NUM //使用用户定义的最大通道数
@@ -140,10 +142,10 @@ void DataWave(UART_HandleTypeDef* huart)
 //    DataScope_Get_Channel_Data(gimbal.pid.pit_spd_ref);
 //    DataScope_Get_Channel_Data(gimbal.pid.pit_spd_fdb);
 //    DataScope_Get_Channel_Data(pid_pit_spd.iout);
-        
-	DataScope_Get_Channel_Data(chassis.spd_input.vx);
-	DataScope_Get_Channel_Data(chassis.spd_input.vy);
-	DataScope_Get_Channel_Data(moto_yaw.ecd);
+//        
+//			DataScope_Get_Channel_Data(chassis.spd_input.vx);
+//			DataScope_Get_Channel_Data(chassis.spd_input.vy);
+			DataScope_Get_Channel_Data(ABS(rx_msg_dbus.rxlen_rx));
 	
 //    DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_ref);
 //    DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_fdb);

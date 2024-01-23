@@ -47,7 +47,7 @@ void uart_decode_task(void const *argu)
 		event = osSignalWait(DBUS_MSG_PUT, osWaitForever);
 		if (event.status == osEventSignal)
 		{
-			if (event.value.signals & CHASSIS_MOTOR_MSG_SEND)
+			if (event.value.signals & DBUS_MSG_PUT)
 			{
 				fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, DMA_DBUS_LEN);
 				rc_callback_handler(&rc, DBUS_de_buf);

@@ -37,7 +37,7 @@ typedef uint8_t (*DoubleBufferArrayPtr)[2]; // 定义一个指向二维数组的指针类型
 
 #define   Memory0	        0
 #define   Memory1	        1
-#define  DMA_DBUS_LEN			18
+#define  DMA_DBUS_LEN			36
 #define  DMA_JUDGE_LEN		122
 #define  DMA_VISION_LEN		20
 #define  DMA_GYRO_LEN     25

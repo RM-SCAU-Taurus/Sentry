@@ -24,7 +24,7 @@ volatile int uartDecodeSignal = 0;
 
 rx_msg_t rx_msg_dbus;
 static uint8_t dma_dbus_buf[2][DMA_DBUS_LEN];
-static uint8_t dma_judge_buf[2][DMA_JUDGE_LEN];
+//static uint8_t dma_judge_buf[2][DMA_JUDGE_LEN];
 uint8_t dma_vision_buf[DMA_VISION_LEN];
 uint8_t dma_gyro_buf[DMA_GYRO_LEN];
 
@@ -79,7 +79,8 @@ void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart)
 			  if ((huart->hdmarx->Instance->CR & DMA_SxCR_CT) == RESET){
             __HAL_DMA_DISABLE(huart->hdmarx);
 					  rx_msg_dbus.rxlen_rx = DMA_DBUS_LEN - __HAL_DMA_GET_COUNTER(huart->hdmarx);	//获取当前剩余数据量
-//						__HAL_DMA_SET_COUNTER(huart->hdmarx,18);	//重新设置数据量
+						__HAL_DMA_SET_COUNTER(huart->hdmarx,DMA_DBUS_LEN);	//重新设置数据量
+				  	huart->hdmarx->Instance->CR |= (uint32_t)(DMA_SxCR_CT);  //将DMA指向Memory1
 					  __HAL_DMA_ENABLE(huart->hdmarx);
             if(rx_msg_dbus.rxlen_rx == 18)	//接收成功18个字节长度
 							{            
@@ -90,11 +91,12 @@ void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart)
 				else{
             __HAL_DMA_DISABLE(huart->hdmarx);
 					  rx_msg_dbus.rxlen_rx = DMA_DBUS_LEN - __HAL_DMA_GET_COUNTER(huart->hdmarx);	//获取当前剩余数据量
-//						__HAL_DMA_SET_COUNTER(huart->hdmarx,18);	//重新设置数据量
+						__HAL_DMA_SET_COUNTER(huart->hdmarx,DMA_DBUS_LEN);	//重新设置数据量
+						huart->hdmarx->Instance->CR  &= ~(DMA_SxCR_CT);  //将DMA指向Memory1
 					  __HAL_DMA_ENABLE(huart->hdmarx);
 						if(rx_msg_dbus.rxlen_rx == 18)	//接收成功18个字节长度
 							{                //处理遥控器数据
-									USER_UART_IDLECallback(huart,&dma_dbus_buf[1][0]);	//Memory_1
+							USER_UART_IDLECallback(huart,&dma_dbus_buf[1][0]);	//Memory_1
 							}
 				}
 

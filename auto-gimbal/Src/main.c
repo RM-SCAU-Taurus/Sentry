@@ -119,14 +119,14 @@ int main(void)
   MX_CRC_Init();
 //  MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
-    can_device_init();
-    chassis_init();
-    gimbal_param_init();
-    PowerControl_Init();
-    USER_UART_Init();
-		vsn_init();
-//		ust_tim_start();//微妙延时函数tim
-    HAL_Delay(500);
+//    can_device_init();
+//    chassis_init();
+//    gimbal_param_init();
+//    PowerControl_Init();
+//    USER_UART_Init();
+//		vsn_init();
+////		ust_tim_start();//微妙延时函数tim
+//    HAL_Delay(500);//最新代码 初始化放任务里
 		
 
   /* USER CODE END 2 */

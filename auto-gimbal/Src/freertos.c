@@ -37,6 +37,7 @@
 #include "vision_send_task.h"
 #include "usb_task.h"
 #include "uart_decode.h"
+#include "sys_init.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,6 +70,7 @@ osThreadId uart_decode_task_t;
 
 osThreadId status_task_t;
 osThreadId test_task_t;
+osThreadId sys_init_task_t;
 
 osThreadId decode_task_handle;
 osThreadId vision_send_task_handle;
@@ -160,6 +162,9 @@ void MX_FREERTOS_Init(void) {
 
 
 /***************************High priority task***************************/
+		osThreadDef(sysinit_Task, sys_init_task, osPriorityRealtime, 0, 128);
+	  sys_init_task_t = osThreadCreate(osThread(sysinit_Task),NULL);
+
     osThreadDef(canTask, can_msg_send_task, osPriorityHigh, 0, 512);
     can_msg_send_task_t = osThreadCreate(osThread(canTask), NULL);
 	 
@@ -179,7 +184,8 @@ void MX_FREERTOS_Init(void) {
     test_task_t = osThreadCreate(osThread(testTask),NULL);
 		
 		osThreadDef(statusTask, status_task, osPriorityHigh, 0, 128);
-	status_task_t = osThreadCreate(osThread(statusTask),NULL);
+	  status_task_t = osThreadCreate(osThread(statusTask),NULL);
+	
     /***********************AboveNormal priority task***********************/
     osThreadDef(chassisTask, chassis_task, osPriorityAboveNormal, 0, 512);
    chassis_task_t = osThreadCreate(osThread(chassisTask),NULL);
@@ -200,7 +206,7 @@ void MX_FREERTOS_Init(void) {
 
     /* low priority task */
 
-		 CDC_send_queue = xQueueCreate(1, 128); // 串口消息队列
+		CDC_send_queue = xQueueCreate(1, 128); // 串口消息队列
     taskEXIT_CRITICAL();
   /* USER CODE END RTOS_THREADS */
 

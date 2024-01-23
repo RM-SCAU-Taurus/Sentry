@@ -43,7 +43,7 @@ extern void rm_dequeue_send_data(void *buf, uint16_t len);
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
 void usb_task(void const *argument)
 {
-  MX_USB_DEVICE_Init();
+//  MX_USB_DEVICE_Init();
   while (1)
   {
     if (xQueueReceive(CDC_send_queue, usb_buf, 10) == pdTRUE)

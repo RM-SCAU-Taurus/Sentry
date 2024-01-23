@@ -63,7 +63,7 @@ static void chassis_mode_switch(void)
         if (last_ctrl_mode != REMOTER_MODE) // 切入遥控模式，初始化底盘模式
             chassis.mode = CHASSIS_MODE_REMOTER_FOLLOW;
         /* 底盘小陀螺模式 */
-        if (rc.ch5 == 0)
+        if (ABS(rc.ch5) <= 60)
             spin_flag = 1;
         if (rc.ch5 == 660 && spin_flag)
         {

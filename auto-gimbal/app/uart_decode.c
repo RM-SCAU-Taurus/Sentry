@@ -28,7 +28,7 @@ static void usb_fifo_init(fifo_s_t *fifo_s, uint8_t *buf, uint16_t size);
 /**********变量声明***********/
 fifo_s_t DBUS_fifo;// DBUS FIFO控制结构体
 uint8_t DBUS_fifo_buf[5 * DMA_DBUS_LEN];// DBUS FIFO环形缓存区
-uint8_t DBUS_de_buf[2*DMA_DBUS_LEN];// DBUS 缓存区
+uint8_t DBUS_de_buf[DMA_DBUS_LEN];// DBUS 缓存区
 
 /**********测试变量声明*******/
 
@@ -45,7 +45,7 @@ void uart_decode_task(void const *argu)
   for (;;)
   {
 			ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-      fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, 2*DMA_DBUS_LEN);
+      fifo_s_gets(&DBUS_fifo, (char *)DBUS_de_buf, DMA_DBUS_LEN);
       rc_callback_handler(&rc, DBUS_de_buf);
 			ulTaskNotifyTake(pdTRUE, 0);
 //			osDelayUntil(&mode_wake_time, 7);

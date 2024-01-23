@@ -43,7 +43,7 @@ typedef uint8_t (*DoubleBufferArrayPtr)[2]; // 定义一个指向二维数组的指针类型
 #define  DMA_GYRO_LEN     25
 
 void USER_UART_Init(void);
-void USER_UART_IDLECallback(UART_HandleTypeDef *huart);
+void USER_UART_IDLECallback(UART_HandleTypeDef *huart,uint8_t *buf);
 void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart);
 extern rx_msg_t rx_msg_dbus;
 #endif

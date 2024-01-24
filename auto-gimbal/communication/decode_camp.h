@@ -6,6 +6,8 @@
 
 #include "struct_typedef.h"
 
+//USB接收FIFO初始化
+void usb_fifo_init(void);
 extern uint16_t referee_data_solve(uint8_t *frame);
 
 #endif

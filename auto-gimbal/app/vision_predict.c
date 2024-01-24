@@ -114,7 +114,7 @@ void vsn_calc(void) {
     /* 直接交给视觉控制 */
 //    vision.new_frame_flag   = 1;                                         /* 标注为新有效数据 */
 //    vision.pit_angle_error  = vd.pit.now;                                /* PIT角度偏差 */
-//    vision.yaw_angle_error  = vd.yaw.vsn_agl_err.now;                    /* YAW轴角度偏差 */
+//    vision.yaw_angle_6020_error  = vd.yaw.vsn_agl_err.now;                    /* YAW轴角度偏差 */
 //    vision.yaw_predict_angle= 0;                                         /* YAW轴角度偏差预测 */
 //    vision.gimbal_pit_ecd = ((gim_msg_t*)ubf_pop(gim_msg_ubf, delay_imu_wz))->pit;
 //    vision.gimbal_yaw_angle = ((gim_msg_t*)ubf_pop(gim_msg_ubf, delay_imu_wz))->yaw;
@@ -280,7 +280,7 @@ static void vsn_kal_reinit(void) {//动态调整卡尔曼参数
 static void vsn_auto_aiming_calc(void) {
     /* 输出不含预测的自瞄数据 */
     vision.pit_angle_error  = vd.pit.vsn_agl_err.now;  /* PIT视觉相对角度偏差 */
-    vision.yaw_angle_error  = vd.yaw.vsn_agl_err.now;  /* YAW视觉相对角度偏差 */
+    vision.yaw_angle_6020_error  = vd.yaw.vsn_agl_err.now;  /* YAW视觉相对角度偏差 */
     vision.gimbal_pit_ecd   = ((gim_msg_t*)ubf_pop(gim_msg_ubf, match_time_pit))->pit;  /* 相位匹配后的云台PIT角度 */
     vision.gimbal_yaw_angle = ((gim_msg_t*)ubf_pop(gim_msg_ubf, match_time_yaw))->yaw;  /* 相位匹配后的云台YAW角度 */
 }
@@ -359,12 +359,12 @@ void vsn_gimbal_ref_calc(void) {
                 vision.new_frame_flag = 0;
                 /* 修改云台设定值 */
 //                 gimbal.pid.pit_ecd_ref = vision.pit_angle_error+gimbal.pid.pit_ecd_fdb;
-//                gimbal.pid.yaw_angle_ref = vision.gimbal_yaw_angle+vision.yaw_angle_error+vision.yaw_predict_angle;
-                gimbal.pid.yaw_angle_ref= vision.yaw_angle_error;//视觉绝对角度
+//                gimbal.pid.yaw_angle_6020_ref = vision.gimbal_yaw_angle+vision.yaw_angle_6020_error+vision.yaw_predict_angle;
+                gimbal.pid.yaw_angle_6020_ref= vision.yaw_angle_6020_error;//视觉绝对角度
                 gimbal.pid.pit_angle_ref  = vision.pit_angle_error;
                 
 //                gimbal.pid.pit_ecd_ref = vision.gimbal_pit_ecd + vision.pit_angle_error * 8191.0f / 360;
-//                gimbal.pid.yaw_angle_ref = vision.gimbal_yaw_angle + vision.yaw_angle_error;
+//                gimbal.pid.yaw_angle_6020_ref = vision.gimbal_yaw_angle + vision.yaw_angle_6020_error;
                 
 							// gimbal.pid.pit_ecd_ref  = vision.gimbal_pit_ecd + ((vision.pit_angle_error + vision.pit_predict_angle) * 8191.0f / 360.0f);
             }
@@ -374,24 +374,24 @@ void vsn_gimbal_ref_calc(void) {
             vision.status = vUNAIMING;
           //  gimbal.pid.pit_ecd_ref   = gimbal.pid.pit_ecd_fdb;
              gimbal.pid.pit_angle_ref = gimbal.pid.pit_angle_fdb;
-            gimbal.pid.yaw_angle_ref = gimbal.pid.yaw_angle_fdb;
+            gimbal.pid.yaw_angle_6020_ref = gimbal.pid.yaw_angle_6020_fdb;
             break;
         }
         case vUNAIMING: {  /* 未识别到目标 */
             if (ctrl_mode == REMOTER_MODE) {
                // gimbal.pid.pit_ecd_ref   += rc.ch2 * scale.ch2;
                   gimbal.pid.pit_angle_ref  +=rc.ch2 * 0.0008f;
-                gimbal.pid.yaw_angle_ref += rc.ch1 * scale.ch1;
+                gimbal.pid.yaw_angle_6020_ref += rc.ch1 * scale.ch1;
             } else 
 						{
 								if(vision_ctrl.speed_mode == 1 && (vision_ctrl.speed_yaw !=0 || vision_ctrl.speed_pit)){
 								
-                gimbal.pid.yaw_spd_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
+                gimbal.pid.yaw_spd_6020_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
 //                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要
 								gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
 								}
 								else{
-								gimbal.pid.yaw_angle_ref= vision.yaw_angle_error;//由导航控制
+								gimbal.pid.yaw_angle_6020_ref= vision.yaw_angle_6020_error;//由导航控制
                 gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
 									
 								}
@@ -409,13 +409,13 @@ static void vsn_shoot_enable(void) {
 		switch (vision.mode) {
         case vMODE_AUTO:
         case vMODE_ANTISPIN: {
-            if (ABSv(gimbal.pid.yaw_angle_ref - gimbal.pid.yaw_angle_fdb) <10.0f && 
+            if (ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb) <10.0f && 
                 ABSv(gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb) < 5.0f) {
                 vision.shoot_enable = 1;
             } else {
                 vision.shoot_enable = 0;
             }
-						 cha_pitch=ABSv(gimbal.pid.yaw_angle_ref - gimbal.pid.yaw_angle_fdb);
+						 cha_pitch=ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb);
 					 	cha_yaw=ABSv(gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb);
 					//vision.shoot_enable = 1;
 //						if(vd.dis.now>6)
@@ -431,7 +431,7 @@ static void vsn_shoot_enable(void) {
         }
         case vMODE_bENERGY:
         case vMODE_sENERGY: {
-            if (ABSv(gimbal.pid.yaw_angle_ref - gimbal.pid.yaw_angle_fdb) < 1.0f && 
+            if (ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb) < 1.0f && 
                 ABSv(gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb) < 1.0f) {
                 vision.shoot_enable = 1;
             } else {

@@ -56,11 +56,16 @@ void gimbal_param_init(void)
     PID_struct_init(&pid_pit_spd, POSITION_PID, 28000, 10000,
                     pid_pit_spd_P, pid_pit_spd_I, pid_pit_spd_D);
     /* YAW 轴 */
-    PID_struct_init(&pid_yaw_angle_above, POSITION_PID, 8000, 0,
-                    pid_yaw_angle_above_P, pid_yaw_angle_above_I, pid_yaw_angle_above_D);
-    PID_struct_init(&pid_yaw_spd_above, POSITION_PID, 28000, 20000,
-                    pid_yaw_spd_above_P, pid_yaw_spd_above_I, pid_yaw_spd_above_D);
+    PID_struct_init(&pid_yaw_angle_6020, POSITION_PID, 8000, 0,
+                    pid_yaw_angle_6020_P, pid_yaw_angle_6020_I, pid_yaw_angle_6020_D);
+    PID_struct_init(&pid_yaw_spd_6020, POSITION_PID, 28000, 20000,
+                    pid_yaw_spd_6020_P, pid_yaw_spd_6020_I, pid_yaw_spd_6020_D);
 
+		PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 8000, 0,
+                    pid_yaw_angle_9025_P, pid_yaw_angle_9025_I, pid_yaw_angle_9025_D);
+    PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 28000, 20000,
+                    pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
+	
     scale.ch1 = RC_CH1_SCALE;
     scale.ch2 = RC_CH2_SCALE;
 }
@@ -70,17 +75,17 @@ void gimbal_param_init(void)
 // 调试视觉绝对速度时用
 // 注释底盘，调成位置环YAW
 // 效果：自动摇头
-FGT_sin_t test_s =
-    {
-        .Td = 1,
-        .time = 0,
-        .max = GIMBAL_YAW_CENTER_OFFSET + 800,
-        .min = GIMBAL_YAW_CENTER_OFFSET - 800,
-        .dc = GIMBAL_YAW_CENTER_OFFSET,
-        .T = 800,
-        .A = 250,
-        .phi = 0,
-        .out = 0};
+//FGT_sin_t test_s =
+//    {
+//        .Td = 1,
+//        .time = 0,
+//        .max = GIMBAL_YAW_CENTER_OFFSET + 800,
+//        .min = GIMBAL_YAW_CENTER_OFFSET - 800,
+//        .dc = GIMBAL_YAW_CENTER_OFFSET,
+//        .T = 800,
+//        .A = 250,
+//        .phi = 0,
+//        .out = 0};
 /* ================================== TEST PARAM ================================== */
 
 /**
@@ -99,7 +104,7 @@ void gimbal_task(void const *argu)
         case PROTECT_MODE:
         {
             gimbal.pid.pit_angle_ref = GIMBAL_PIT_CENTER_OFFSET; // 云台默认俯仰水平
-            gimbal.pid.yaw_angle_ref = imu_data.yaw;           // 云台默认当前水平朝向
+            gimbal.pid.yaw_angle_6020_ref = imu_data.yaw;           // 云台默认当前水平朝向
             vision_ctrl.yaw = imu_data.yaw;
             for (uint8_t i = 0; i < 2; i++)
                 gimbal.current[i] = 0;
@@ -108,7 +113,7 @@ void gimbal_task(void const *argu)
         case REMOTER_MODE:
         {
             gimbal.pid.pit_angle_ref += rc.ch2 * scale.ch2;
-            gimbal.pid.yaw_angle_ref += rc.ch1 * scale.ch1;
+            gimbal.pid.yaw_angle_6020_ref += rc.ch1 * scale.ch1;
             //							  goback_flag = 0;
             vision_ctrl.yaw = imu_data.yaw;
             vision.status = vFIRST_LOST;
@@ -120,12 +125,12 @@ void gimbal_task(void const *argu)
             if (chassis.mode == CHASSIS_MODE_KEYBOARD_SUPPLY)
             {
                 gimbal.pid.pit_angle_ref = GIMBAL_PIT_CENTER_OFFSET; // 补给模式，头保持水平
-                gimbal.pid.yaw_angle_ref += rc.mouse.x * KEYBOARD_SCALE_YAW_SUPPLY;
+                gimbal.pid.yaw_angle_6020_ref += rc.mouse.x * KEYBOARD_SCALE_YAW_SUPPLY;
             }
             else
             {
                 gimbal.pid.pit_angle_ref += rc.mouse.y * KEYBOARD_SCALE_PIT;
-                gimbal.pid.yaw_angle_ref += rc.mouse.x * KEYBOARD_SCALE_YAW;
+                gimbal.pid.yaw_angle_6020_ref += rc.mouse.x * KEYBOARD_SCALE_YAW;
             }
         }
         case AUTO_MODE:
@@ -160,7 +165,7 @@ void gimbal_task(void const *argu)
         gimbal_pid_calcu();
         memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current));
         osSignalSet(can_msg_send_task_t, GIMBAL_MOTOR_MSG_SEND);
-        DataWave(&huart3);
+//        DataWave(&huart3);
         taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
     }
@@ -188,38 +193,38 @@ void gimbal_pid_calcu(void)
 		/*------------------------下yaw轴串级pid计算------------------------*/
     if (vision_ctrl.speed_mode == 0)
     {
-        if (gimbal.pid.yaw_angle_ref < 0)
-            gimbal.pid.yaw_angle_ref += 360;
-        else if (gimbal.pid.yaw_angle_ref > 360)
-            gimbal.pid.yaw_angle_ref -= 360; // 目标值限幅
+        if (gimbal.pid.yaw_angle_6020_ref < 0)
+            gimbal.pid.yaw_angle_6020_ref += 360;
+        else if (gimbal.pid.yaw_angle_6020_ref > 360)
+            gimbal.pid.yaw_angle_6020_ref -= 360; // 目标值限幅
 
-        gimbal.pid.yaw_angle_fdb = imu_data.yaw; // 陀螺仪角度反馈
-        gimbal.pid.yaw_angle_err = circle_error(gimbal.pid.yaw_angle_ref, gimbal.pid.yaw_angle_fdb, 360);
-        pid_calc(&pid_yaw_angle_above, gimbal.pid.yaw_angle_fdb, gimbal.pid.yaw_angle_fdb + gimbal.pid.yaw_angle_err);
+        gimbal.pid.yaw_angle_6020_fdb = imu_data.yaw; // 陀螺仪角度反馈
+        gimbal.pid.yaw_angle_6020_err = circle_error(gimbal.pid.yaw_angle_6020_ref, gimbal.pid.yaw_angle_6020_fdb, 360);
+        pid_calc(&pid_yaw_angle_6020, gimbal.pid.yaw_angle_6020_fdb, gimbal.pid.yaw_angle_6020_fdb + gimbal.pid.yaw_angle_6020_err);
 
-        gimbal.pid.yaw_spd_ref = pid_yaw_angle_above.pos_out;
-        gimbal.pid.yaw_spd_fdb = imu_data.wz; // 陀螺仪速度反馈
-        pid_calc(&pid_yaw_spd_above, gimbal.pid.yaw_spd_fdb, gimbal.pid.yaw_spd_ref);
+        gimbal.pid.yaw_spd_6020_ref = pid_yaw_angle_6020.pos_out;
+        gimbal.pid.yaw_spd_6020_fdb = imu_data.wz; // 陀螺仪速度反馈
+        pid_calc(&pid_yaw_spd_6020, gimbal.pid.yaw_spd_6020_fdb, gimbal.pid.yaw_spd_6020_ref);
 
-        gimbal.current[0] = -pid_yaw_spd_above.pos_out;
+        gimbal.current[0] = -pid_yaw_spd_6020.pos_out;
     }
     else if (vision_ctrl.speed_mode == 1)
     {
-        gimbal.pid.yaw_spd_fdb = imu_data.wz; // 陀螺仪速度反馈
-        pid_calc(&pid_yaw_spd_above, gimbal.pid.yaw_spd_fdb, gimbal.pid.yaw_spd_ref);
-        gimbal.current[0] = -pid_yaw_spd_above.pos_out;
+        gimbal.pid.yaw_spd_6020_fdb = imu_data.wz; // 陀螺仪速度反馈
+        pid_calc(&pid_yaw_spd_6020, gimbal.pid.yaw_spd_6020_fdb, gimbal.pid.yaw_spd_6020_ref);
+        gimbal.current[0] = -pid_yaw_spd_6020.pos_out;
     }
 		
 	 /*------------------------下yaw轴串级pid计算------------------------*/
-//	        if (gimbal.pid.yaw_angle_ref < 0)
-//            gimbal.pid.yaw_angle_ref += 360;
-//        else if (gimbal.pid.yaw_angle_ref > 360)
-//            gimbal.pid.yaw_angle_ref -= 360; // 目标值限幅
-//        gimbal.pid.yaw_angle_fdb = imu_data.yaw; // 陀螺仪角度反馈
-//        gimbal.pid.yaw_angle_err = circle_error(gimbal.pid.yaw_angle_ref, gimbal.pid.yaw_angle_fdb, 360);
-//        pid_calc(&pid_yaw_angle_above, gimbal.pid.yaw_angle_fdb, gimbal.pid.yaw_angle_fdb + gimbal.pid.yaw_angle_err);
-//        gimbal.pid.yaw_spd_ref = pid_yaw_angle_above.pos_out;
-//        gimbal.pid.yaw_spd_fdb = imu_data.wz; // 陀螺仪速度反馈
-//        pid_calc(&pid_yaw_spd_above, gimbal.pid.yaw_spd_fdb, gimbal.pid.yaw_spd_ref);
-//        gimbal.current[0] = -pid_yaw_spd_above.pos_out;	
+	        if (gimbal.pid.yaw_angle_9025_ref < 0)
+            gimbal.pid.yaw_angle_9025_ref += 360;
+        else if (gimbal.pid.yaw_angle_9025_ref > 360)
+            gimbal.pid.yaw_angle_9025_ref -= 360; // 目标值限幅
+        gimbal.pid.yaw_angle_9025_fdb = imu_data.yaw; // 陀螺仪角度反馈
+        gimbal.pid.yaw_angle_9025_err = circle_error(gimbal.pid.yaw_angle_9025_ref, gimbal.pid.yaw_angle_9025_fdb, 360);
+        pid_calc(&pid_yaw_angle_9025, gimbal.pid.yaw_angle_9025_fdb, gimbal.pid.yaw_angle_9025_fdb + gimbal.pid.yaw_angle_9025_err);
+        gimbal.pid.yaw_spd_9025_ref = pid_yaw_angle_9025.pos_out;
+        gimbal.pid.yaw_spd_9025_fdb = imu_data.wz; // 陀螺仪速度反馈
+        pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);
+        gimbal.current[2] = -pid_yaw_spd_9025.pos_out;	
 }

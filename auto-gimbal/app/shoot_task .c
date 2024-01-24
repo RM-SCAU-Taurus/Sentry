@@ -134,8 +134,8 @@ static void shoot_mode_sw(void)
             {
                 shoot.firc_mode = FIRC_MODE_RUN; // 开启摩擦轮
             }
-            shoot.stir_mode = STIR_MODE_STOP;
-            // shoot.stir_mode = STIR_MODE_SINGLE;  //单发（测弹道用）
+//            shoot.stir_mode = STIR_MODE_STOP;
+             shoot.stir_mode = STIR_MODE_SINGLE;  //单发（测弹道用）
         }
         break;
         case RC_DN:

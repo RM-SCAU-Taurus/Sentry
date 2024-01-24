@@ -9,8 +9,6 @@
 
 extern TIM_HandleTypeDef htim5;
 
-//USB接收FIFO初始化
-void usb_fifo_init(void);
 
 void decode_task(void const * argument);
 	
@@ -47,7 +45,7 @@ void decode_task(void const * argument);
 //RM协议解析函数，系统自动调用
 void decode_task(void const * argument)
 {
-    usb_fifo_init();
+//    usb_fifo_init();
     while(1)
     {
       decode_unpack_fifo_data();

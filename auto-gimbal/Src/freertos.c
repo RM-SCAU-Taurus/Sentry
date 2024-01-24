@@ -168,7 +168,7 @@ void MX_FREERTOS_Init(void) {
     osThreadDef(canTask, can_msg_send_task, osPriorityHigh, 0, 512);
     can_msg_send_task_t = osThreadCreate(osThread(canTask), NULL);
 	 
-	  osThreadDef(UARTTask, uart_decode_task, osPriorityHigh, 0, 128);
+	  osThreadDef(UARTTask, uart_decode_task, osPriorityHigh, 0, 256);
     uart_decode_task_t = osThreadCreate(osThread(UARTTask), NULL);	
 		
 		osThreadDef(USBTask, usb_task, osPriorityHigh, 0, 128);

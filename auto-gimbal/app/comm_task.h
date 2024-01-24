@@ -12,11 +12,8 @@
 #include "stm32f4xx_hal.h"
 
 //#define CHASSIS_CAN_TX_ID 	0x200
-#define GIMBAL_CAN_TX_ID  				0x1ff
-#define CHASSIS_CTRL_CAN_TX_ID  	0x001
-#define CAN_9025_YAW_TX_ID      	0x141
-#define TORQUE_COMMAND          0xA1
-#define JUDGE_MSG_PUT    				  ( 1 << 4 )
+#define GIMBAL_CAN_TX_ID  	0x1ff
+#define CHASSIS_CTRL_CAN_TX_ID  0x001
 #define DBUS_MSG_PUT    				  ( 1 << 5 )
 #define GIMBAL_MOTOR_MSG_SEND     ( 1 << 6 )
 #define CHASSIS_MOTOR_MSG_SEND    ( 1 << 7 )
@@ -28,7 +25,7 @@ typedef struct
     /* 4 chassis motor current */
     int16_t chassis_cur[4];
     /* yaw/pitch motor current */
-    int16_t gimbal_cur[3];
+    int16_t gimbal_cur[2];
     /* stir current */
     int16_t trigger_cur;
 

@@ -785,6 +785,11 @@
               <FileType>1</FileType>
               <FilePath>..\app\sys_init.c</FilePath>
             </File>
+            <File>
+              <FileName>sys_init.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\app\sys_init.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

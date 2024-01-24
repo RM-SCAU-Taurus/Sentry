@@ -75,7 +75,7 @@ typedef struct {
     float pit_predict_angle;
     
     float gimbal_yaw_angle; /* 时间轴同步时云台yaw角度 */
-    float yaw_angle_error;
+    float yaw_angle_6020_error;
     float yaw_predict_angle;
 } vsn_output_t;
 /* 视觉驱动状态枚举类型 */

@@ -26,5 +26,6 @@ void uart_decode_task(void const *argu);
 
 extern volatile int uartDecodeSignal;
 extern fifo_s_t DBUS_fifo;
+extern fifo_s_t JUDGE_fifo;
 extern uint8_t DBUS_fifo_buf[3*DMA_DBUS_LEN];
 #endif

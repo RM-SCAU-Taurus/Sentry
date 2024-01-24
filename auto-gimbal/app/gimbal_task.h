@@ -31,17 +31,24 @@ typedef struct
     /* ------------------------------- YAW ------------------------------- */
     /* ------------- position ------------- */
     /* yaw angle pid param */
-    float yaw_angle_ref;
-    float yaw_angle_fdb;
-    float yaw_angle_err;
+    float yaw_angle_6020_ref;
+    float yaw_angle_6020_fdb;
+    float yaw_angle_6020_err;
+		
+    float yaw_angle_9025_ref;
+    float yaw_angle_9025_fdb;
+    float yaw_angle_9025_err;			
     /* yaw motor ecd pid param */
     float yaw_mecd_ref;
     float yaw_mecd_fdb;
     float yaw_mecd_err;
     /* -------------   speed  ------------- */
     /* yaw speed pid param */
-    float yaw_spd_ref;
-    float yaw_spd_fdb;
+    float yaw_spd_6020_ref;
+    float yaw_spd_6020_fdb;
+		
+		float yaw_spd_9025_ref;
+    float yaw_spd_9025_fdb;	
     /* yaw motor ecd pid param */
     float yaw_mspd_ref;
     float yaw_mspd_fdb;
@@ -55,7 +62,7 @@ typedef struct
     /* read from flash */
     int32_t       pit_center_offset;
     int32_t       yaw_center_offset;
-    int16_t       current[2];  //yaw 0  pit  1
+		int16_t       current[3];  //yaw_6020 0  pit 1  yaw_9025 2
 		float         yaw_imu_offset;//导航回正车头用
 } gimbal_t;
 typedef struct {

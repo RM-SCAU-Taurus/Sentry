@@ -37,6 +37,7 @@ extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
 
 /**********测试变量声明********/
 float state_test;
+unsigned portBASE_TYPE uxHighWaterMark_chassis;
 /**********结构体定义**********/
 chassis_t chassis;
 
@@ -191,6 +192,7 @@ void chassis_task(void const *argu)
         else
             chassis_odom.super_cup_state = 0;
         osSignalSet(can_msg_send_task_t, CHASSIS_MOTOR_MSG_SEND);
+//				uxHighWaterMark_chassis = uxTaskGetStackHighWaterMark(NULL);
         osDelayUntil(&mode_wake_time, CHASSIS_PERIOD);
     }
 }

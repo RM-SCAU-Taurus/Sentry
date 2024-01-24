@@ -147,10 +147,10 @@ void DataWave(UART_HandleTypeDef* huart)
 //			DataScope_Get_Channel_Data(chassis.spd_input.vy);
 			DataScope_Get_Channel_Data(ABS(rx_msg_dbus.rxlen_rx));
 	
-//    DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_ref);
-//    DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_fdb);
-//    DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_ref);
-//    DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_fdb);
+//    DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_ref);
+//    DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_fdb);
+//    DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_6020_ref);
+//    DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_6020_fdb);
 
 //    DataScope_Get_Channel_Data((float) gimbal.pid.yaw_mecd_ref, 1 );
 //    DataScope_Get_Channel_Data((float) gimbal.pid.yaw_mecd_fdb, 2 );
@@ -168,10 +168,10 @@ void DataWave(UART_HandleTypeDef* huart)
 //		DataScope_Get_Channel_Data((float) vision.yaw.abs_speed);
 //    DataScope_Get_Channel_Data(vision.predict_angle);
 
-//        DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_ref);
-//        DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_fdb);
-//        DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_ref);
-//        DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_fdb);
+//        DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_ref);
+//        DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_fdb);
+//        DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_6020_ref);
+//        DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_6020_fdb);
 //				DataScope_Get_Channel_Data(vision_ctrl.gimbal_yaw_cmd);
 //        DataScope_Get_Channel_Data(vision.yaw.kal.abs_speed[NOW]);
 //        DataScope_Get_Channel_Data(vision.distance);

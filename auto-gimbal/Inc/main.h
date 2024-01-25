@@ -72,10 +72,6 @@ void USB_Reset(void);
 #define LED_B_GPIO_Port GPIOD
 #define LED_A_Pin GPIO_PIN_11
 #define LED_A_GPIO_Port GPIOD
-#define Vision_TX_Pin GPIO_PIN_6
-#define Vision_TX_GPIO_Port GPIOC
-#define Vision_RX_Pin GPIO_PIN_7
-#define Vision_RX_GPIO_Port GPIOC
 #define DBUS_TX_Pin GPIO_PIN_9
 #define DBUS_TX_GPIO_Port GPIOA
 #define DBUS_RX_Pin GPIO_PIN_10

@@ -19,7 +19,6 @@
 #include "DataScope_DP.h"
 #include "usart.h"
 #include "bsp_can.h"
-#include "bsp_JY901.h"
 #include "bsp_T_imu.h"
 #include "ubf.h"
 #include "us_tim.h"

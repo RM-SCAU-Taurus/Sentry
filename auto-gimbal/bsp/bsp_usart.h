@@ -32,8 +32,6 @@ typedef uint8_t (*DoubleBufferArrayPtr)[2]; // 定义一个指向二维数组的指针类型
 
 #define 	DBUS_HUART    huart1
 #define   JUDGE_HUART   huart2
-#define 	GYRO_HUART		huart4		//因最新陀螺仪使用CAN，暂时无用
-#define   VISION_HUART	huart6
 
 #define   Memory0	        0
 #define   Memory1	        1

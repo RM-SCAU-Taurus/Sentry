@@ -4,12 +4,8 @@
 #include "stm32f4xx_hal.h"
 #include "math_calcu.h"
 
-//机器标号
-//小钢炮1号   3
-//小钢炮2号   4
-//小钢炮3号   5
-//舵轮单枪    6
-#define Robot_Number 1
+#define Sentry 1 
+#define Robot_Number Sentry
 
 /*----------------------------- the whole system ----------------------------- */
 // task period
@@ -18,7 +14,6 @@
 #define SHOOT_PERIOD      2
 #define USART_SEND_PERIOD 2
 #define MODESWITCH_PERIOD 6
-#define UARTDECODE_MODESWITCH_PERIOD 14
 #define STATUS_PERIOD     500
 
 // gimbal test pid param
@@ -61,7 +56,7 @@
 #define KEY_VISION_SENTRY       KB_X
 #define FLAG_VISION_SENTRY      kb_status[KEY_VISION_SENTRY]
 
-#if ( Robot_Number == 1 )
+#if ( Robot_Number == Sentry )
 
 /*-----------------------------shoot-----------------------------*/
 

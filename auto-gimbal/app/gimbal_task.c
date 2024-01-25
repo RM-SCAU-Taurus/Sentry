@@ -24,7 +24,6 @@
 #include "protocol_camp.h"
 #include "control_def.h"
 /**********板级支持库**********/
-// #include "bsp_JY901.h"
 #include "bsp_T_imu.h"
 #include "bsp_can.h"
 #include "bsp_TriggerMotor.h"
@@ -119,20 +118,6 @@ void gimbal_task(void const *argu)
             vision.status = vFIRST_LOST;
         }
         break;
-        case KEYBOARD_MODE:
-        {
-            /* 由于云台与系统状态几乎重叠，仅多一个补给，故暂时不单设置云台状态机 */
-            if (chassis.mode == CHASSIS_MODE_KEYBOARD_SUPPLY)
-            {
-                gimbal.pid.pit_angle_ref = GIMBAL_PIT_CENTER_OFFSET; // 补给模式，头保持水平
-                gimbal.pid.yaw_angle_6020_ref += rc.mouse.x * KEYBOARD_SCALE_YAW_SUPPLY;
-            }
-            else
-            {
-                gimbal.pid.pit_angle_ref += rc.mouse.y * KEYBOARD_SCALE_PIT;
-                gimbal.pid.yaw_angle_6020_ref += rc.mouse.x * KEYBOARD_SCALE_YAW;
-            }
-        }
         case AUTO_MODE:
         {
             vsn_gimbal_ref_calc();

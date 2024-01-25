@@ -33,7 +33,7 @@
 #include "shoot_task.h"
 #include "status_task.h"
 #include "bsp_judge.h"
-#include "test_task.h"
+#include "gimbal_to_chassis_task.h"
 #include "vision_send_task.h"
 #include "usb_task.h"
 #include "uart_decode.h"
@@ -148,7 +148,7 @@ void MX_FREERTOS_Init(void) {
 
 
   /* USER CODE END RTOS_TIMERS */
-	
+
   /* USER CODE BEGIN RTOS_QUEUES */
     /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -223,7 +223,6 @@ void StartDefaultTask(void const * argument)
 {
   /* init code for USB_DEVICE */
 //  MX_USB_DEVICE_Init();
-//	   USER_UART_Init();
   /* USER CODE BEGIN StartDefaultTask */
     /* Infinite loop */
     for(;;)

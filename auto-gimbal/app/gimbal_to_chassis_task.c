@@ -1,4 +1,4 @@
-#include "test_task.h"
+#include "gimbal_to_chassis_task.h"
 #include "cmsis_os.h"
 #include "func_generator.h"
 #include "chassis_task.h"
@@ -7,7 +7,7 @@
 #include "protocol_camp.h"
 #include "bsp_can.h"
 #include "bsp_judge.h"
-#define TEST_PERIOD 5
+#define GIMBAL_TO_CHASSIS_TASK_PERIOD 10
 
 extern chassis_ctrl_info_t chassis_ctrl;
 
@@ -32,6 +32,6 @@ void gimbal_to_chassic_task(void const *argu)//·¢¸øµ×ÅÌ
 			chassis.msg_send(CHASSIS_CTRL_CAN_TX_ID,chassis.spd_input.vx,chassis.spd_input.vy,chassis.spd_input.vw,0x01,chassis.spin_dir);
 			send_judge_msg(0x09,&hcan1);
 		}			
-			  osDelay(10);
+			 osDelayUntil(&wake_up_time, GIMBAL_TO_CHASSIS_TASK_PERIOD);
     }
 }

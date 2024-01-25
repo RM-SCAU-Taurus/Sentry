@@ -761,11 +761,6 @@
               <FilePath>..\app\shoot_task .c</FilePath>
             </File>
             <File>
-              <FileName>test_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\test_task.c</FilePath>
-            </File>
-            <File>
               <FileName>usb_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\usb_task.c</FilePath>
@@ -784,6 +779,11 @@
               <FileName>sys_init.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\sys_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>gimbal_to_chassis_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\gimbal_to_chassis_task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -826,11 +826,6 @@
               <FilePath>..\bsp\bsp_powerlimit.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_debug.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\bsp_debug.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_T_imu.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\bsp\bsp_T_imu.c</FilePath>
@@ -849,11 +844,6 @@
               <FileName>bsp_judge.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\bsp\bsp_judge.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_JY901.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\bsp_JY901.c</FilePath>
             </File>
             <File>
               <FileName>bsp_Mf_Motor.c</FileName>

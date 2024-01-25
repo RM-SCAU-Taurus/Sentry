@@ -51,7 +51,7 @@ uint8_t DBUS_fifo_buf[3 * DMA_DBUS_LEN]; // DBUS FIFO环形缓存区
 fifo_s_t JUDGE_fifo;						 // JUDGE FIFO控制结构体
 uint8_t JUDGE_fifo_buf[2 * DMA_JUDGE_LEN]; // JUDGE FIFO环形缓存区
 /**********测试变量声明****************/
-unsigned portBASE_TYPE uxHighWaterMark_sys_init;
+//unsigned portBASE_TYPE uxHighWaterMark_sys_init;
 
 
 void sys_init_task(void const *argu)
@@ -68,7 +68,7 @@ void sys_init_task(void const *argu)
 	UART_fifo_init(&DBUS_fifo, DBUS_fifo_buf, 3 * DMA_DBUS_LEN);
 	UART_fifo_init(&JUDGE_fifo, JUDGE_fifo_buf, 2 * DMA_JUDGE_LEN);
 	HAL_Delay(1000);
-	uxHighWaterMark_sys_init = uxTaskGetStackHighWaterMark(NULL);
+//	uxHighWaterMark_sys_init = uxTaskGetStackHighWaterMark(NULL);
 	vTaskDelete(NULL);
 	
 	taskEXIT_CRITICAL();

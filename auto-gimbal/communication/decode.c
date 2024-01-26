@@ -45,11 +45,13 @@ void decode_task(void const * argument);
 //RM协议解析函数，系统自动调用
 void decode_task(void const * argument)
 {
+		uint32_t mode_wake_time = osKernelSysTick();
 //    usb_fifo_init();
-    while(1)
+    for (;;)
     {
       decode_unpack_fifo_data();
-      osDelay(2);
+			osDelayUntil(&mode_wake_time,2);
+//      osDelay(2);
     }
 }
 

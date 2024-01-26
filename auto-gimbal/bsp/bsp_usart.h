@@ -18,31 +18,57 @@
 
 #include "usart.h"
 
-typedef struct {
-    uint8_t *current_buffer;  // 指向当前使用的缓冲区
-    uint8_t *last_buffer;     // 指向上次使用的缓冲区
-} DoubleBuffer_t,*p_DoubleBuffer_t;
+#define DEVICE_USART_CNT 2     // 目前分配了2个串口
 
-typedef struct {
-		int8_t rxlen_now;
-		int8_t rxlen_last;
-		int8_t rxlen_rx ;
-}rx_msg_t;
-typedef uint8_t (*DoubleBufferArrayPtr)[2]; // 定义一个指向二维数组的指针类型
+// 模块回调函数,用于解析协议
+typedef void (*usart_module_callback)();
+/* --------------------------------------------------------------------------------------------------------------------------------- */
+// 串口实例结构体,每个module都要包含一个实例.
+typedef struct
+{
+		uint8_t *Buf_0;
+		uint8_t *Buf_1;
+    uint8_t recv_buff_size;                // DMA设置接收缓冲区的大小
+		uint8_t recv_buff_len;                // 模块接收到数据的大小
+		uint8_t recv_Frame_len;                // 一包数据的大小
+    UART_HandleTypeDef *usart_handle;      // 实例对应的usart_handle
+    usart_module_callback module_callback; // 解析收到的数据的回调函数
+} USARTInstance;
+
+/* usart 初始化配置结构体 */
+typedef struct
+{
+		uint8_t *Buf_0;
+		uint8_t *Buf_1;
+    uint8_t recv_buff_size;                // DMA设置接收缓冲区的大小
+		uint8_t recv_buff_len;                // 模块接收到数据的大小
+		uint8_t recv_Frame_len;                // 一包数据的大小
+    UART_HandleTypeDef *usart_handle;      // 实例对应的usart_handle
+    usart_module_callback module_callback; // 解析收到的数据的回调函数
+} USART_Init_Config_s;
+
+
+/**
+ * @brief 注册一个串口实例,返回一个串口实例指针
+ *
+ * @param init_config 传入串口初始化结构体
+ */
+USARTInstance *USARTRegister(USART_Init_Config_s *init_config);
+
+void USARTServiceInit(USARTInstance *_instance);
+/* --------------------------------------------------------------------------------------------------------------------------------- */
 
 #define 	DBUS_HUART    huart1
 #define   JUDGE_HUART   huart2
 
-#define   Memory0	        0
-#define   Memory1	        1
 #define  DMA_DBUS_LEN			36
-#define  DMA_JUDGE_LEN		122
-#define  DMA_VISION_LEN		20
-#define  DMA_GYRO_LEN     25
+#define  Frame_DBUS_LEN		18
+
+#define  DMA_JUDGE_LEN		150
+#define  Frame_JUDGE_LEN	122	
 
 void USER_UART_Init(void);
 void USER_UART_IDLECallback(UART_HandleTypeDef *huart,uint8_t *buf);
 void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart);
-extern rx_msg_t rx_msg_dbus;
 #endif
 

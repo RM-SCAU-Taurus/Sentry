@@ -38,6 +38,8 @@
 #include "usb_task.h"
 #include "uart_decode.h"
 #include "sys_init.h"
+
+#include "remote_msg.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,7 +59,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+//osThreadId CPU_RunTimeHandle;
 osThreadId mode_sw_task_t;
 osThreadId chassis_task_t;
 osThreadId gimbal_task_t;
@@ -69,9 +71,10 @@ osThreadId can_msg_send_task_t;
 osThreadId uart_decode_task_t;
 
 osThreadId status_task_t;
-osThreadId test_task_t;
+osThreadId gimbal_to_chassic_handle;
 osThreadId sys_init_task_t;
 
+osThreadId CPU_RunTimeHandle;
 osThreadId decode_task_handle;
 osThreadId vision_send_task_handle;
 osThreadId usb_task_handle;
@@ -165,6 +168,9 @@ void MX_FREERTOS_Init(void) {
 		osThreadDef(sysinit_Task, sys_init_task, osPriorityRealtime, 0, 128);
 	  sys_init_task_t = osThreadCreate(osThread(sysinit_Task),NULL);
 
+//		osThreadDef(CPU_RunTime, CPU_RunTime, osPriorityHigh, 0, 128);
+//		CPU_RunTimeHandle = osThreadCreate(osThread(CPU_RunTime), NULL);
+
     osThreadDef(canTask, can_msg_send_task, osPriorityHigh, 0, 512);
     can_msg_send_task_t = osThreadCreate(osThread(canTask), NULL);
 	 
@@ -181,16 +187,16 @@ void MX_FREERTOS_Init(void) {
     vision_send_task_handle = osThreadCreate(osThread(Vision_send_task), NULL);
 		
 		osThreadDef(testTask, gimbal_to_chassic_task, osPriorityHigh, 0, 256);
-    test_task_t = osThreadCreate(osThread(testTask),NULL);
+    gimbal_to_chassic_handle = osThreadCreate(osThread(testTask),NULL);
 		
 		osThreadDef(statusTask, status_task, osPriorityHigh, 0, 128);
 	  status_task_t = osThreadCreate(osThread(statusTask),NULL);
 	
     /***********************AboveNormal priority task***********************/
-    osThreadDef(chassisTask, chassis_task, osPriorityAboveNormal, 0, 512);
+    osThreadDef(chassisTask, chassis_task, osPriorityAboveNormal, 0, 256);//512
    chassis_task_t = osThreadCreate(osThread(chassisTask),NULL);
 
-    osThreadDef(gimbalTask, gimbal_task, osPriorityAboveNormal, 0, 512);
+    osThreadDef(gimbalTask, gimbal_task, osPriorityAboveNormal, 0, 256);//512
    gimbal_task_t = osThreadCreate(osThread(gimbalTask),NULL);
 
     osThreadDef(shootTask, shoot_task, osPriorityAboveNormal, 0, 256);                                       
@@ -234,5 +240,32 @@ void StartDefaultTask(void const * argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+void vApplicationIdleHook( void )
+{
+	uint16_t i=0;
+	  for (;;)
+		{
+				// rc.init_status = rc_FSM(status.rc_status);  //更新遥控器的初始状态
+
+				/* 遥控器通信状态检查 */
+				// 遥控通信周期大约14ms，此任务，每100ms检查并清除一次中断标志
+				for( i = 0 ; i < 14 ; i++){
+				if (rc_normal_flag)
+				{
+					status.rc_status = 1; // 系统状态标志置1，供modeswitch_task中检查
+					rc_normal_flag = 0;   // 清除遥控器串口中断标志
+
+					/* LED 状态显示 */
+				}
+				else // 遥控器或陀螺仪失联
+				{
+					status.rc_status = 0; // 遥控状态标志清0
+				}
+
+			} 
+		}
+}
+
+
 
 /* USER CODE END Application */

@@ -48,7 +48,7 @@ void uart_decode_task(void const *argu)
 	osEvent event;
 	for (;;)
 	{
-		event = osSignalWait(DBUS_MSG_PUT | JUDGE_MSG_PUT, osWaitForever);
+		event = osSignalWait( DBUS_MSG_PUT | JUDGE_MSG_PUT, osWaitForever);
 		if (event.status == osEventSignal)
 		{
 			if (event.value.signals & DBUS_MSG_PUT)

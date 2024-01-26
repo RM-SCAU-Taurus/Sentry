@@ -96,7 +96,7 @@ void gimbal_task(void const *argu)
     uint32_t mode_wake_time = osKernelSysTick();
     for (;;)
     {
-        taskENTER_CRITICAL();
+       taskENTER_CRITICAL();
 
         switch (ctrl_mode)
         {
@@ -113,7 +113,6 @@ void gimbal_task(void const *argu)
         {
             gimbal.pid.pit_angle_ref += rc.ch2 * scale.ch2;
             gimbal.pid.yaw_angle_6020_ref += rc.ch1 * scale.ch1;
-            //							  goback_flag = 0;
             vision_ctrl.yaw = imu_data.yaw;
             vision.status = vFIRST_LOST;
         }
@@ -144,14 +143,14 @@ void gimbal_task(void const *argu)
         else
         {
             chassis_odom.gimbal_yaw_fdb = chassis_odom.gimbal_yaw_fdb;
-        }
+        }				
 
         /* 云台串级PID */
         gimbal_pid_calcu();
         memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current));
         osSignalSet(can_msg_send_task_t, GIMBAL_MOTOR_MSG_SEND);
 //        DataWave(&huart3);
-        taskEXIT_CRITICAL();
+       taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
     }
 }

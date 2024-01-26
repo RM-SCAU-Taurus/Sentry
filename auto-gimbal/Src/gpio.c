@@ -38,7 +38,6 @@
         * Output
         * EVENT_OUT
         * EXTI
-     PB0   ------> S_TIM3_CH3
      PB14   ------> S_TIM12_CH1
 */
 void MX_GPIO_Init(void)
@@ -65,14 +64,6 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, AI_OLED_SCL_Pin|AI_OLED_SDA_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : PB0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = LASER_Pin;

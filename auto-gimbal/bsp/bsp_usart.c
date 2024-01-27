@@ -58,7 +58,7 @@ extern SemaphoreHandle_t Decode_JUDGE_Handle; // 信号量句柄
 /* 静态函数声明 ------------------------------------------------------------------*/
 /* USER CODE BEGIN */
 static void USART_Init_Configc_Create(USART_Init_Config_s *conf, uint8_t size, UART_HandleTypeDef *usart_handle, usart_module_callback callback,
-									  uint8_t *Buf_0_add, uint8_t *Buf_1_add, uint8_t Frame_len);
+									  uint8_t *Buf_0_addr, uint8_t *Buf_1_addr, uint8_t Frame_len);
 
 static uint8_t *Memory_change(USARTInstance *_instance);
 /* USER CODE END */
@@ -89,9 +89,7 @@ static USARTInstance *usart_instance[DEVICE_USART_CNT] = {NULL};
 
 /* 测试变量声明 ------------------------------------------------------------------*/
 /* USER CODE BEGIN */
-uint16_t Aerror_times = 0;
-uint16_t Berror_times = 0;
-volatile int uartDecodeSignal = 0;
+
 /* USER CODE END */
 
 /* 定义绝对值函数 */
@@ -216,11 +214,11 @@ void USARTServiceInit(USARTInstance *_instance)
  * @param
  */
 static void USART_Init_Configc_Create(USART_Init_Config_s *conf, uint8_t size, UART_HandleTypeDef *usart_handle, usart_module_callback callback,
-									  uint8_t *Buf_0_add, uint8_t *Buf_1_add, uint8_t Frame_len)
+									  uint8_t *Buf_0_addr, uint8_t *Buf_1_addr, uint8_t Frame_len)
 {
 
-	conf->Buf_0 = Buf_0_add;
-	conf->Buf_1 = Buf_1_add;
+	conf->Buf_0 = Buf_0_addr;
+	conf->Buf_1 = Buf_1_addr;
 	conf->recv_buff_len = 0;
 	conf->recv_buff_size = size;
 	conf->recv_Frame_len = Frame_len;

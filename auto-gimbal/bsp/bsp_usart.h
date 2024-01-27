@@ -48,14 +48,7 @@ typedef struct
 } USART_Init_Config_s;
 
 
-/**
- * @brief 注册一个串口实例,返回一个串口实例指针
- *
- * @param init_config 传入串口初始化结构体
- */
-USARTInstance *USARTRegister(USART_Init_Config_s *init_config);
 
-void USARTServiceInit(USARTInstance *_instance);
 /* --------------------------------------------------------------------------------------------------------------------------------- */
 
 #define 	DBUS_HUART    huart1
@@ -70,5 +63,14 @@ void USARTServiceInit(USARTInstance *_instance);
 void USER_UART_Init(void);
 void USER_UART_IDLECallback(UART_HandleTypeDef *huart,uint8_t *buf);
 void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart);
+
+/**
+ * @brief 注册一个串口实例,返回一个串口实例指针
+ *
+ * @param init_config 传入串口初始化结构体
+ */
+USARTInstance *USARTRegister(USART_Init_Config_s *init_config);
+
+void USARTServiceInit(USARTInstance *_instance);
 #endif
 

@@ -24,6 +24,36 @@
 #define CHASSIS_WZ_SET_SCALE	0.0f //底盘速度自旋补偿值
 #define M3508_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f		//m3508转化成底盘速度(m/s)的比例
 
+// 底盘模式回调函数,用于解析协议
+typedef void (*chassis_mode_callback)();
+
+
+typedef enum 
+{
+    CHASSIS_MODE_PROTECT,
+    CHASSIS_MODE_REMOTER_FOLLOW,
+    CHASSIS_MODE_AUTO,  //自动步兵的自动模式  
+    CHASSIS_MODE_REMOTER_ROTATE,
+    CHASSIS_MODE_KEYBOARD_FOLLOW,
+    CHASSIS_MODE_KEYBOARD_ROTATE,
+    CHASSIS_MODE_KEYBOARD_FIGHT,
+    CHASSIS_MODE_KEYBOARD_SUPPLY,
+    
+} chassis_mode_e;
+
+typedef enum 
+{
+    ChasisInstance_MODE_PROTECT,
+    ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE,
+    ChasisInstance_MODE_AUTO,  //自动步兵的自动模式  
+} ChasisInstance_mode_e;
+
+typedef struct
+{
+	ChasisInstance_mode_e Chassis_Mode;
+  chassis_mode_callback mode_callback; // 解析收到的数据的回调函数
+}ChasisInstance_t;
+
 /* chassis parameter structure */
 typedef struct
 {
@@ -38,19 +68,6 @@ typedef struct
     float y;
 }odom_t;
 
-typedef enum 
-{
-    CHASSIS_MODE_PROTECT,
-    
-    CHASSIS_MODE_REMOTER_FOLLOW,
-    CHASSIS_MODE_REMOTER_ROTATE,
-    
-    CHASSIS_MODE_KEYBOARD_FOLLOW,
-    CHASSIS_MODE_KEYBOARD_ROTATE,
-    CHASSIS_MODE_KEYBOARD_FIGHT,
-    CHASSIS_MODE_KEYBOARD_SUPPLY,
-    CHASSIS_MODE_AUTO  //自动步兵的自动模式  
-} chassis_mode_e;
 
 typedef struct
 {   

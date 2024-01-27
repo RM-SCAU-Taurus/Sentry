@@ -7,9 +7,10 @@ typedef enum
 {
     PROTECT_MODE,   //保护模式
     REMOTER_MODE,   //遥控模式
+    AUTO_MODE,    //自动模式
     KEYBOARD_MODE,  //键盘模式
-    VISION_MODE,     //视觉模式(鼠标右键开启)
-    AUTO_MODE      //自动模式
+    VISION_MODE    //视觉模式(鼠标右键开启)
+    
 } ctrl_mode_e;
 
 void mode_switch_task(void const *argu);

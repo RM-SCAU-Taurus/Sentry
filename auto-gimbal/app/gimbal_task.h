@@ -10,6 +10,9 @@
 #include "stm32f4xx_hal.h"
 #include "pid.h"
 #include "ubf.h"
+
+typedef void (*gimbal_mode_callback)();
+
 typedef struct
 {
     /* ------------------------------- PIT ------------------------------- */
@@ -54,6 +57,20 @@ typedef struct
     float yaw_mspd_fdb;
 } gim_pid_t;
 
+
+typedef enum 
+{
+    GimbalInstance_MODE_PROTECT,
+    GimbalInstance_MODE_REMOTER,
+    GimbalInstance_MODE_AUTO,  
+} GimbalInstance_mode_e;
+
+typedef struct
+{
+	GimbalInstance_mode_e Gimbal_Mode;
+  gimbal_mode_callback mode_callback; // è§£ææ”¶åˆ°çš„æ•°æ®çš„å›è°ƒå‡½æ•°
+}GimbalInstance_t;
+
 typedef struct
 {
     /* gimbal ctrl parameter */
@@ -63,7 +80,7 @@ typedef struct
     int32_t       pit_center_offset;
     int32_t       yaw_center_offset;
 		int16_t       current[3];  //yaw_6020 0  pit 1  yaw_9025 2
-		float         yaw_imu_offset;//µ¼º½»ØÕı³µÍ·ÓÃ
+		float         yaw_imu_offset;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½
 } gimbal_t;
 typedef struct {
     float pit;
@@ -73,7 +90,7 @@ typedef struct {
 } gim_msg_t;
 
 extern gimbal_t gimbal;
-extern  ubf_t gim_msg_ubf;   /* ÔÆÌ¨×ËÌ¬ÀúÊ·Êı¾İ */
+extern  ubf_t gim_msg_ubf;   /* ï¿½ï¿½Ì¨ï¿½ï¿½Ì¬ï¿½ï¿½Ê·ï¿½ï¿½ï¿½ï¿½ */
 void gimbal_task(void const *argu);
 void gimbal_param_init(void);
 

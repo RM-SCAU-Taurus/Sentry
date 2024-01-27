@@ -18,6 +18,7 @@
 /**********数据处理库**********/
 #include "remote_msg.h"
 #include "DataScope_DP.h"
+#include "msg_center.h"
 /**********类型定义库**********/
 #include "control_def.h"
 #include "protocol_camp.h"
@@ -28,9 +29,11 @@
 #include "bsp_can.h"
 /**********外部变量声明********/
 extern TaskHandle_t can_msg_send_task_t;
-extern chassis_ctrl_info_t chassis_ctrl;
+// extern chassis_ctrl_info_t chassis_ctrl;
+
 extern chassis_odom_info_t chassis_odom;
 extern Game_Status_t Game_Status;
+chassis_ctrl_info_t chassis_ctrl_sub_msg;
 /**********外部函数声明********/
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
 /**********宏定义声明********/
@@ -45,12 +48,20 @@ static void Chassis_queue_send(void);
 static void ROTATE_State_Check(void);
 static void chassis_mode_switch(void);
 
+
+/**********静态变量声明********/
+static Subscriber_t *chassis_ctrl_sub;                   // 用于订阅底盘的控制命令
+
 /**********测试变量声明********/
 float state_test;
 unsigned portBASE_TYPE uxHighWaterMark_chassis;
 /**********结构体定义**********/
 chassis_t chassis;
 ChasisInstance_t Chasis_behavior[3];
+
+
+
+
 
 /**********函数定义************/
 
@@ -66,6 +77,7 @@ void chassis_task(void const *argu)
     for (;;)
     {
         chassis_mode_switch();
+        SubGetMessage(chassis_ctrl_sub,&chassis_ctrl_sub_msg);
         switch (chassis.mode)
         {
         case CHASSIS_MODE_PROTECT: // 底盘保护模式
@@ -133,7 +145,8 @@ static void chassis_mode_switch(void)
     case AUTO_MODE:
     {
         if (last_ctrl_mode != AUTO_MODE)
-            memset(&chassis_ctrl, 0, sizeof(chassis_ctrl_info_t));//清除上一帧数据
+            // memset(&chassis_ctrl, 0, sizeof(chassis_ctrl_info_t));//清除上一帧数据
+            memset(&chassis_ctrl_sub_msg, 0, sizeof(chassis_ctrl_info_t));//清除上一帧数据
         chassis.mode = CHASSIS_MODE_AUTO;
     }
     default:
@@ -163,14 +176,24 @@ static void CHASSIS_MODE_PROTECT_callback(void)
 static void CHASSIS_MODE_AUTO_callback(void)
 {
 
+    // chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET;
+    // chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
+    // chassis.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
+    // chassis.angle_dif_degree = chassis.position_error * (360.0f / 8191.0f);
+    // gimbal.yaw_imu_offset = imu_data.yaw - chassis.angle_dif_degree;
+    // chassis.spd_input.vx = chassis_ctrl.vx / 0.375f * 19.0f * 57.3f;
+    // chassis.spd_input.vy = -chassis_ctrl.vy / 0.375f * 19.0f * 57.3f;
+    // chassis.spd_input.vw = chassis_ctrl.vw / 0.375f * 19.0f * 57.3f * 0.25967f;
+
     chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET;
     chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
     chassis.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
     chassis.angle_dif_degree = chassis.position_error * (360.0f / 8191.0f);
     gimbal.yaw_imu_offset = imu_data.yaw - chassis.angle_dif_degree;
-    chassis.spd_input.vx = chassis_ctrl.vx / 0.375f * 19.0f * 57.3f;
-    chassis.spd_input.vy = -chassis_ctrl.vy / 0.375f * 19.0f * 57.3f;
-    chassis.spd_input.vw = chassis_ctrl.vw / 0.375f * 19.0f * 57.3f * 0.25967f;
+    chassis.spd_input.vx = chassis_ctrl_sub_msg.vx / 0.375f * 19.0f * 57.3f;
+    chassis.spd_input.vy = -chassis_ctrl_sub_msg.vy / 0.375f * 19.0f * 57.3f;
+    chassis.spd_input.vw = chassis_ctrl_sub_msg.vw / 0.375f * 19.0f * 57.3f * 0.25967f;
+    
 }
 
 static void CHASSIS_MODE_FOLL_ROTA_callback(void)
@@ -267,6 +290,7 @@ void chassis_init()
     chassis.msg_send = can1_send_chassis_message;
     chassis.wheel_max = 8000;
 
+    chassis_ctrl_sub = SubRegister("chassis_sub",sizeof(chassis_ctrl_info_t));
     /*模式实例赋值*/
     ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_PROTECT], ChasisInstance_MODE_PROTECT, CHASSIS_MODE_PROTECT_callback);
     ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE], ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE, CHASSIS_MODE_FOLL_ROTA_callback);

@@ -26,7 +26,7 @@ extern void append_CRC8_check_sum(unsigned char *pchMessage, unsigned int dwLeng
 //USB底层发送函数，直接操作硬件
 extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
-chassis_ctrl_info_t chassis_ctrl;
+// chassis_ctrl_info_t chassis_ctrl;
 
 chassis_odom_info_t chassis_odom;
 

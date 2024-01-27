@@ -6,13 +6,14 @@
 #include "fifo.h"
 #include "cmsis_os.h"
 #include "bsp_usart.h"
-
+#include "msg_center.h"
 extern TIM_HandleTypeDef htim5;
 
 
 void decode_task(void const * argument);
 	
- extern chassis_ctrl_info_t chassis_ctrl;//底盘控制
+//  extern chassis_ctrl_info_t chassis_ctrl;//底盘控制
+ static chassis_ctrl_info_t chassis_ctrl;
 
  extern chassis_odom_info_t chassis_odom; //姿态信息
   
@@ -39,17 +40,20 @@ void encode_send_data(uint16_t cmd_id, void* buf, uint16_t len);
 
 frame_header_struct_t decode_receive_header;
 
+static Publisher_t *chassis_ctrl_pub;                   // 用于订阅底盘的控制命令
 
 void decode_task(void const * argument);
 
 //RM协议解析函数，系统自动调用
 void decode_task(void const * argument)
 {
+    chassis_ctrl_pub = PubRegister("chassis_ctrl_pub", sizeof(chassis_ctrl_info_t));
 		uint32_t mode_wake_time = osKernelSysTick();
 //    usb_fifo_init();
     for (;;)
     {
       decode_unpack_fifo_data();
+      PubPushMessage(chassis_ctrl_pub, (void *)&chassis_ctrl);
 			osDelayUntil(&mode_wake_time,2);
 //      osDelay(2);
     }

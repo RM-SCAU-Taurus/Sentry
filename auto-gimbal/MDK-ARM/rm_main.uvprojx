@@ -805,6 +805,11 @@
               <FileType>1</FileType>
               <FilePath>..\app\vision_send_task.c</FilePath>
             </File>
+            <File>
+              <FileName>msg_center.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\communication\msg_center.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

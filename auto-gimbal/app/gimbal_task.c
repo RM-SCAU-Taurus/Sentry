@@ -48,7 +48,7 @@ static void GimbalInstance_Create(GimbalInstance_t *_instance, GimbalInstance_mo
 /**********结构体定义**********/
 gimbal_t gimbal;
 ubf_t gim_msg_ubf; /* 云台姿态历史数据 */
-GimbalInstance_t Gimbal_behavior[3];
+static GimbalInstance_t Gimbal_behavior[3];
 /**********测试变量声明********/
 int8_t choose_pid_flag = 0, goback_flag = 0;
 

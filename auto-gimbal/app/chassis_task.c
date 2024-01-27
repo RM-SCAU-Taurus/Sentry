@@ -6,10 +6,9 @@
 #include "cmsis_os.h"
 #include "usb_task.h"
 #include "shoot_task.h"
-#include "modeswitch_task.h"
+#include "comm_type.h"
 #include "chassis_task.h"
 #include "gimbal_task.h"
-#include "comm_task.h"
 /**********数学库*************/
 #include "math_calcu.h"
 #include "math.h"
@@ -22,6 +21,7 @@
 /**********类型定义库**********/
 #include "control_def.h"
 #include "protocol_camp.h"
+#include "comm_type.h"
 /**********板级支持库**********/
 #include "bsp_T_imu.h"
 #include "bsp_powerlimit.h"
@@ -34,6 +34,7 @@ extern TaskHandle_t can_msg_send_task_t;
 extern chassis_odom_info_t chassis_odom;
 extern Game_Status_t Game_Status;
 chassis_ctrl_info_t chassis_ctrl_sub_msg;
+static ctrl_mode_e ctrl_mode_sys;
 /**********外部函数声明********/
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
 /**********宏定义声明********/
@@ -51,6 +52,7 @@ static void chassis_mode_switch(void);
 
 /**********静态变量声明********/
 static Subscriber_t *chassis_ctrl_sub;                   // 用于订阅底盘的控制命令
+static Subscriber_t *C_ctrl_mode_sub;                   // 用于订阅控制模式的命令
 
 /**********测试变量声明********/
 float state_test;
@@ -125,9 +127,10 @@ static void chassis_mode_switch(void)
 {
     /* 系统历史状态机 */
     static ctrl_mode_e last_ctrl_mode = PROTECT_MODE;
-
+    SubGetMessage(C_ctrl_mode_sub,&ctrl_mode_sys);
+    
     /* 底盘状态机 */
-    switch (ctrl_mode)
+    switch (ctrl_mode_sys)
     {
     case PROTECT_MODE: // 能量模式和保护模式下，底盘行为相同
     {
@@ -153,7 +156,7 @@ static void chassis_mode_switch(void)
         break;
     }
     /* 系统历史状态更新 */
-    last_ctrl_mode = ctrl_mode;
+    last_ctrl_mode = ctrl_mode_sys;
 }
 
 
@@ -184,7 +187,6 @@ static void CHASSIS_MODE_AUTO_callback(void)
     // chassis.spd_input.vx = chassis_ctrl.vx / 0.375f * 19.0f * 57.3f;
     // chassis.spd_input.vy = -chassis_ctrl.vy / 0.375f * 19.0f * 57.3f;
     // chassis.spd_input.vw = chassis_ctrl.vw / 0.375f * 19.0f * 57.3f * 0.25967f;
-
     chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET;
     chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
     chassis.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
@@ -193,7 +195,7 @@ static void CHASSIS_MODE_AUTO_callback(void)
     chassis.spd_input.vx = chassis_ctrl_sub_msg.vx / 0.375f * 19.0f * 57.3f;
     chassis.spd_input.vy = -chassis_ctrl_sub_msg.vy / 0.375f * 19.0f * 57.3f;
     chassis.spd_input.vw = chassis_ctrl_sub_msg.vw / 0.375f * 19.0f * 57.3f * 0.25967f;
-    
+
 }
 
 static void CHASSIS_MODE_FOLL_ROTA_callback(void)
@@ -290,7 +292,8 @@ void chassis_init()
     chassis.msg_send = can1_send_chassis_message;
     chassis.wheel_max = 8000;
 
-    chassis_ctrl_sub = SubRegister("chassis_sub",sizeof(chassis_ctrl_info_t));
+    chassis_ctrl_sub = SubRegister("chassis_ctrl",sizeof(chassis_ctrl_info_t));
+    C_ctrl_mode_sub    = SubRegister("Mode_Switch",sizeof(ctrl_mode_e));
     /*模式实例赋值*/
     ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_PROTECT], ChasisInstance_MODE_PROTECT, CHASSIS_MODE_PROTECT_callback);
     ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE], ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE, CHASSIS_MODE_FOLL_ROTA_callback);

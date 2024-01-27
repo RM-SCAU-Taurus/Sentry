@@ -15,6 +15,7 @@
 /**********数据处理库**********/
 #include "vision_predict.h"
 #include "remote_msg.h"
+#include "msg_center.h"
 /**********类型定义库**********/
 #include "control_def.h"
 /**********板级支持库**********/
@@ -30,8 +31,10 @@
 
 /**********变量声明********/
 uint8_t lock_flag = 0;/* 解锁标志 */
-/**********结构体定义**********/
+static Publisher_t *mode_switch_pub;                   // 用于订阅底盘的控制命令
 ctrl_mode_e ctrl_mode; /* 系统状态机 */
+/**********结构体定义**********/
+
 /**********静态函数声明********/
 static uint8_t rc_normal_check(void);
 static void unlock_init(void);
@@ -42,7 +45,8 @@ static void rc_abnormal_proess(void);
 /* 系统模式切换任务函数 */
  void mode_switch_task(void const *argu)
 {
-		vision.mode = vMODE_AUTO;
+    mode_switch_pub = PubRegister("Mode_Switch",sizeof(ctrl_mode_e));
+	vision.mode = vMODE_AUTO;
     for(;;)
     {
         if( !lock_flag )
@@ -57,6 +61,8 @@ static void rc_abnormal_proess(void);
         {
             rc_abnormal_proess();  //遥控器失联处理
         }
+    
+    PubPushMessage(mode_switch_pub, (void *)&ctrl_mode);
         osDelay(5);
     }
 }

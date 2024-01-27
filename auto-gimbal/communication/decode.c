@@ -47,7 +47,7 @@ void decode_task(void const * argument);
 //RM协议解析函数，系统自动调用
 void decode_task(void const * argument)
 {
-    chassis_ctrl_pub = PubRegister("chassis_ctrl_pub", sizeof(chassis_ctrl_info_t));
+    chassis_ctrl_pub = PubRegister("chassis_ctrl", sizeof(chassis_ctrl_info_t));
 		uint32_t mode_wake_time = osKernelSysTick();
 //    usb_fifo_init();
     for (;;)

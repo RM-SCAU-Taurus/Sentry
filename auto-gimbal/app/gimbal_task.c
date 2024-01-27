@@ -8,7 +8,7 @@
 #include "status_task.h"
 #include "comm_task.h"
 #include "usb_task.h"
-#include "modeswitch_task.h"
+
 /**********数学库*************/
 #include "us_tim.h"
 #include "pid.h"
@@ -20,9 +20,11 @@
 #include "ubf.h"
 #include "DataScope_DP.h"
 #include "remote_msg.h"
+#include "msg_center.h"
 /**********类型定义库**********/
 #include "protocol_camp.h"
 #include "control_def.h"
+#include "comm_type.h"
 /**********板级支持库**********/
 #include "bsp_T_imu.h"
 #include "bsp_can.h"
@@ -49,6 +51,8 @@ static void GimbalInstance_Create(GimbalInstance_t *_instance, GimbalInstance_mo
 gimbal_t gimbal;
 ubf_t gim_msg_ubf; /* 云台姿态历史数据 */
 static GimbalInstance_t Gimbal_behavior[3];
+static ctrl_mode_e ctrl_mode_sys;
+static Subscriber_t *G_ctrl_mode_sub;                   // 用于订阅控制模式的命令
 /**********测试变量声明********/
 int8_t choose_pid_flag = 0, goback_flag = 0;
 
@@ -74,6 +78,7 @@ void gimbal_param_init(void)
     scale.ch1 = RC_CH1_SCALE;
     scale.ch2 = RC_CH2_SCALE;
 
+    G_ctrl_mode_sub = SubRegister("Mode_Switch",sizeof(ctrl_mode_e));
     GimbalInstance_Create(&Gimbal_behavior[GimbalInstance_MODE_PROTECT], GimbalInstance_MODE_PROTECT, Gimbal_MODE_PROTECT_callback);
     GimbalInstance_Create(&Gimbal_behavior[GimbalInstance_MODE_REMOTER], GimbalInstance_MODE_REMOTER, Gimbal_MODE_REMOTER_callback);
     GimbalInstance_Create(&Gimbal_behavior[GimbalInstance_MODE_AUTO], GimbalInstance_MODE_AUTO, Gimbal_MODE_AUTO_callback);
@@ -107,8 +112,8 @@ void gimbal_task(void const *argu)
     for (;;)
     {
         taskENTER_CRITICAL();
-
-        switch (ctrl_mode)
+        SubGetMessage(G_ctrl_mode_sub,&ctrl_mode_sys);
+        switch (ctrl_mode_sys)
         {
         case PROTECT_MODE:
         {

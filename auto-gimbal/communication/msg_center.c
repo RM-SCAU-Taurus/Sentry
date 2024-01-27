@@ -26,7 +26,7 @@ static void CheckLen(uint8_t len1, uint8_t len2)
 
 Publisher_t *PubRegister(char *name, uint8_t data_len)
 {
-    CheckName(name);
+    //    CheckName(name);
     Publisher_t *node = &message_center;
     while (node->next_topic_node) // message_center会直接跳过,不需要特殊处理,这被称作dumb_head(编程技巧)
     {

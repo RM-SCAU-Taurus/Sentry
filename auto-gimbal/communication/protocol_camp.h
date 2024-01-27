@@ -72,7 +72,7 @@ typedef struct
   float vw;
 	uint8_t super_cup;
 	
-}  chassis_ctrl_info_t;
+}chassis_ctrl_info_t;
 
 // chassis odom feedback message
 typedef struct

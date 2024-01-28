@@ -44,16 +44,17 @@ static void ChasisInstance_Create(ChasisInstance_t *_instance, ChasisInstance_mo
 static void CHASSIS_MODE_PROTECT_callback(void);
 static void CHASSIS_MODE_FOLL_ROTA_callback(void);
 static void CHASSIS_MODE_AUTO_callback(void);
-static void ChassisOdom_calc(void);
+static void Chassis_odom_calc(void);
 static void Chassis_queue_send(void);
 static void ROTATE_State_Check(void);
 static void chassis_mode_switch(void);
-
+static void Gimbal_to_Chassis_input(Gimbal_to_Chassis_t *str);
 
 /**********静态变量声明********/
+static Gimbal_to_Chassis_t Gimbal_to_Chassis;
 static Subscriber_t *chassis_ctrl_sub;                   // 用于订阅底盘的控制命令
 static Subscriber_t *C_ctrl_mode_sub;                   // 用于订阅控制模式的命令
-
+static Publisher_t  *chassis_ctrl_send_pub;                   // 用于订阅底盘的控制命令
 /**********测试变量声明********/
 float state_test;
 unsigned portBASE_TYPE uxHighWaterMark_chassis;
@@ -103,9 +104,13 @@ void chassis_task(void const *argu)
         }
 
         /* 里程计 数据计算 */
-        ChassisOdom_calc();
+        Chassis_odom_calc();
         /* 里程计&裁判系统 数据入列 */
         Chassis_queue_send();
+        /* Gimbal_to_Chassis 数据入列 */
+        Gimbal_to_Chassis_input(&Gimbal_to_Chassis);
+        PubPushMessage(chassis_ctrl_send_pub, (void *)&Gimbal_to_Chassis);
+
         /* 任务通知 */
         osSignalSet(can_msg_send_task_t, CHASSIS_MOTOR_MSG_SEND);
         // uxHighWaterMark_chassis = uxTaskGetStackHighWaterMark(NULL);
@@ -230,7 +235,7 @@ static void CHASSIS_MODE_FOLL_ROTA_callback(void)
     }
 }
 
-static void ChassisOdom_calc(void)
+static void Chassis_odom_calc(void)
 {
     chassis.odom.x += chassis.spd_fdb.vx * 0.001f;
     chassis.odom.y += chassis.spd_fdb.vy * 0.001f;
@@ -251,6 +256,15 @@ static void Chassis_queue_send(void)
 {
     rm_queue_data(CHASSIS_ODOM_FDB_ID, &chassis_odom, sizeof(chassis_odom));
     rm_queue_data(GAME_STATUS_FDB_ID, &Game_Status, sizeof(Game_Status)); // 两个入队列的发送函数要在同一个任务用，原因未知。有入队函数的任务不能有taskEXIT_CRITICAL()保护;
+}
+
+static void Gimbal_to_Chassis_input(Gimbal_to_Chassis_t *str)
+{
+    str->spd_input.vx = chassis.spd_input.vx ;
+    str->spd_input.vy = chassis.spd_input.vy ;
+    str->spd_input.vw = chassis.spd_input.vw ;
+    str->ctrl_mode_sys= ctrl_mode_sys;
+    str->spin_dir     = chassis.spin_dir;
 }
 
 static void ROTATE_State_Check(void)
@@ -292,6 +306,7 @@ void chassis_init()
     chassis.msg_send = can1_send_chassis_message;
     chassis.wheel_max = 8000;
 
+    chassis_ctrl_send_pub = PubRegister("Chassis_spd_send",sizeof(Gimbal_to_Chassis_t));
     chassis_ctrl_sub = SubRegister("chassis_ctrl",sizeof(chassis_ctrl_info_t));
     C_ctrl_mode_sub    = SubRegister("Mode_Switch",sizeof(ctrl_mode_e));
     /*模式实例赋值*/

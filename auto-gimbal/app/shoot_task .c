@@ -15,6 +15,7 @@
 /**********类型定义库**********/
 #include "control_def.h"
 #include "protocol_camp.h"
+#include "msg_center.h"
 /**********板级支持库**********/
 #include "bsp_CoverServo.h"
 #include "bsp_FricMotor.h"
@@ -33,7 +34,9 @@ static void shoot_mode_sw(void);
 fric_t fric;
 shoot_t shoot;
 /**********变量声明*************/
+static ctrl_mode_e ctrl_mode_sys;
 
+static Subscriber_t *Shoot_ctrl_mode_sub;                   
 /**********测试变量声明********/
 int flag = 0;
 int cnt = 0;
@@ -76,6 +79,8 @@ void shoot_init(void)
     shoot.barrel.cooling_rate = 25;
     shoot.barrel.heat_max = 240;
     shoot.shoot_speed = 30;
+
+    Shoot_ctrl_mode_sub = SubRegister("Mode_Switch",sizeof(ctrl_mode_e));
 }
 
 static void shoot_mode_sw(void)
@@ -83,6 +88,7 @@ static void shoot_mode_sw(void)
     /* 系统历史状态机 */
     static ctrl_mode_e last_ctrl_mode = PROTECT_MODE;
 
+    SubGetMessage(Shoot_ctrl_mode_sub,&ctrl_mode_sys);
     /* 更新裁判系统参数 */
 
     ShootParam_Update();
@@ -104,7 +110,7 @@ static void shoot_mode_sw(void)
     }
 
     /* 模式切换 */
-    switch (ctrl_mode)
+    switch (ctrl_mode_sys)
     {
     case PROTECT_MODE:
     {
@@ -172,7 +178,7 @@ static void shoot_mode_sw(void)
         break;
     }
     /* 历史状态更新 */
-    last_ctrl_mode = ctrl_mode;
+    last_ctrl_mode = ctrl_mode_sys;
 }
 
 /* 发射器裁判系统数据更新 */

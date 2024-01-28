@@ -15,6 +15,8 @@
 #include "status_task.h"
 #include "protocol_camp.h"
 #include "vision_predict.h"
+#include "comm_type.h"
+#include "msg_center.h"
 extern shoot_t shoot;
 extern vision_ctrl_info_t vision_ctrl; // 自动步兵控制
 static void TriggerMotor_pidcal(void);
@@ -22,12 +24,22 @@ static void TriggerMotor_pidcal(void);
 extern TaskHandle_t can_msg_send_task_t;
 uint8_t shoot_enable_flag = 0;
 int shoot_number = 0;
+
+/// @brief 
+/// @param  
+
+static ctrl_mode_e ctrl_mode_sys;
+static Subscriber_t *Tri_ctrl_mode_sub;                   // 用于订阅底盘的控制命令
+
+
 void TriggerMotor_init(void)
 {
     PID_struct_init(&pid_trigger_ecd, POSITION_PID, 6800, 0,
                     PID_TRIGGER_ECD_P, PID_TRIGGER_ECD_I, PID_TRIGGER_ECD_D);
     PID_struct_init(&pid_trigger_spd, POSITION_PID, 10000, 5500,
                     PID_TRIGGER_SPD_P, PID_TRIGGER_SPD_I, PID_TRIGGER_SPD_D);
+
+    Tri_ctrl_mode_sub = SubRegister("Mode_Switch",sizeof(ctrl_mode_e));
 }
 
 static void TriggerMotor_pidcal(void)
@@ -50,6 +62,7 @@ void TriggerMotor_control(void)
     static uint8_t shoot_enable = 1;             // 打能量机关单发使能标志
     static uint32_t shoot_time, shoot_last_time; // 计算射击周期
 
+    SubGetMessage(Tri_ctrl_mode_sub,&ctrl_mode_sys);
     switch (shoot.stir_mode)
     {
     case STIR_MODE_PROTECT: // 拨盘保护模式，保持惯性，无力
@@ -80,8 +93,8 @@ void TriggerMotor_control(void)
         shoot.barrel.pid.trigger_ecd_error = shoot.barrel.pid.trigger_ecd_ref - shoot.barrel.pid.trigger_ecd_fdb;
         if (STIR_MODE_SINGLE == shoot.stir_mode) // 拨盘单发模式
         {
-            if ((rc.mouse.l == 0 && ctrl_mode == AUTO_MODE) ||
-                (rc.ch5 == 0 && ctrl_mode == REMOTER_MODE))
+            if ((rc.mouse.l == 0 && ctrl_mode_sys == AUTO_MODE) ||
+                (rc.ch5 == 0 && ctrl_mode_sys == REMOTER_MODE))
                 shoot_enable = 1;
             if (shoot_enable && (rc.mouse.l || rc.ch5 == 660) && ABS(shoot.barrel.pid.trigger_ecd_error) < 0.2f * TRIGGER_MOTOR_ECD)
             {
@@ -94,8 +107,8 @@ void TriggerMotor_control(void)
         {
 
             if (
-                (ctrl_mode == REMOTER_MODE ||
-                 (ctrl_mode == AUTO_MODE && vision.shoot_enable)) &&
+                (ctrl_mode_sys == REMOTER_MODE ||
+                 (ctrl_mode_sys == AUTO_MODE && vision.shoot_enable)) &&
                 frequency_cnt * SHOOT_PERIOD >= shoot.trigger_period                  // 射频控制等够了时间才发一颗
                 && ABS(shoot.barrel.pid.trigger_ecd_error) < 0.8f * TRIGGER_MOTOR_ECD // 拨盘误差控制
                 && shoot.barrel.heat_remain >= MIN_HEAT                               // 热量控制
@@ -110,7 +123,7 @@ void TriggerMotor_control(void)
                 shoot.barrel.shoot_period = shoot_time - shoot_last_time;
                 shoot_last_time = shoot_time;
             }
-            if ((ctrl_mode == AUTO_MODE && !vision.shoot_enable) || shoot.barrel.heat_remain < MIN_HEAT)
+            if ((ctrl_mode_sys == AUTO_MODE && !vision.shoot_enable) || shoot.barrel.heat_remain < MIN_HEAT)
             {
                 shoot.barrel.pid.trigger_ecd_ref = motor_trigger.total_ecd;
                 pid_trigger_spd.iout = 0;

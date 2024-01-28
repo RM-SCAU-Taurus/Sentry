@@ -1,5 +1,38 @@
 {
-  
+  {
+    "doxdocgen.generic.linesToGet": 2,
+    "doxdocgen.generic.authorName": "xxx",
+    "doxdocgen.generic.authorEmail": "xxx@xxx.com",
+    "doxdocgen.generic.useGitUserEmail": true,
+    "doxdocgen.generic.useGitUserName": true,
+    "doxdocgen.generic.authorTag": "@author{indent:12} {author} ({email})",
+    "doxdocgen.file.fileTemplate": "@file{indent:12} {name}",
+    "doxdocgen.file.versionTag": "@version{indent:12} 0.1",
+    "doxdocgen.file.copyrightTag": ["@copyright{indent:12} Taurus"],
+    "doxdocgen.file.customTag": ["*****************************************************************************"],
+    "doxdocgen.generic.briefTemplate": "@brief{indent:12} {text}",
+    "doxdocgen.generic.dateTemplate": "@date{indent:12} {date}",
+    "doxdocgen.generic.paramTemplate": "@param{indent:12} {param} ",
+    "doxdocgen.generic.returnTemplate": "@return{indent:12} {type} ",
+    "doxdocgen.file.fileOrder": [
+    "custom",
+    "file",
+    "brief",
+    "author",
+    "date",
+    "copyright",
+    "custom"
+       ],
+    "doxdocgen.generic.order": [
+    "brief",
+    "empty",
+    "tparam",
+    "param",
+    "return",
+    "custom"
+       ]
+   }
+   
   {
     "background.enabled": true
   } 

@@ -20,12 +20,14 @@
 #define __CHASSIS_TASK_H__
 
 #include "stm32f4xx_hal.h"
+#include "comm_type.h"
+
 
 #define CHASSIS_WZ_SET_SCALE	0.0f //底盘速度自旋补偿值
 #define M3508_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f		//m3508转化成底盘速度(m/s)的比例
 
 // 底盘模式回调函数,用于解析协议
-typedef void (*chassis_mode_callback)();
+typedef void (*chassis_mode_callback)(void);
 
 
 typedef enum 
@@ -60,7 +62,14 @@ typedef struct
     float vx;
     float vy;
     float vw;
+    int8_t    spin_dir;      //小陀螺方向
 } spd_t;
+
+
+
+
+
+
 typedef struct
 {
     /* data */

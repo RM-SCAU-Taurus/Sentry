@@ -11,7 +11,7 @@
 #include "pid.h"
 #include "ubf.h"
 
-typedef void (*gimbal_mode_callback)();
+typedef void (*gimbal_mode_callback)(void);
 
 typedef struct
 {

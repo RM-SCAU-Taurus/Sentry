@@ -46,7 +46,7 @@ static void rc_abnormal_proess(void);
  void mode_switch_task(void const *argu)
 {
     mode_switch_pub = PubRegister("Mode_Switch",sizeof(ctrl_mode_e));
-	vision.mode = vMODE_AUTO;
+		vision.mode = vMODE_AUTO;
     for(;;)
     {
         if( !lock_flag )

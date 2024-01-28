@@ -20,7 +20,7 @@ static void CheckLen(uint8_t len1, uint8_t len2)
     if (len1 != len2)
     {
         while (1)
-            ; // 进入这里说明相同话题的消息长度却不同
+            ; // 进入这里说明相同话题的收发消息长度却不同
     }
 }
 

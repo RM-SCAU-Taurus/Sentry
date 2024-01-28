@@ -24,29 +24,39 @@
 #include "us_tim.h"
 #include "vision_predict.h"
 #include "vision_send_task.h"
+
+#include "protocol_camp.h"
+#include "msg_center.h"
+#include "comm_type.h"
+
+
 extern chassis_odom_info_t chassis_odom;
 
-void vision_send_task(void const *argu) {
+void vision_send_task(void const *argu)
+{
     uint32_t thread_wake_time = osKernelSysTick();
-    for(;;) {
+    for (;;)
+    {
         taskENTER_CRITICAL();
-        
-			/*采样陀螺仪数据*/
-		     gim_msg_t temp_gim_msg = {
-            .pit = moto_pit.ecd, //电控侧PIT角度相位匹配要用编码值
+
+        /*采样陀螺仪数据*/
+        gim_msg_t temp_gim_msg = {
+            .pit = moto_pit.ecd, // 电控侧PIT角度相位匹配要用编码值
             .yaw = imu_data.yaw,
-            .wy  = imu_data.wy,
-            .wz  = imu_data.wz,
+            .wy = imu_data.wy,
+            .wz = imu_data.wz,
         };
-        ubf_push(gim_msg_ubf, &temp_gim_msg);//相位匹配入列
-				/*视觉云台信息*/
-				chassis_odom.gimbal_pitch_imu    = imu_data.pitch;           //单位：° 视觉侧PIT角度重力补偿要用IMU
-        chassis_odom.gimbal_yaw_imu     = imu_data.yaw;             //单位：°
-        chassis_odom.gimbal_pitch_rate_imu  = -imu_data.wy / 16.3835f;  //单位：°/s
-        chassis_odom.gimbal_yaw_rate_imu = imu_data.wz / 16.3835f;   //单位：°/s
+        ubf_push(gim_msg_ubf, &temp_gim_msg); // 相位匹配入列
+        /*视觉云台信息*/
+
+        chassis_odom.gimbal_pitch_imu = imu_data.pitch;               // 单位：° 视觉侧PIT角度重力补偿要用IMU
+        chassis_odom.gimbal_yaw_imu = imu_data.yaw;                   // 单位：°
+        chassis_odom.gimbal_pitch_rate_imu = -imu_data.wy / 16.3835f; // 单位：°/s
+        chassis_odom.gimbal_yaw_rate_imu = imu_data.wz / 16.3835f;    // 单位：°/s
+
         taskEXIT_CRITICAL();
-        
+
         /* 绝对1ms发送周期 */
-        osDelayUntil(&thread_wake_time, 1); 
+        osDelayUntil(&thread_wake_time, 1);
     }
 }

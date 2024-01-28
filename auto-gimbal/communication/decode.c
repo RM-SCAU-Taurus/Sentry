@@ -49,7 +49,6 @@ void decode_task(void const * argument)
 {
     chassis_ctrl_pub = PubRegister("chassis_ctrl", sizeof(chassis_ctrl_info_t));
 		uint32_t mode_wake_time = osKernelSysTick();
-//    usb_fifo_init();
     for (;;)
     {
       decode_unpack_fifo_data();

@@ -2,9 +2,7 @@
 /* USER CODE BEGIN */
 #include "gimbal_to_chassis_task.h"
 #include "cmsis_os.h"
-#include "func_generator.h"
 #include "comm_task.h"
-//#include "chassis_task.h"
 /* USER CODE END */
 
 /* C库 ---------------------------------------------------------------------------*/
@@ -57,7 +55,7 @@
 
 /* 静态函数声明 ------------------------------------------------------------------*/
 /* USER CODE BEGIN */
-
+static void gimbal_to_chassic_init(void);
 /* USER CODE END */
 
 /* 宏定义声明 --------------------------------------------------------------------*/
@@ -72,7 +70,11 @@
 
 /* 变量声明 ----------------------------------------------------------------------*/
 /* USER CODE BEGIN */
+static Gimbal_to_Chassis_t Gimbal_to_Chassis;
 
+static Subscriber_t *chassis_ctrl_send_sub; // 用于订阅底盘的发送命令
+
+static Gim_to_Cha_send_t Gim_to_Cha_send;
 /* USER CODE END */
 
 /* 测试变量声明 ------------------------------------------------------------------*/
@@ -80,16 +82,6 @@
 
 /* USER CODE END */
 
-
-static Gimbal_to_Chassis_t Gimbal_to_Chassis;
-// extern chassis_ctrl_info_t chassis_ctrl;
-extern chassis_ctrl_info_t chassis_ctrl_sub_msg;
-
-static void gimbal_to_chassic_init(void);
-
-static Subscriber_t *chassis_ctrl_send_sub; // 用于订阅底盘的发送命令
-
-Gim_to_Cha_send_t Gim_to_Cha_send;
 
 void gimbal_to_chassic_task(void const *argu) // 发给底盘
 {
@@ -106,7 +98,7 @@ void gimbal_to_chassic_task(void const *argu) // 发给底盘
 		}
 		if (Gimbal_to_Chassis.ctrl_mode_sys == AUTO_MODE)
 		{
-			Gim_to_Cha_send.Send_ctrl_callback(CHASSIS_CTRL_CAN_TX_ID, Gimbal_to_Chassis.spd_input.vx, Gimbal_to_Chassis.spd_input.vy, Gimbal_to_Chassis.spd_input.vw, 0x02, chassis_ctrl_sub_msg.super_cup);
+			Gim_to_Cha_send.Send_ctrl_callback(CHASSIS_CTRL_CAN_TX_ID, Gimbal_to_Chassis.spd_input.vx, Gimbal_to_Chassis.spd_input.vy, Gimbal_to_Chassis.spd_input.vw, 0x02,Gimbal_to_Chassis.super_cup);
 			Gim_to_Cha_send.Send_judge_callback(0x09, &hcan1);
 		}
 		else if (Gimbal_to_Chassis.ctrl_mode_sys == REMOTER_MODE)

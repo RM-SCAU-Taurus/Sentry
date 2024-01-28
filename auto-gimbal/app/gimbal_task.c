@@ -4,11 +4,9 @@
 #include "usart.h"
 /**********任务库*************/
 #include "gimbal_task.h"
-#include "chassis_task.h"
 #include "status_task.h"
 #include "comm_task.h"
 #include "usb_task.h"
-
 /**********数学库*************/
 #include "us_tim.h"
 #include "pid.h"
@@ -33,6 +31,7 @@
 extern TaskHandle_t can_msg_send_task_t;
 extern vision_ctrl_info_t vision_ctrl; // 自动步兵控制
 extern chassis_odom_info_t chassis_odom;
+extern chassis_odom_info_t chassis_odom;
 extern Game_Status_t Game_Status;
 /**********外部函数声明********/
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
@@ -50,6 +49,8 @@ static void GimbalInstance_Create(GimbalInstance_t *_instance, GimbalInstance_mo
 /**********结构体定义**********/
 gimbal_t gimbal;
 ubf_t gim_msg_ubf; /* 云台姿态历史数据 */
+/**********外部变量定义********/
+
 static GimbalInstance_t Gimbal_behavior[3];
 static ctrl_mode_e ctrl_mode_sys;
 static Subscriber_t *G_ctrl_mode_sub;                   // 用于订阅控制模式的命令

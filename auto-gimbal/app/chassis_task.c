@@ -33,7 +33,7 @@ extern TaskHandle_t can_msg_send_task_t;
 
 extern chassis_odom_info_t chassis_odom;
 extern Game_Status_t Game_Status;
-chassis_ctrl_info_t chassis_ctrl_sub_msg;
+static chassis_ctrl_info_t chassis_ctrl_sub_msg;
 static ctrl_mode_e ctrl_mode_sys;
 /**********外部函数声明********/
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
@@ -61,10 +61,6 @@ unsigned portBASE_TYPE uxHighWaterMark_chassis;
 /**********结构体定义**********/
 chassis_t chassis;
 ChasisInstance_t Chasis_behavior[3];
-
-
-
-
 
 /**********函数定义************/
 
@@ -265,6 +261,8 @@ static void Gimbal_to_Chassis_input(Gimbal_to_Chassis_t *str)
     str->spd_input.vw = chassis.spd_input.vw ;
     str->ctrl_mode_sys= ctrl_mode_sys;
     str->spin_dir     = chassis.spin_dir;
+    str->super_cup    = chassis_ctrl_sub_msg.super_cup;
+    
 }
 
 static void ROTATE_State_Check(void)

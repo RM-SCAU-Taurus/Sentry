@@ -31,6 +31,7 @@ typedef struct
   ctrl_mode_e ctrl_mode_sys;
   spd_comm_t     spd_input;
   int8_t    spin_dir;      //小陀螺方向
+  uint8_t super_cup;
 }Gimbal_to_Chassis_t;
 
 #endif

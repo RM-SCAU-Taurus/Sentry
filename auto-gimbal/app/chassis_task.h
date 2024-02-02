@@ -26,8 +26,10 @@
 #define CHASSIS_WZ_SET_SCALE	0.0f //底盘速度自旋补偿值
 #define M3508_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f		//m3508转化成底盘速度(m/s)的比例
 
+
+
 // 底盘模式回调函数,用于解析协议
-typedef void (*chassis_mode_callback)(void);
+typedef void (*chassis_mode_callback)();
 
 
 typedef enum 
@@ -65,11 +67,6 @@ typedef struct
     int8_t    spin_dir;      //小陀螺方向
 } spd_t;
 
-
-
-
-
-
 typedef struct
 {
     /* data */
@@ -102,6 +99,47 @@ typedef struct
     void (*msg_handle)(uint32_t can_id,uint8_t * data);
     void (*msg_send)(int16_t ID, int16_t iq1, int16_t iq2, int16_t iq3, uint8_t iq4,uint8_t iq5);
 } chassis_t;
+
+
+/*******************OOP*********************************/
+//父类
+typedef struct
+{
+    chassis_mode_callback c_Fun;
+}Chassis_Base;
+
+//子类
+typedef struct 
+{
+    Chassis_Base Base;
+}Chassis_Derived;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*******************OOP*********************************/
+
+
 
 extern chassis_t chassis;
 void chassis_task(void const *argu);

@@ -47,7 +47,8 @@ static void CHASSIS_MODE_AUTO_callback(void);
 static void Chassis_odom_calc(void);
 static void Chassis_queue_send(void);
 static void ROTATE_State_Check(void);
-static void chassis_mode_switch(void);
+// static void chassis_mode_switch(void);
+static Chassis_Base*  chassis_mode_switch(void);
 static void Gimbal_to_Chassis_input(Gimbal_to_Chassis_t *str);
 
 /**********静态变量声明********/
@@ -62,6 +63,11 @@ unsigned portBASE_TYPE uxHighWaterMark_chassis;
 chassis_t chassis;
 ChasisInstance_t Chasis_behavior[3];
 
+Chassis_Derived Drv_PROTECT;
+Chassis_Derived Drv_REMOTER;
+Chassis_Derived Drv_AUTO;
+
+
 /**********函数定义************/
 
 /**
@@ -72,32 +78,14 @@ ChasisInstance_t Chasis_behavior[3];
  */
 void chassis_task(void const *argu)
 {
-    uint32_t mode_wake_time = osKernelSysTick();
+   uint32_t mode_wake_time = osKernelSysTick();
+    static Chassis_Base* p= NULL;
     for (;;)
     {
-        chassis_mode_switch();
+        p = chassis_mode_switch();
         SubGetMessage(chassis_ctrl_sub,&chassis_ctrl_sub_msg);
-        switch (chassis.mode)
-        {
-        case CHASSIS_MODE_PROTECT: // 底盘保护模式
-        {
-            Chasis_behavior[CHASSIS_MODE_PROTECT].mode_callback();
-        }
-        break;
-        case CHASSIS_MODE_REMOTER_FOLLOW: // 底盘遥控跟随模式
-        case CHASSIS_MODE_REMOTER_ROTATE: // 底盘遥控陀螺模式
-        {
-            Chasis_behavior[CHASSIS_MODE_REMOTER_FOLLOW].mode_callback();
-        }
-        break;
-        case CHASSIS_MODE_AUTO:
-        {
-            Chasis_behavior[CHASSIS_MODE_AUTO].mode_callback();
-        }
-        break;
-        default:
-            break;
-        }
+        
+        p->c_Fun();
 
         /* 里程计 数据计算 */
         Chassis_odom_calc();
@@ -124,13 +112,14 @@ void chassis_task(void const *argu)
 
 
 /* --------------------------------------------静态函数定义-------------------------------------------------------------------------------- */
-static void chassis_mode_switch(void)
+
+/*  static void chassis_mode_switch(void)
 {
-    /* 系统历史状态机 */
+  
     static ctrl_mode_e last_ctrl_mode = PROTECT_MODE;
     SubGetMessage(C_ctrl_mode_sub,&ctrl_mode_sys);
     
-    /* 底盘状态机 */
+    
     switch (ctrl_mode_sys)
     {
     case PROTECT_MODE: // 能量模式和保护模式下，底盘行为相同
@@ -142,7 +131,7 @@ static void chassis_mode_switch(void)
     {
         if (last_ctrl_mode != REMOTER_MODE) // 切入遥控模式，初始化底盘模式
             chassis.mode = CHASSIS_MODE_REMOTER_FOLLOW;
-        /* 底盘小陀螺模式 */
+       
         ROTATE_State_Check();
     }
     break;
@@ -156,8 +145,49 @@ static void chassis_mode_switch(void)
     default:
         break;
     }
+ 
+    last_ctrl_mode = ctrl_mode_sys;
+}*/
+
+
+
+static Chassis_Base*  chassis_mode_switch(void)
+{
+    /* 系统历史状态机 */
+    static ctrl_mode_e last_ctrl_mode = PROTECT_MODE;
+    SubGetMessage(C_ctrl_mode_sub,&ctrl_mode_sys);
+    static Chassis_Base* p_re= NULL;
+    /* 底盘状态机 */
+    switch (ctrl_mode_sys)
+    {
+    case PROTECT_MODE: // 能量模式和保护模式下，底盘行为相同
+    {
+        p_re = (Chassis_Base *)&Drv_PROTECT;
+    }
+    break;
+    case REMOTER_MODE:
+    {
+        if (last_ctrl_mode != REMOTER_MODE) // 切入遥控模式，初始化底盘模式
+            chassis.mode = CHASSIS_MODE_REMOTER_FOLLOW;
+        /* 底盘小陀螺模式 */
+        ROTATE_State_Check();
+         p_re = (Chassis_Base *)&Drv_REMOTER;
+    }
+    break;
+    case AUTO_MODE:
+    {
+        if (last_ctrl_mode != AUTO_MODE)
+            // memset(&chassis_ctrl, 0, sizeof(chassis_ctrl_info_t));//清除上一帧数据
+            memset(&chassis_ctrl_sub_msg, 0, sizeof(chassis_ctrl_info_t));//清除上一帧数据
+        chassis.mode = CHASSIS_MODE_AUTO;
+         p_re = (Chassis_Base *)&Drv_AUTO;
+    }
+    default:
+        break;
+    }
     /* 系统历史状态更新 */
     last_ctrl_mode = ctrl_mode_sys;
+    return p_re;
 }
 
 
@@ -308,9 +338,13 @@ void chassis_init()
     chassis_ctrl_sub = SubRegister("chassis_ctrl",sizeof(chassis_ctrl_info_t));
     C_ctrl_mode_sub    = SubRegister("Mode_Switch",sizeof(ctrl_mode_e));
     /*模式实例赋值*/
-    ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_PROTECT], ChasisInstance_MODE_PROTECT, CHASSIS_MODE_PROTECT_callback);
+  /*  ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_PROTECT], ChasisInstance_MODE_PROTECT, CHASSIS_MODE_PROTECT_callback);
     ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE], ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE, CHASSIS_MODE_FOLL_ROTA_callback);
     ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_AUTO], ChasisInstance_MODE_AUTO, CHASSIS_MODE_AUTO_callback);
+    */
+   Drv_PROTECT.Base.c_Fun = CHASSIS_MODE_PROTECT_callback;
+   Drv_REMOTER.Base.c_Fun = CHASSIS_MODE_FOLL_ROTA_callback;
+   Drv_AUTO.Base.c_Fun    = CHASSIS_MODE_AUTO_callback;
 }
 
 /**

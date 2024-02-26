@@ -166,7 +166,7 @@ static Chassis_Base *chassis_mode_switch(void)
     {
         if (last_ctrl_mode != AUTO_MODE)
             // memset(&chassis_ctrl, 0, sizeof(chassis_ctrl_info_t));//清除上一帧数据
-            memset(&chassis_ctrl_sub_msg, 0, sizeof(chassis_ctrl_info_t)); // 清除上一帧数据
+        memset(&chassis_ctrl_sub_msg, 0, sizeof(chassis_ctrl_info_t)); // 清除上一帧数据
         chassis.mode = CHASSIS_MODE_AUTO;
         p_re = (Chassis_Base *)&Drv_AUTO;
     }

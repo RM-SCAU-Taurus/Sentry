@@ -17,7 +17,7 @@
 
 #define MAX_TOPIC_NAME_LEN 32 // 最大的话题名长度,每个话题都有字符串来命名
 #define MAX_TOPIC_COUNT 12    // 最多支持的话题数量
-#define QUEUE_SIZE 1
+#define QUEUE_SIZE 3
 
 typedef struct mqt
 {

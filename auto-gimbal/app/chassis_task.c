@@ -36,21 +36,22 @@ extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
 /**********宏定义声明********/
 
 /**********静态函数声明********/
-static void ChasisInstance_Create(ChasisInstance_t *_instance, ChasisInstance_mode_e mode_sel, chassis_mode_callback callback);
 static void CHASSIS_MODE_PROTECT_callback(void);
 static void CHASSIS_MODE_FOLL_ROTA_callback(void);
 static void CHASSIS_MODE_AUTO_callback(void);
 static void ChassisOdom_calc(void);
 static void Chassis_queue_send(void);
 static void ROTATE_State_Check(void);
-static void chassis_mode_switch(void);
-
+static Chassis_Base *chassis_mode_switch(void);
 /**********测试变量声明********/
-float state_test;
-unsigned portBASE_TYPE uxHighWaterMark_chassis;
+
 /**********结构体定义**********/
 chassis_t chassis;
-ChasisInstance_t Chasis_behavior[3];
+// ChasisInstance_t Chasis_behavior[3];
+
+Chassis_Derived Drv_PROTECT;
+Chassis_Derived Drv_REMOTER;
+Chassis_Derived Drv_AUTO;
 
 /**********函数定义************/
 
@@ -63,31 +64,12 @@ ChasisInstance_t Chasis_behavior[3];
 void chassis_task(void const *argu)
 {
     uint32_t mode_wake_time = osKernelSysTick();
+    static Chassis_Base *Action_ptr = NULL;
     for (;;)
     {
-        chassis_mode_switch();
-        switch (chassis.mode)
-        {
-        case CHASSIS_MODE_PROTECT: // 底盘保护模式
-        {
-            Chasis_behavior[CHASSIS_MODE_PROTECT].mode_callback();
-        }
-        break;
-        case CHASSIS_MODE_REMOTER_FOLLOW: // 底盘遥控跟随模式
-        case CHASSIS_MODE_REMOTER_ROTATE: // 底盘遥控陀螺模式
-        {
-            Chasis_behavior[CHASSIS_MODE_REMOTER_FOLLOW].mode_callback();
-        }
-        break;
-        case CHASSIS_MODE_AUTO:
-        {
-            Chasis_behavior[CHASSIS_MODE_AUTO].mode_callback();
-        }
-        break;
-        default:
-            break;
-        }
+        Action_ptr = chassis_mode_switch();
 
+        Action_ptr->c_Fun();
         /* 里程计 数据计算 */
         ChassisOdom_calc();
         /* 里程计&裁判系统 数据入列 */
@@ -109,17 +91,18 @@ void chassis_task(void const *argu)
 
 
 /* --------------------------------------------静态函数定义-------------------------------------------------------------------------------- */
-static void chassis_mode_switch(void)
+static Chassis_Base *chassis_mode_switch(void)
 {
     /* 系统历史状态机 */
     static ctrl_mode_e last_ctrl_mode = PROTECT_MODE;
-
+    static Chassis_Base *p_re = NULL;
     /* 底盘状态机 */
     switch (ctrl_mode)
     {
     case PROTECT_MODE: // 能量模式和保护模式下，底盘行为相同
     {
         chassis.mode = CHASSIS_MODE_PROTECT;
+         p_re = (Chassis_Base *)&Drv_PROTECT;
     }
     break;
     case REMOTER_MODE:
@@ -128,6 +111,7 @@ static void chassis_mode_switch(void)
             chassis.mode = CHASSIS_MODE_REMOTER_FOLLOW;
         /* 底盘小陀螺模式 */
         ROTATE_State_Check();
+        p_re = (Chassis_Base *)&Drv_REMOTER;
     }
     break;
     case AUTO_MODE:
@@ -135,20 +119,16 @@ static void chassis_mode_switch(void)
         if (last_ctrl_mode != AUTO_MODE)
             memset(&chassis_ctrl, 0, sizeof(chassis_ctrl_info_t));//清除上一帧数据
         chassis.mode = CHASSIS_MODE_AUTO;
+        p_re = (Chassis_Base *)&Drv_AUTO;
     }
     default:
         break;
     }
     /* 系统历史状态更新 */
     last_ctrl_mode = ctrl_mode;
+    return p_re;
 }
 
-
-static void ChasisInstance_Create(ChasisInstance_t *_instance, ChasisInstance_mode_e mode_sel, chassis_mode_callback callback)
-{
-    _instance->Chassis_Mode = mode_sel;
-    _instance->mode_callback = callback;
-}
 
 static void CHASSIS_MODE_PROTECT_callback(void)
 {
@@ -268,9 +248,13 @@ void chassis_init()
     chassis.wheel_max = 8000;
 
     /*模式实例赋值*/
-    ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_PROTECT], ChasisInstance_MODE_PROTECT, CHASSIS_MODE_PROTECT_callback);
-    ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE], ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE, CHASSIS_MODE_FOLL_ROTA_callback);
-    ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_AUTO], ChasisInstance_MODE_AUTO, CHASSIS_MODE_AUTO_callback);
+    // ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_PROTECT], ChasisInstance_MODE_PROTECT, CHASSIS_MODE_PROTECT_callback);
+    // ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE], ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE, CHASSIS_MODE_FOLL_ROTA_callback);
+    // ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_AUTO], ChasisInstance_MODE_AUTO, CHASSIS_MODE_AUTO_callback);
+
+    Drv_PROTECT.Base.c_Fun = CHASSIS_MODE_PROTECT_callback;
+    Drv_REMOTER.Base.c_Fun = CHASSIS_MODE_FOLL_ROTA_callback;
+    Drv_AUTO.Base.c_Fun = CHASSIS_MODE_AUTO_callback;
 }
 
 /**
@@ -306,4 +290,5 @@ void can_msg_read(uint32_t can_id, uint8_t *data)
     chassis.spd_fdb.vy = -chassis.spd_fdb.vy * 0.25f * 6.0f * 0.0625f / 19 / 57.3f; // 转/s -》度/s->转弧度->除转速比->乘轮子半径
     chassis.spd_fdb.vw = (int16_t)(data[4] << 8 | data[5]);
     chassis.spd_fdb.vw = chassis.spd_fdb.vw * 0.25f * 0.5f * 0.375f * 5.64f / 19.0f / 57.3f * 10.0f; // 转/s -》度/s->转弧度->除转速比->乘轮子半径->除轮子到车中心半径
+
 }

@@ -1,3 +1,4 @@
-Load "b:\\GitHub\\Sentry\\auto-gimbal\\MDK-ARM\\rm_main\\rm_main.axf" 
-Erase Done.Programming Done.Verify OK.Application running ...
-Flash Load finished at 16:27:49
+*** Using Compiler 'V5.06 update 5 (build 528)', folder: 'B:\Keil5\ARM\ARMCC\Bin'
+Build target 'rm_main'
+".\rm_main\rm_main.axf" - 0 Error(s), 0 Warning(s).
+Build Time Elapsed:  00:00:01

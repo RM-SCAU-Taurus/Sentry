@@ -94,6 +94,22 @@ typedef struct
     void (*msg_send)(int16_t ID, int16_t iq1, int16_t iq2, int16_t iq3, uint8_t iq4,uint8_t iq5);
 } chassis_t;
 
+
+/*******************OOP*********************************/
+//父类
+typedef struct
+{
+    chassis_mode_callback c_Fun;
+}Chassis_Base;
+
+//子类
+typedef struct 
+{
+    Chassis_Base Base;
+}Chassis_Derived;
+
+/*******************OOP*********************************/
+
 extern chassis_t chassis;
 void chassis_task(void const *argu);
 void can_msg_read(uint32_t can_id,uint8_t * data);

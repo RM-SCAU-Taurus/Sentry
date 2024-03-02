@@ -11,6 +11,26 @@
 #include "pid.h"
 #include "ubf.h"
 
+/*******************OOP*********************************/
+
+// 云台模式回调函数,用于解析协议
+typedef void (*gimbal_mode_callback)();
+
+
+//父类
+typedef struct
+{
+    gimbal_mode_callback c_Fun;
+}Gimbal_Base;
+
+//子类
+typedef struct 
+{
+    Gimbal_Base Base;
+}Gimbal_Derived;
+
+/*******************OOP*********************************/
+
 typedef void (*gimbal_mode_callback)();
 
 typedef struct
@@ -68,7 +88,7 @@ typedef enum
 typedef struct
 {
 	GimbalInstance_mode_e Gimbal_Mode;
-  gimbal_mode_callback mode_callback; // 瑙ｆ瀽鏀跺埌鐨勬暟鎹殑鍥炶皟鍑芥暟
+  gimbal_mode_callback mode_callback; // 瑙ｆ瀽鏀跺埌鐨勬暟鎹?鐨勫洖璋冨嚱鏁?
 }GimbalInstance_t;
 
 typedef struct
@@ -81,6 +101,12 @@ typedef struct
     int32_t       yaw_center_offset;
 		int16_t       current[3];  //yaw_6020 0  pit 1  yaw_9025 2
 		float         yaw_imu_offset;//锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷头锟斤拷
+
+    /*9025跟随*/
+    int16_t   position_ref;
+    float 	  position_error;
+    float     angle_error;
+    float     angle_dif_degree;
 } gimbal_t;
 typedef struct {
     float pit;

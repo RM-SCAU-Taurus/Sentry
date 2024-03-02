@@ -49,9 +49,9 @@ static Chassis_Base *chassis_mode_switch(void);
 chassis_t chassis;
 // ChasisInstance_t Chasis_behavior[3];
 
-Chassis_Derived Drv_PROTECT;
-Chassis_Derived Drv_REMOTER;
-Chassis_Derived Drv_AUTO;
+static Chassis_Derived Drv_PROTECT;
+static Chassis_Derived Drv_REMOTER;
+static Chassis_Derived Drv_AUTO;
 
 /**********函数定义************/
 
@@ -99,7 +99,7 @@ static Chassis_Base *chassis_mode_switch(void)
     /* 底盘状态机 */
     switch (ctrl_mode)
     {
-    case PROTECT_MODE: // 能量模式和保护模式下，底盘行为相同
+    case PROTECT_MODE: // 能量模式和保护模式下，+底盘行为相同
     {
         chassis.mode = CHASSIS_MODE_PROTECT;
          p_re = (Chassis_Base *)&Drv_PROTECT;

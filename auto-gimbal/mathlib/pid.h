@@ -98,7 +98,9 @@ __PID_EXT pid_t pid_yaw_angle_6020;
 __PID_EXT pid_t pid_yaw_spd_6020;
 
 __PID_EXT pid_t pid_yaw_angle_9025;
-__PID_EXT pid_t pid_yaw_spd_9025;		
+__PID_EXT pid_t pid_yaw_spd_9025;	
+
+
 
 //测试YAW轴 位置速度串级 使用YAW电机反馈
 __PID_EXT pid_t pid_yaw_mecd;

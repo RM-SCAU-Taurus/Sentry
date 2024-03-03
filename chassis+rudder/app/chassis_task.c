@@ -20,10 +20,6 @@
 #include "iwdg.h"
 #include "FreeRTOS.h"
 #include "status_task.h"
-
-#define Encode_to_Degree 22.753f
-#define Rad_to_Degree 57.3f
-
 extern TaskHandle_t can_msg_send_task_t;
 float test[4];
 float vwcos[4];
@@ -33,7 +29,6 @@ extern chassis_ctrl_info_t chassis_ctrl;
 extern game_status_info_t game_state;
 extern chassis_odom_info_t chassis_odom;
 chassis_t chassis;
-
 
 extern void rm_queue_data(uint16_t cmd_id,void* buf,uint16_t len );
 void chassis_init()
@@ -49,11 +44,19 @@ void chassis_init()
 		}
 //    PID_struct_init(&pid_chassis_angle, POSITION_PID, 6000, 0,
 //                    7.0f, 0.0f, 0.0f);
+//		
+//		chassis.rudder_ecd_offset[0] = 2153;//100
+//		chassis.rudder_ecd_offset[1] = 5290;//5300
+//		chassis.rudder_ecd_offset[2] = 6350;//6350
+//		chassis.rudder_ecd_offset[3] = 3880;//6500
 		
-		chassis.rudder_ecd_offset[0] = 2153;//100
-		chassis.rudder_ecd_offset[1] = 5290;//5300
-		chassis.rudder_ecd_offset[2] = 6350;//6350
-		chassis.rudder_ecd_offset[3] = 3880;//6500
+				
+		chassis.rudder_ecd_offset[0] = 5050;//100
+		chassis.rudder_ecd_offset[1] = 3597;//5300
+		chassis.rudder_ecd_offset[2] = 6253;//6350
+		chassis.rudder_ecd_offset[3] = 6668;//6500
+		
+		
 		
     scale.ch3 = RC_CH3_SCALE;
     scale.ch4 = RC_CH4_SCALE;
@@ -68,7 +71,7 @@ void chassis_init()
     chassis.Float_to_uint8 = Float2Byte;
     chassis.game_msg_send = can1_send_game_msg;
     chassis.spd_msg_send  = can1_send_spd_msg;
-    chassis.wheel_max = 8000;  /* 关掉功率控制时需要初始化 */
+    chassis.wheel_max = 9000;  /* 关掉功率控制时需要初始化 */
 		
 }
 static void chassis_mode_switch(void)
@@ -108,7 +111,6 @@ static void chassis_mode_switch(void)
         break;
         case AUTO_MODE:
         {
-
             chassis.mode = CHASSIS_MODE_AUTO;
 
         }
@@ -133,7 +135,7 @@ void chassis_task(void const *argu)
     for(;;)
     {
         taskENTER_CRITICAL();
-		   	HAL_IWDG_Refresh(&hiwdg);//看门狗
+		//	HAL_IWDG_Refresh(&hiwdg);//看门狗
         chassis_mode_switch();
         switch( chassis.mode )
         {
@@ -142,7 +144,7 @@ void chassis_task(void const *argu)
                 chassis.spd_input.vx = 0;
                 chassis.spd_input.vy = 0;
                 chassis.spd_input.vw = 0;
-							  rudder_odom_cal();//里程计计算
+							 rudder_odom_cal();//里程计计算
 							memset(motor_cur.chassis_cur_3508,0, sizeof(chassis.current)); 
 							memset(motor_cur.chassis_cur_6020,0, sizeof(chassis.current_6020)); 
 							  for(uint8_t i=0; i<4; i++)
@@ -234,6 +236,12 @@ void steering_calc(float vx, float vy, float vw, int16_t angle[], int16_t speed[
 	int16_t wheel_rpm[4];
 	int16_t	rudder_angle[4];
 	const float rudder_deadband = 200;
+
+	/* 轮速解算 */
+//    wheel_rpm[0] = -sqrt(pow(vx,2) + pow(vy,2) + pow(vw,2) - 2*vw*(vx+vy));
+//    wheel_rpm[1] = sqrt(pow(vx,2) + pow(vy,2) + pow(vw,2) - 2*vw*(vx-vy));
+//    wheel_rpm[2] = sqrt(pow(vx,2) + pow(vy,2) + pow(vw,2) + 2*vw*(vx-vy));
+//    wheel_rpm[3] = -sqrt(pow(vx,2) + pow(vy,2) + pow(vw,2) + 2*vw*(vx+vy));
 		
 	wheel_rpm[0] = sqrt(pow(vx - vw * 0.707107f,2) + pow(vy - vw * 0.707107f,2));
 	wheel_rpm[1] = -sqrt(pow(vx - vw * 0.707107f,2) + pow(vy + vw * 0.707107f,2));
@@ -296,6 +304,8 @@ void chassis_spd_distribution(void)
     float  wheel_spd_total = 0;  //总轮速
     float  distribution_temp = 1.0f;	//限制比例
 
+    /* 麦轮逆运动学原设定速度解算 */
+    //mecanum_calc(chassis.spd_input.vx,chassis.spd_input.vy, chassis.spd_input.vw, chassis.wheel_spd_input);
 		steering_calc(chassis.spd_input.vx,chassis.spd_input.vy, chassis.spd_input.vw,chassis.rudder_angle_ref, chassis.wheel_spd_input);//舵轮
     /* 计算总速度 */
     for(int i=0; i<4; i++)
@@ -314,6 +324,19 @@ void chassis_spd_distribution(void)
         chassis.wheel_spd_ref[j] = chassis.wheel_spd_input[j] / distribution_temp ;
         chassis.wheel_spd_ref[j] = data_limit(chassis.wheel_spd_ref[j], 8900, -8900);  //电机转速最高到8900
     }
+//    /* 麦轮正运动学处理后设定速度解算 */
+//    chassis.spd_ref.vx = (+chassis.wheel_spd_ref[0] - chassis.wheel_spd_ref[1] + chassis.wheel_spd_ref[2] - chassis.wheel_spd_ref[3] )* 0.25f;
+//    chassis.spd_ref.vy = (+chassis.wheel_spd_ref[0] + chassis.wheel_spd_ref[1] - chassis.wheel_spd_ref[2] - chassis.wheel_spd_ref[3] )* 0.25f;
+//    chassis.spd_ref.vw = (-chassis.wheel_spd_ref[0] - chassis.wheel_spd_ref[1] - chassis.wheel_spd_ref[2] - chassis.wheel_spd_ref[3] )* 0.25f;
+//   
+//		
+//    chassis.spd_error = chassis.spd_ref.vx + chassis.spd_ref.vy + chassis.spd_ref.vw
+//                        - chassis.spd_fdb.vx - chassis.spd_fdb.vy - chassis.spd_fdb.vw;
+
+//    /* 麦轮正运动学反馈速度解算 */
+//    chassis.spd_fdb.vx = (+moto_chassis[0].speed_rpm - moto_chassis[1].speed_rpm + moto_chassis[2].speed_rpm - moto_chassis[3].speed_rpm )* 0.25f;
+//    chassis.spd_fdb.vy = (+moto_chassis[0].speed_rpm + moto_chassis[1].speed_rpm - moto_chassis[2].speed_rpm - moto_chassis[3].speed_rpm )* 0.25f;
+//    chassis.spd_fdb.vw = (-moto_chassis[0].speed_rpm - moto_chassis[1].speed_rpm - moto_chassis[2].speed_rpm - moto_chassis[3].speed_rpm )* 0.25f;
     
 					if(!status.chassis_status[0]&&!status.chassis_status[1]&&!status.chassis_status[2]&&!status.chassis_status[3])//4个全掉才发零
 					{
@@ -323,49 +346,64 @@ void chassis_spd_distribution(void)
 					}
 					else
 					{
-
-//				//		/*舵轮逆运动速度解算*/调每个轮子的正负和轮子的r
-//						chassis.spd_fdb.vx= (+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/22.753f/57.3f)//-
-//											-moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/22.753f/57.3f)
-//											-moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/22.753f/57.3f)
-//											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/22.753f/57.3f));//-
+												//		/*舵轮逆运动速度解算*/调每个轮子的正负和轮子的r
+//						chassis.spd_fdb.vx= (-moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/22.753f/57.3f)//-
+//											+moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/22.753f/57.3f)
+//											+moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/22.753f/57.3f)
+//											-moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/22.753f/57.3f));//-
 //											
 //											//* 0.25f*6.0f*0.0625f/19/57.3f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径
-//						chassis.spd_fdb.vy= (+moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/22.753f/57.3f)
-//											-moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/22.753f/57.3f)
-//											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/22.753f/57.3f)
-//											+moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/22.753f/57.3f));
+//						chassis.spd_fdb.vy= (-moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/22.753f/57.3f)
+//											+moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/22.753f/57.3f)
+//											+moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/22.753f/57.3f)
+//											-moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/22.753f/57.3f));
 //											//* 0.25f*6.0f*0.0625f/19/57.3f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径
-//						chassis.spd_fdb.vw= ((+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]+45*22.753f)/22.753f/57.3f)
-//											+moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]+45*22.753f)/22.753f/57.3f)
-//											+moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]-45*22.753f)/22.753f/57.3f)
-//											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]-45*22.753f)/22.753f/57.3f))+
-//											(moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]-45*22.753f)/22.753f/57.3f)
-//											+moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]-45*22.753f)/22.753f/57.3f)
-//											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]+45*22.753f)/22.753f/57.3f)
-//											-moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]+45*22.753f)/22.753f/57.3f)))*1000;
-											
-																						//		/*舵轮逆运动速度解算*/调每个轮子的正负和轮子的r
-						chassis.spd_fdb.vx= (+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/Encode_to_Degree/Rad_to_Degree)//-
-											-moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/Encode_to_Degree/Rad_to_Degree)
-											-moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/Encode_to_Degree/Rad_to_Degree));//-
+//						chassis.spd_fdb.vw= ((-moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]-45*22.753f)/22.753f/57.3f)
+//											-moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]-45*22.753f)/22.753f/57.3f)
+//											-moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]+45*22.753f)/22.753f/57.3f)
+//											-moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]+45*22.753f)/22.753f/57.3f))+
+//											(moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]+45*22.753f)/22.753f/57.3f)
+//											+moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]+45*22.753f)/22.753f/57.3f)
+//											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]-45*22.753f)/22.753f/57.3f)
+//											-moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]-45*22.753f)/22.753f/57.3f)))*1000;
+//											//*0.25f*0.5f*0.375f/19.0f/57.3f*5.64f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径->除轮子到车中心半径
+
+				//		/*舵轮逆运动速度解算*/调每个轮子的正负和轮子的r
+						chassis.spd_fdb.vx= (+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/22.753f/57.3f)//-
+											-moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/22.753f/57.3f)
+											-moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/22.753f/57.3f)
+											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/22.753f/57.3f));//-
 											
 											//* 0.25f*6.0f*0.0625f/19/57.3f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径
-						chassis.spd_fdb.vy= (+moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/Encode_to_Degree/Rad_to_Degree)
-											-moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/Encode_to_Degree/Rad_to_Degree)
-											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/Encode_to_Degree/Rad_to_Degree));
+						chassis.spd_fdb.vy= (+moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/22.753f/57.3f)
+											-moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/22.753f/57.3f)
+											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/22.753f/57.3f)
+											+moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/22.753f/57.3f));
 											//* 0.25f*6.0f*0.0625f/19/57.3f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径
-						chassis.spd_fdb.vw= ((+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]+45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]+45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]-45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]-45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree))+
-											(moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]-45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]-45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]+45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-					 						-moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]+45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)))*1000;
-					   			//*0.25f*0.5f*0.375f/19.0f/57.3f*5.64f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径->除轮子到车中心半径
+						chassis.spd_fdb.vw= ((+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]+45*22.753f)/22.753f/57.3f)
+											+moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]+45*22.753f)/22.753f/57.3f)
+											+moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]-45*22.753f)/22.753f/57.3f)
+											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]-45*22.753f)/22.753f/57.3f))+
+											(moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]-45*22.753f)/22.753f/57.3f)
+											+moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]-45*22.753f)/22.753f/57.3f)
+											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]+45*22.753f)/22.753f/57.3f)
+											-moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]+45*22.753f)/22.753f/57.3f)))*1000;
+//											//*0.25f*0.5f*0.375f/19.0f/57.3f*5.64f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径->除轮子到车中心半径
+//											test[0] =((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]+0*22.753f)/22.753f/1.0f);
+//											test[1] =((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]+0*22.753f)/22.753f/1.0f);
+//											test[2] = ((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]-0*22.753f)/22.753f/1.0f);
+//											test[3] = ((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]-0*22.753f)/22.753f/1.0f);
+//											
+//											vwcos[0]=(+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]+45*22.753f)/22.753f/57.3f));
+//											vwcos[1]=(+moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]+45*22.753f)/22.753f/57.3f));
+//											vwcos[2]=(+moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]-45*22.753f)/22.753f/57.3f));
+//											vwcos[3]=(+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]-45*22.753f)/22.753f/57.3f));
+//											
+//											vwsin[0]=(+moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]-45*22.753f)/22.753f/57.3f));
+//											vwsin[1]=(+moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]-45*22.753f)/22.753f/57.3f));
+//											vwsin[2]=(-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]+45*22.753f)/22.753f/57.3f));
+//											vwsin[3]=(-moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]+45*22.753f)/22.753f/57.3f));
+											
 						}
 	
 		chassis.odom.x += chassis.spd_fdb.vx*0.001f;
@@ -410,27 +448,49 @@ void rudder_odom_cal(void)
 					}
 					else
 					{
+												//		/*舵轮逆运动速度解算*/调每个轮子的正负和轮子的r
+//						chassis.spd_fdb.vx= (+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/22.753f/57.3f)//-
+//											-moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/22.753f/57.3f)
+//											-moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/22.753f/57.3f)
+//											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/22.753f/57.3f));//-
+//											
+//											//* 0.25f*6.0f*0.0625f/19/57.3f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径
+//						chassis.spd_fdb.vy= (+moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/22.753f/57.3f)
+//											-moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/22.753f/57.3f)
+//											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/22.753f/57.3f)
+//											+moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/22.753f/57.3f));
+//											//* 0.25f*6.0f*0.0625f/19/57.3f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径
+//						chassis.spd_fdb.vw= ((+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]-45*22.753f)/22.753f/57.3f)
+//											+moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]-45*22.753f)/22.753f/57.3f)
+//											+moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]+45*22.753f)/22.753f/57.3f)
+//											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]+45*22.753f)/22.753f/57.3f))+
+//											(moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]+45*22.753f)/22.753f/57.3f)
+//											+moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]+45*22.753f)/22.753f/57.3f)
+//											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]-45*22.753f)/22.753f/57.3f)
+//											-moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]-45*22.753f)/22.753f/57.3f)))*1000;
+//											//*0.25f*0.5f*0.375f/19.0f/57.3f*5.64f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径->除轮子到车中心半径
+//											
 															//		/*舵轮逆运动速度解算*/调每个轮子的正负和轮子的r
-						chassis.spd_fdb.vx= (+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/Encode_to_Degree/Rad_to_Degree)//-
-											-moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/Encode_to_Degree/Rad_to_Degree)
-											-moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/Encode_to_Degree/Rad_to_Degree));//-
+						chassis.spd_fdb.vx= (+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/22.753f/57.3f)//-
+											-moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/22.753f/57.3f)
+											-moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/22.753f/57.3f)
+											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/22.753f/57.3f));//-
 											
 											//* 0.25f*6.0f*0.0625f/19/57.3f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径
-						chassis.spd_fdb.vy= (+moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/Encode_to_Degree/Rad_to_Degree)
-											-moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/Encode_to_Degree/Rad_to_Degree)
-											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/Encode_to_Degree/Rad_to_Degree));
+						chassis.spd_fdb.vy= (+moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0])/22.753f/57.3f)
+											-moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1])/22.753f/57.3f)
+											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2])/22.753f/57.3f)
+											+moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3])/22.753f/57.3f));
 											//* 0.25f*6.0f*0.0625f/19/57.3f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径
-						chassis.spd_fdb.vw= ((+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]+45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]+45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]-45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]-45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree))+
-											(moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]-45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-											+moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]-45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]+45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)
-					 						-moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]+45*Encode_to_Degree)/Encode_to_Degree/Rad_to_Degree)))*1000;
-					   			//*0.25f*0.5f*0.375f/19.0f/57.3f*5.64f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径->除轮子到车中心半径
+						chassis.spd_fdb.vw= ((+moto_chassis[0].speed_rpm*cosf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]+45*22.753f)/22.753f/57.3f)
+											+moto_chassis[1].speed_rpm*cosf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]+45*22.753f)/22.753f/57.3f)
+											+moto_chassis[2].speed_rpm*cosf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]-45*22.753f)/22.753f/57.3f)
+											+moto_chassis[3].speed_rpm*cosf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]-45*22.753f)/22.753f/57.3f))+
+											(moto_chassis[0].speed_rpm*sinf((chassis.rudder_ecd_fdb[0]-chassis.rudder_ecd_offset[0]-45*22.753f)/22.753f/57.3f)
+											+moto_chassis[1].speed_rpm*sinf((chassis.rudder_ecd_fdb[1]-chassis.rudder_ecd_offset[1]-45*22.753f)/22.753f/57.3f)
+											-moto_chassis[2].speed_rpm*sinf((chassis.rudder_ecd_fdb[2]-chassis.rudder_ecd_offset[2]+45*22.753f)/22.753f/57.3f)
+											-moto_chassis[3].speed_rpm*sinf((chassis.rudder_ecd_fdb[3]-chassis.rudder_ecd_offset[3]+45*22.753f)/22.753f/57.3f)))*1000;
+//											//*0.25f*0.5f*0.375f/19.0f/57.3f*5.64f;// 转/s -》度/s->转弧度->除转速比->乘轮子半径->除轮子到车中心半径
 						}
 }
 /**

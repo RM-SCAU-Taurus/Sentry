@@ -150,6 +150,7 @@ typedef struct
 	float speed_mode;
 	float speed_yaw;
 	float speed_pit;
+	float shoot_yaw_tole;
 }vision_ctrl_info_t;
 
 typedef struct

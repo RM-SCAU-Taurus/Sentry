@@ -49,9 +49,9 @@ static Chassis_Base *chassis_mode_switch(void);
 chassis_t chassis;
 // ChasisInstance_t Chasis_behavior[3];
 
-static Chassis_Derived Drv_PROTECT;
-static Chassis_Derived Drv_REMOTER;
-static Chassis_Derived Drv_AUTO;
+Chassis_Derived Drv_PROTECT;
+Chassis_Derived Drv_REMOTER;
+Chassis_Derived Drv_AUTO;
 
 /**********函数定义************/
 
@@ -99,7 +99,7 @@ static Chassis_Base *chassis_mode_switch(void)
     /* 底盘状态机 */
     switch (ctrl_mode)
     {
-    case PROTECT_MODE: // 能量模式和保护模式下，+底盘行为相同
+    case PROTECT_MODE: // 能量模式和保护模式下，底盘行为相同
     {
         chassis.mode = CHASSIS_MODE_PROTECT;
          p_re = (Chassis_Base *)&Drv_PROTECT;
@@ -148,8 +148,13 @@ static void CHASSIS_MODE_AUTO_callback(void)
     chassis.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
     chassis.angle_dif_degree = chassis.position_error * (360.0f / 8191.0f);
     gimbal.yaw_imu_offset = imu_data.yaw - chassis.angle_dif_degree;
-    chassis.spd_input.vx = chassis_ctrl.vx / 0.375f * 19.0f * 57.3f;
-    chassis.spd_input.vy = -chassis_ctrl.vy / 0.375f * 19.0f * 57.3f;
+	
+	
+	  chassis.spd_input.vx = 1.0f * (float)(chassis_ctrl.vx * cos(chassis.angle_error) - (-1.0f) * (-chassis_ctrl.vy) * sin(chassis.angle_error));
+    chassis.spd_input.vy = 1.0f * (float)(-chassis_ctrl.vx * sin(chassis.angle_error) - (-1.0f) * (-chassis_ctrl.vy) * cos(chassis.angle_error));
+	
+		chassis.spd_input.vx  =  chassis.spd_input.vx / 0.375f * 19.0f * 57.3f;
+	   chassis.spd_input.vy = chassis.spd_input.vy /  0.375f * 19.0f * 57.3f;
     chassis.spd_input.vw = chassis_ctrl.vw / 0.375f * 19.0f * 57.3f * 0.25967f;
 }
 
@@ -159,7 +164,9 @@ static void CHASSIS_MODE_FOLL_ROTA_callback(void)
     chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
     chassis.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
     chassis.angle_dif_degree = chassis.position_error * (360.0f / 8191.0f);
-
+		
+		chassis.angle_error = 0;
+		
     chassis.spd_input.vx = 1.0f * (float)(rc.ch4 * scale.ch4 * cos(chassis.angle_error) - (-1.0f) * rc.ch3 * scale.ch3 * sin(chassis.angle_error));
     chassis.spd_input.vy = 1.0f * (float)(-rc.ch4 * scale.ch4 * sin(chassis.angle_error) - (-1.0f) * rc.ch3 * scale.ch3 * cos(chassis.angle_error));
     chassis.spd_input.vy = chassis.spd_input.vy; // 换模式加-

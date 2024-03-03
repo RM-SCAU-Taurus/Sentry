@@ -102,7 +102,6 @@
 #define GIMBAL_PIT_MIN              2330
 
 #define GIMBAL_YAW_CENTER_OFFSET   5588 //5568
-#define GIMBAL_YAW_9025_OFFSET     4000
 #define GIMBAL_YAW_BETWEEN_ECD      ( 8191 / 8 )
 #define FIGHT_OFFSET_ERR            ( -1.0f * GIMBAL_YAW_BETWEEN_ECD / 8191 * 2 * PI )
 

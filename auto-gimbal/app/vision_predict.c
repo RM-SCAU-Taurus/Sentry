@@ -383,15 +383,15 @@ void vsn_gimbal_ref_calc(void) {
                 gimbal.pid.yaw_angle_6020_ref += rc.ch1 * scale.ch1;
             } else 
 						{
-								if(vision_ctrl.speed_mode == 1 && (vision_ctrl.speed_yaw !=0 || vision_ctrl.speed_pit)){
-								
+								if(vision_ctrl.speed_mode == 1 ){
+								vision_ctrl.speed_yaw = data_limit(vision_ctrl.speed_yaw, 250, -250);
                 gimbal.pid.yaw_spd_6020_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
 //                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要
 								gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
 								}
 								else{
-								gimbal.pid.yaw_angle_6020_ref= vision.yaw_angle_6020_error;//由导航控制
-                gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
+								gimbal.pid.yaw_angle_6020_ref = vision.yaw_angle_6020_error;//由导航控制
+                gimbal.pid.pit_angle_ref      = vision.pit_angle_error;	
 									
 								}
             }
@@ -408,7 +408,7 @@ static void vsn_shoot_enable(void) {
 		switch (vision.mode) {
         case vMODE_AUTO:
         case vMODE_ANTISPIN: {
-            if (ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb) <10.0f && 
+            if (ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb) <vision_ctrl.shoot_yaw_tole && 
                 ABSv(gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb) < 5.0f) {
                 vision.shoot_enable = 1;
             } else {
@@ -430,7 +430,7 @@ static void vsn_shoot_enable(void) {
         }
         case vMODE_bENERGY:
         case vMODE_sENERGY: {
-            if (ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb) < 1.0f && 
+            if (ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb) <vision_ctrl.shoot_yaw_tole && 
                 ABSv(gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb) < 1.0f) {
                 vision.shoot_enable = 1;
             } else {

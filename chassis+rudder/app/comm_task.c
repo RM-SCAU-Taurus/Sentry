@@ -29,7 +29,7 @@ extern chassis_ctrl_info_t chassis_ctrl;
 int tent=0;
 void can_msg_send_task(void const *argu)
 {
-//    osEvent event;
+    osEvent event;
     for(;;)
     {
 							if( ctrl_mode==PROTECT_MODE || !lock_flag )

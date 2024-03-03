@@ -2,8 +2,8 @@
 .\rm_main\test_task.o: ..\app\test_task.h
 .\rm_main\test_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 .\rm_main\test_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-.\rm_main\test_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
-.\rm_main\test_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
+.\rm_main\test_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
+.\rm_main\test_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 .\rm_main\test_task.o: ../Inc/FreeRTOSConfig.h
 .\rm_main\test_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 .\rm_main\test_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -17,8 +17,8 @@
 .\rm_main\test_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 .\rm_main\test_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 .\rm_main\test_task.o: ..\mathlib\func_generator.h
-.\rm_main\test_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
-.\rm_main\test_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\math.h
+.\rm_main\test_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\rm_main\test_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\math.h
 .\rm_main\test_task.o: ..\mathlib\math_calcu.h
 .\rm_main\test_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 .\rm_main\test_task.o: ../Inc/stm32f4xx_hal_conf.h
@@ -58,7 +58,7 @@
 .\rm_main\test_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 .\rm_main\test_task.o: ..\dsp\Include\arm_math.h
 .\rm_main\test_task.o: ../Drivers/CMSIS/Include/core_cm4.h
-.\rm_main\test_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\string.h
+.\rm_main\test_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\string.h
 .\rm_main\test_task.o: ..\app\comm_task.h
 .\rm_main\test_task.o: ..\bsp\bsp_can.h
 .\rm_main\test_task.o: ../Inc/can.h

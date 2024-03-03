@@ -27,6 +27,7 @@
 #include "bsp_T_imu.h"
 #include "bsp_can.h"
 #include "bsp_TriggerMotor.h"
+#include "bsp_Mf_Motor.h"
 /**********外部变量声明********/
 extern TaskHandle_t can_msg_send_task_t;
 extern vision_ctrl_info_t vision_ctrl; // 自动步兵控制
@@ -35,20 +36,27 @@ extern Game_Status_t Game_Status;
 /**********外部函数声明********/
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
 extern vision_tx_msg_t vision_tx_msg;
+extern moto_mf_t YAW_9025;
 /**********静态函数声明********/
 static void gimbal_pid_calcu(void);
 static void Gimbal_MODE_PROTECT_callback(void);
 static void Gimbal_MODE_AUTO_callback(void);
 static void Gimbal_MODE_REMOTER_callback(void);
 static void Gimbal_data_calc(void);
-static void GimbalInstance_Create(GimbalInstance_t *_instance, GimbalInstance_mode_e mode_sel, gimbal_mode_callback callback);
+static Gimbal_Base *Gimbal_mode_check(void);
 /**********宏定义声明**********/
 #define __GIMBAL_TASK_GLOBALS
-// #define __9025ready
+#define __9025ready
+#define __6020_Yaw_off 5000
 /**********结构体定义**********/
 gimbal_t gimbal;
 ubf_t gim_msg_ubf; /* 云台姿态历史数据 */
-GimbalInstance_t Gimbal_behavior[3];
+
+static Gimbal_Derived Drv_PROTECT;
+
+static Gimbal_Derived Drv_REMOTER;
+
+static Gimbal_Derived Drv_AUTO;
 /**********测试变量声明********/
 int8_t choose_pid_flag = 0, goback_flag = 0;
 
@@ -71,12 +79,18 @@ void gimbal_param_init(void)
     PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 28000, 20000,
                     pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
 
+      PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 6000, 0,
+
+                    0.0f, 0.0f, 0.0f);
+
     scale.ch1 = RC_CH1_SCALE;
     scale.ch2 = RC_CH2_SCALE;
 
-    GimbalInstance_Create(&Gimbal_behavior[GimbalInstance_MODE_PROTECT], GimbalInstance_MODE_PROTECT, Gimbal_MODE_PROTECT_callback);
-    GimbalInstance_Create(&Gimbal_behavior[GimbalInstance_MODE_REMOTER], GimbalInstance_MODE_REMOTER, Gimbal_MODE_REMOTER_callback);
-    GimbalInstance_Create(&Gimbal_behavior[GimbalInstance_MODE_AUTO], GimbalInstance_MODE_AUTO, Gimbal_MODE_AUTO_callback);
+        Drv_PROTECT.Base.c_Fun = Gimbal_MODE_PROTECT_callback;
+
+    Drv_REMOTER.Base.c_Fun = Gimbal_MODE_REMOTER_callback;
+
+    Drv_AUTO.Base.c_Fun = Gimbal_MODE_AUTO_callback;
 }
 
 /* ================================== TEST PARAM ================================== */
@@ -104,30 +118,13 @@ void gimbal_param_init(void)
 void gimbal_task(void const *argu)
 {
     uint32_t mode_wake_time = osKernelSysTick();
+    static Gimbal_Base *Action_ptr = NULL;
     for (;;)
     {
         taskENTER_CRITICAL();
+         Action_ptr = Gimbal_mode_check();
 
-        switch (ctrl_mode)
-        {
-        case PROTECT_MODE:
-        {
-            Gimbal_behavior[PROTECT_MODE].mode_callback();
-        }
-        break;
-        case REMOTER_MODE:
-        {
-            Gimbal_behavior[REMOTER_MODE].mode_callback();
-        }
-        break;
-        case AUTO_MODE:
-        {
-            Gimbal_behavior[AUTO_MODE].mode_callback();
-        }
-        break;
-        default:
-            break;
-        }
+          Action_ptr->c_Fun();
 
         Gimbal_data_calc();
         /* 云台串级PID */
@@ -139,10 +136,58 @@ void gimbal_task(void const *argu)
     }
 }
 
-static void GimbalInstance_Create(GimbalInstance_t *_instance, GimbalInstance_mode_e mode_sel, gimbal_mode_callback callback)
+
+static Gimbal_Base *Gimbal_mode_check(void)
 {
-    _instance->Gimbal_Mode = mode_sel;
-    _instance->mode_callback = callback;
+
+
+    static Gimbal_Base *p_return = NULL;
+
+
+
+    switch (ctrl_mode)
+
+    {
+
+    case PROTECT_MODE:
+
+    {
+
+        p_return = (Gimbal_Base *)&Drv_PROTECT;
+
+    }
+
+    break;
+
+    case REMOTER_MODE:
+
+    {
+
+        p_return = (Gimbal_Base *)&Drv_REMOTER;
+
+    }
+
+    break;
+
+    case AUTO_MODE:
+
+    {
+
+        p_return = (Gimbal_Base *)&Drv_AUTO;
+
+    }
+
+    break;
+
+    default:
+
+        break;
+
+    }
+
+
+    return p_return;
+
 }
 
 static void Gimbal_MODE_PROTECT_callback(void)
@@ -237,17 +282,18 @@ void gimbal_pid_calcu(void)
 
     /*------------------------下yaw轴串级pid计算------------------------*/
 #ifdef __9025ready
-    if (gimbal.pid.yaw_angle_9025_ref < 0)
-        gimbal.pid.yaw_angle_9025_ref += 360;
-    else if (gimbal.pid.yaw_angle_9025_ref > 360)
-        gimbal.pid.yaw_angle_9025_ref -= 360;     // 目标值限幅
-    gimbal.pid.yaw_angle_9025_fdb = imu_data.yaw; // 陀螺仪角度反馈
-    gimbal.pid.yaw_angle_9025_err = circle_error(gimbal.pid.yaw_angle_9025_ref, gimbal.pid.yaw_angle_9025_fdb, 360);
-    pid_calc(&pid_yaw_angle_9025, gimbal.pid.yaw_angle_9025_fdb, gimbal.pid.yaw_angle_9025_fdb + gimbal.pid.yaw_angle_9025_err);
+
+
+    gimbal.position_ref = GIMBAL_YAW_9025_OFFSET;
+    gimbal.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
+    gimbal.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
+
+
+    pid_calc(&pid_yaw_angle_9025, moto_yaw.ecd, moto_yaw.ecd + gimbal.angle_error);
     gimbal.pid.yaw_spd_9025_ref = pid_yaw_angle_9025.pos_out;
-    gimbal.pid.yaw_spd_9025_fdb = imu_data.wz; // 陀螺仪速度反馈
+    gimbal.pid.yaw_spd_9025_fdb = YAW_9025.RPM; // 陀螺仪速度反馈
     pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);
     gimbal.current[2] = -pid_yaw_spd_9025.pos_out;
 #endif
-    memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current));//赋值电流结果进CAN发送缓冲
+    memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current)); // 赋值电流结果进CAN发送缓冲
 }

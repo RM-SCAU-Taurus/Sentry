@@ -11,6 +11,26 @@
 #include "pid.h"
 #include "ubf.h"
 
+/*******************OOP*********************************/
+
+// 云台模式回调函数,用于解析协议
+typedef void (*gimbal_mode_callback)();
+
+
+//父类
+typedef struct
+{
+    gimbal_mode_callback c_Fun;
+}Gimbal_Base;
+
+//子类
+typedef struct 
+{
+    Gimbal_Base Base;
+}Gimbal_Derived;
+
+/*******************OOP*********************************/
+
 typedef void (*gimbal_mode_callback)();
 
 typedef struct
@@ -68,7 +88,7 @@ typedef enum
 typedef struct
 {
 	GimbalInstance_mode_e Gimbal_Mode;
-  gimbal_mode_callback mode_callback; // 解析收到的数据的回调函数
+  gimbal_mode_callback mode_callback; // 瑙ｆ瀽鏀跺埌鐨勬暟鎹?鐨勫洖璋冨嚱鏁?
 }GimbalInstance_t;
 
 typedef struct
@@ -80,7 +100,13 @@ typedef struct
     int32_t       pit_center_offset;
     int32_t       yaw_center_offset;
 		int16_t       current[3];  //yaw_6020 0  pit 1  yaw_9025 2
-		float         yaw_imu_offset;//����������ͷ��
+		float         yaw_imu_offset;//锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷头锟斤拷
+
+    /*9025跟随*/
+    int16_t   position_ref;
+    float 	  position_error;
+    float     angle_error;
+    float     angle_dif_degree;
 } gimbal_t;
 typedef struct {
     float pit;
@@ -90,7 +116,7 @@ typedef struct {
 } gim_msg_t;
 
 extern gimbal_t gimbal;
-extern  ubf_t gim_msg_ubf;   /* ��̨��̬��ʷ���� */
+extern  ubf_t gim_msg_ubf;   /* 锟斤拷台锟斤拷态锟斤拷史锟斤拷锟斤拷 */
 void gimbal_task(void const *argu);
 void gimbal_param_init(void);
 

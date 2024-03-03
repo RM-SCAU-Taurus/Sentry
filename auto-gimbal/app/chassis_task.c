@@ -49,9 +49,9 @@ static Chassis_Base *chassis_mode_switch(void);
 chassis_t chassis;
 // ChasisInstance_t Chasis_behavior[3];
 
-Chassis_Derived Drv_PROTECT;
-Chassis_Derived Drv_REMOTER;
-Chassis_Derived Drv_AUTO;
+static Chassis_Derived Drv_PROTECT;
+static Chassis_Derived Drv_REMOTER;
+static Chassis_Derived Drv_AUTO;
 
 /**********函数定义************/
 

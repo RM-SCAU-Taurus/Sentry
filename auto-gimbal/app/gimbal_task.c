@@ -46,7 +46,7 @@ static void Gimbal_data_calc(void);
 static Gimbal_Base *Gimbal_mode_check(void);
 /**********宏定义声明**********/
 #define __GIMBAL_TASK_GLOBALS
-#define __9025ready
+//#define __9025ready
 #define __6020_Yaw_off 5000
 /**********结构体定义**********/
 gimbal_t gimbal;

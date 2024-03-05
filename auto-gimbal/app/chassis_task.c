@@ -25,12 +25,15 @@
 #include "bsp_T_imu.h"
 #include "bsp_powerlimit.h"
 #include "bsp_can.h"
-#include "bsp_can.h"
+#include "bsp_Mf_Motor.h"
 /**********外部变量声明********/
 extern TaskHandle_t can_msg_send_task_t;
 extern chassis_ctrl_info_t chassis_ctrl;
 extern chassis_odom_info_t chassis_odom;
 extern Game_Status_t Game_Status;
+
+extern moto_mf_t YAW_9025;
+
 /**********外部函数声明********/
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
 /**********宏定义声明********/
@@ -69,7 +72,7 @@ void chassis_task(void const *argu)
     {
         Action_ptr = chassis_mode_switch();
 
-        Action_ptr->c_Fun();
+        Action_ptr->Control_Fun();
         /* 里程计 数据计算 */
         ChassisOdom_calc();
         /* 里程计&裁判系统 数据入列 */
@@ -161,11 +164,12 @@ static void CHASSIS_MODE_AUTO_callback(void)
 static void CHASSIS_MODE_FOLL_ROTA_callback(void)
 {
     chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET;
-    chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
-    chassis.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
-    chassis.angle_dif_degree = chassis.position_error * (360.0f / 8191.0f);
+//    chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
+	chassis.position_error = circle_error(chassis.position_ref, YAW_9025.encoder, 360);
+    chassis.angle_error = chassis.position_error * (2.0f * PI /360.0f);
+    chassis.angle_dif_degree = chassis.position_error * (360.0f / 360.0f);
 		
-		chassis.angle_error = 0;
+//		chassis.angle_error = 0;
 		
     chassis.spd_input.vx = 1.0f * (float)(rc.ch4 * scale.ch4 * cos(chassis.angle_error) - (-1.0f) * rc.ch3 * scale.ch3 * sin(chassis.angle_error));
     chassis.spd_input.vy = 1.0f * (float)(-rc.ch4 * scale.ch4 * sin(chassis.angle_error) - (-1.0f) * rc.ch3 * scale.ch3 * cos(chassis.angle_error));
@@ -259,9 +263,9 @@ void chassis_init()
     // ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE], ChasisInstance_MODE_REMOTER_FOLLOW_ROTATE, CHASSIS_MODE_FOLL_ROTA_callback);
     // ChasisInstance_Create(&Chasis_behavior[ChasisInstance_MODE_AUTO], ChasisInstance_MODE_AUTO, CHASSIS_MODE_AUTO_callback);
 
-    Drv_PROTECT.Base.c_Fun = CHASSIS_MODE_PROTECT_callback;
-    Drv_REMOTER.Base.c_Fun = CHASSIS_MODE_FOLL_ROTA_callback;
-    Drv_AUTO.Base.c_Fun = CHASSIS_MODE_AUTO_callback;
+    Drv_PROTECT.Base.Control_Fun = CHASSIS_MODE_PROTECT_callback;
+    Drv_REMOTER.Base.Control_Fun = CHASSIS_MODE_FOLL_ROTA_callback;
+    Drv_AUTO.Base.Control_Fun = CHASSIS_MODE_AUTO_callback;
 }
 
 /**

@@ -46,7 +46,7 @@ static void Gimbal_data_calc(void);
 static Gimbal_Base *Gimbal_mode_check(void);
 /**********宏定义声明**********/
 #define __GIMBAL_TASK_GLOBALS
-//#define __9025ready
+#define __9025ready
 #define __6020_Yaw_off 5000
 /**********结构体定义**********/
 gimbal_t gimbal;
@@ -76,21 +76,21 @@ void gimbal_param_init(void)
 
     PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 8000, 0,
                     pid_yaw_angle_9025_P, pid_yaw_angle_9025_I, pid_yaw_angle_9025_D);
-    PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 28000, 20000,
+    PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 2048, 1024,
                     pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
 
-      PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 6000, 0,
+      PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 1000, 500,
 
-                    0.0f, 0.0f, 0.0f);
+                    -0.06f, -0.00005f, 0.0f);
 
     scale.ch1 = RC_CH1_SCALE;
     scale.ch2 = RC_CH2_SCALE;
 
-        Drv_PROTECT.Base.c_Fun = Gimbal_MODE_PROTECT_callback;
+        Drv_PROTECT.Base.Control_Fun = Gimbal_MODE_PROTECT_callback;
 
-    Drv_REMOTER.Base.c_Fun = Gimbal_MODE_REMOTER_callback;
+    Drv_REMOTER.Base.Control_Fun = Gimbal_MODE_REMOTER_callback;
 
-    Drv_AUTO.Base.c_Fun = Gimbal_MODE_AUTO_callback;
+    Drv_AUTO.Base.Control_Fun = Gimbal_MODE_AUTO_callback;
 }
 
 /* ================================== TEST PARAM ================================== */
@@ -124,7 +124,7 @@ void gimbal_task(void const *argu)
         taskENTER_CRITICAL();
          Action_ptr = Gimbal_mode_check();
 
-          Action_ptr->c_Fun();
+          Action_ptr->Control_Fun();
 
         Gimbal_data_calc();
         /* 云台串级PID */
@@ -285,15 +285,15 @@ void gimbal_pid_calcu(void)
 
 
     gimbal.position_ref = GIMBAL_YAW_9025_OFFSET;
-    gimbal.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
-    gimbal.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
+    gimbal.position_error = circle_error(gimbal.position_ref, moto_yaw.ecd, 8191);
+    gimbal.angle_error = gimbal.position_error  * (2.0f * PI / 8191.0f);
 
 
-    pid_calc(&pid_yaw_angle_9025, moto_yaw.ecd, moto_yaw.ecd + gimbal.angle_error);
-    gimbal.pid.yaw_spd_9025_ref = pid_yaw_angle_9025.pos_out;
-    gimbal.pid.yaw_spd_9025_fdb = YAW_9025.RPM; // 陀螺仪速度反馈
+   pid_calc(&pid_yaw_angle_9025, moto_yaw.ecd, moto_yaw.ecd + gimbal.position_error);
+   gimbal.pid.yaw_spd_9025_ref = pid_yaw_angle_9025.pos_out;
+    gimbal.pid.yaw_spd_9025_fdb = YAW_9025.wspeed; // 陀螺仪速度反馈
     pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);
-    gimbal.current[2] = -pid_yaw_spd_9025.pos_out;
+    gimbal.current[2] = pid_yaw_spd_9025.pos_out;
 #endif
     memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current)); // 赋值电流结果进CAN发送缓冲
 }

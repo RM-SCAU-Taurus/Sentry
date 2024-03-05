@@ -20,7 +20,7 @@ typedef void (*gimbal_mode_callback)();
 //父类
 typedef struct
 {
-    gimbal_mode_callback c_Fun;
+    gimbal_mode_callback Control_Fun;
 }Gimbal_Base;
 
 //子类

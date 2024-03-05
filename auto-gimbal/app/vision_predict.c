@@ -391,7 +391,7 @@ void vsn_gimbal_ref_calc(void) {
 								}
 								else{
 //								gimbal.pid.yaw_angle_6020_ref = vision.yaw_angle_6020_error;//”…µº∫Ωøÿ÷∆
-								gimbal.pid.yaw_angle_6020_ref = gimbal.pid.pit_angle_fdb;
+								gimbal.pid.yaw_angle_6020_ref = gimbal.pid.yaw_angle_6020_fdb;
                 gimbal.pid.pit_angle_ref      = vision.pit_angle_error;	
 									
 								}

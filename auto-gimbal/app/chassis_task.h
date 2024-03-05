@@ -99,7 +99,7 @@ typedef struct
 //父类
 typedef struct
 {
-    chassis_mode_callback c_Fun;
+    chassis_mode_callback Control_Fun;
 }Chassis_Base;
 
 //子类

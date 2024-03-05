@@ -101,25 +101,25 @@
 #define GIMBAL_PIT_MAX              3450
 #define GIMBAL_PIT_MIN              2330
 
-#define GIMBAL_YAW_CENTER_OFFSET   5588 //5568
-#define GIMBAL_YAW_9025_OFFSET     4000
+#define GIMBAL_YAW_CENTER_OFFSET   151 //5568
+#define GIMBAL_YAW_9025_OFFSET     178
 #define GIMBAL_YAW_BETWEEN_ECD      ( 8191 / 8 )
 #define FIGHT_OFFSET_ERR            ( -1.0f * GIMBAL_YAW_BETWEEN_ECD / 8191 * 2 * PI )
 
 /* YAW轴PID系数 */
-#define pid_yaw_angle_6020_P 150.0f//180
+#define pid_yaw_angle_6020_P 120.0f//180
 #define pid_yaw_angle_6020_I 0.0f
 #define pid_yaw_angle_6020_D 0.0f
 
-#define pid_yaw_spd_6020_P 12.0f//20
-#define pid_yaw_spd_6020_I 0.1f//0.3
+#define pid_yaw_spd_6020_P -12.0f//20
+#define pid_yaw_spd_6020_I 0.0f//0.3
 #define pid_yaw_spd_6020_D 0.0f
 
 #define pid_yaw_angle_9025_P 0.0f//180
 #define pid_yaw_angle_9025_I 0.0f
 #define pid_yaw_angle_9025_D 0.0f
 
-#define pid_yaw_spd_9025_P 0.0f//20
+#define pid_yaw_spd_9025_P 45.0f//20
 #define pid_yaw_spd_9025_I 0.0f//0.3
 #define pid_yaw_spd_9025_D 0.0f
 

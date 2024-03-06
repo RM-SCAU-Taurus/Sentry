@@ -21,6 +21,10 @@ uint8_t CAN1_Tx_data[8];
 uint8_t CAN2_Rx_data[8];
 uint8_t CAN2_Tx_data[8];
 uint8_t GAME_STATE;
+
+/* 定义中值滤波变量 */
+float RM6020_array[7] = {0};
+float follow_yaw_data=0;
 extern Game_Status_t Game_Status;
 moto_mf_t YAW_9025;
 /**
@@ -59,12 +63,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
             status.power_control = 1;
             break;
         }
-        case CAN_TRIGGER_MOTOR1_ID: // 上枪管拨盘2006
-        {
-            motor_trigger.msg_cnt++ <= 50 ? get_moto_offset(&motor_trigger, &hcan1, CAN1_Rx_data) : encoder_data_handler(&motor_trigger, &hcan1, CAN1_Rx_data);
-            status.gimbal_status[2] = 1;
-            break;
-        }
+
         default:
         {
             break;
@@ -99,6 +98,15 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
             //            }
             break;
         }
+				
+				        case CAN_TRIGGER_MOTOR1_ID: // 上枪管拨盘2006
+        {
+            motor_trigger.msg_cnt++ <= 50 ? get_moto_offset(&motor_trigger, &hcan1, CAN1_Rx_data) : encoder_data_handler(&motor_trigger, &hcan1, CAN1_Rx_data);
+            status.gimbal_status[2] = 1;
+            break;
+        }
+				
+				
         }
         __HAL_CAN_ENABLE_IT(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
     }
@@ -180,6 +188,8 @@ void encoder_data_handler(moto_measure_t *ptr, CAN_HandleTypeDef *hcan, uint8_t 
     // 机械角度
     ptr->last_ecd = ptr->ecd;
     ptr->ecd = (uint16_t)(CAN_Rx_data[0] << 8 | CAN_Rx_data[1]);
+
+		follow_yaw_data = GildeAverageValueFilter(ptr->ecd, RM6020_array);
 
     // 相对开机后的角度
     if (ptr->ecd - ptr->last_ecd > 4096)

@@ -143,8 +143,7 @@ void DataWave(UART_HandleTypeDef* huart)
 //    DataScope_Get_Channel_Data(gimbal.pid.pit_spd_fdb);
 //    DataScope_Get_Channel_Data(pid_pit_spd.iout);
 //        
-			DataScope_Get_Channel_Data(chassis.spd_input.vx);
-			DataScope_Get_Channel_Data(chassis.spd_input.vy);
+			DataScope_Get_Channel_Data(pid_yaw_spd_9025.pos_out);
 	
 //    DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_ref);
 //    DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_fdb);

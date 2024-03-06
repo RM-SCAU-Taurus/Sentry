@@ -10,7 +10,7 @@
 #include "bsp_Mf_Motor.h"
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "math_calcu.h"
 /* 圆周率 */
 #ifndef PI
 #define PI 3.14159265358979323846f
@@ -22,13 +22,23 @@
 
 #define  WHEEL_RADIUS 0.120f
 
+/* 定义中值滤波变量 */
+uint8_t wspeed_n = 0;
+float wspeed[7] = {0};
+
+
 void encoder_data_receive(moto_mf_t* ptr, uint8_t * CAN_Rx_data)
 {
+		static float wspeed_rec;
     //命令字节
     ptr->Command_byte = CAN_Rx_data[0];
     //转子转速
     ptr->RPM = ((int16_t)(CAN_Rx_data[5] << 8 | CAN_Rx_data[4]))/1.0f;
-    ptr->wspeed     = ((int16_t)(CAN_Rx_data[5] << 8 | CAN_Rx_data[4]))*0.104f/1.0f;
+//    ptr->wspeed     = ((int16_t)(CAN_Rx_data[5] << 8 | CAN_Rx_data[4]))*0.104f/1.0f;
+	  wspeed_rec     = ((int16_t)(CAN_Rx_data[5] << 8 | CAN_Rx_data[4]))*0.104f/1.0f;
+
+		ptr->wspeed = GildeAverageValueFilter(wspeed_rec, wspeed);
+		
     ptr->vspeed = ptr->wspeed * WHEEL_RADIUS;
     //转矩电流
     ptr->powercontrol = (int16_t)(CAN_Rx_data[3] << 8 | CAN_Rx_data[2]);

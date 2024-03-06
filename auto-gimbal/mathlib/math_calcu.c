@@ -12,6 +12,9 @@
 #include "remote_msg.h"
 #include "math.h"
 #include "data_processing.h"
+#include <stdlib.h>
+
+#define window 5 // 滑动窗口大小
 
 ramp_function_source_t chassis_x_ramp;
 ramp_function_source_t chassis_y_ramp;
@@ -108,14 +111,14 @@ float GildeAverageValueFilter(float NewValue,float *Data)
     max=Data[0];
     min=Data[0];
     sum=Data[0];
-    for(i=N2-1; i!=0; i--)
+    for(i=7-1; i!=0; i--)
     {
         if(Data[i]>max) max=Data[i];
         else if(Data[i]<min) min=Data[i];
         sum+=Data[i];
         Data[i]=Data[i-1];
     }
-    i=N2-2;
+    i=7-2;
     sum=sum-max-min;
     sum=sum/i;
     return(sum);
@@ -182,4 +185,32 @@ float lowpassfilter(float x)
 	
 	return y;
 
+}
+
+// Function to compare integers for qsort function
+int compare(const void *a, const void *b)
+{
+	return (*(int *)a - *(int *)b);
+}
+// Function to perform median filter
+void medianFilter(float *signal, float *result, uint8_t N)
+{
+	int i, j, filterSize = 5;
+	int *temp = (int *)malloc(filterSize * sizeof(int));
+
+	for (i = 0; i < N; ++i)
+	{
+		for (j = 0; j < filterSize; ++j)
+		{
+			if ((i + j) < N)
+				temp[j] = signal[i + j];
+			else
+				temp[j] = 0;
+		}
+
+		qsort(temp, filterSize, sizeof(int), compare);
+		result[i] = temp[filterSize / 2];
+	}
+
+	free(temp);
 }

@@ -60,4 +60,6 @@ float Sigmoid_function(float x);
 float circle_error(float set,float get,float circle_para);
 float data_limit(float data, float max, float min);
 float lowpassfilter(float x);
+void medianFilter(float* signal, float* result, uint8_t N);
+int compare(const void *a, const void *b);
 #endif

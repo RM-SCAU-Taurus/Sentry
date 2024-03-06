@@ -37,6 +37,7 @@ extern Game_Status_t Game_Status;
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
 extern vision_tx_msg_t vision_tx_msg;
 extern moto_mf_t YAW_9025;
+extern uint8_t flag_ii;
 /**********静态函数声明********/
 static void gimbal_pid_calcu(void);
 static void Gimbal_MODE_PROTECT_callback(void);
@@ -59,7 +60,7 @@ static Gimbal_Derived Drv_REMOTER;
 static Gimbal_Derived Drv_AUTO;
 /**********测试变量声明********/
 int8_t choose_pid_flag = 0, goback_flag = 0;
-
+uint16_t cnt_9025=0;
 void gimbal_param_init(void)
 {
     memset(&gimbal, 0, sizeof(gimbal_t));
@@ -76,13 +77,17 @@ void gimbal_param_init(void)
 
     PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 8000, 0,
                     pid_yaw_angle_9025_P, pid_yaw_angle_9025_I, pid_yaw_angle_9025_D);
-    PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 2048, 1024,
+    PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 1024, 512,
                     pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
 
-      PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 1000, 500,
+      PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 150, 50,
 
-                    -0.06f, -0.00005f, 0.0f);
-
+                    -0.04f, -0.00005f, 0.0f);
+		
+		
+		    PID_struct_init(&pid_9025_i, POSITION_PID, 50, 0,
+                    0.0f, 0.0f, 0.0f);
+										
     scale.ch1 = RC_CH1_SCALE;
     scale.ch2 = RC_CH2_SCALE;
 
@@ -285,14 +290,25 @@ void gimbal_pid_calcu(void)
 
 
     gimbal.position_ref = GIMBAL_YAW_9025_OFFSET;
-    gimbal.position_error = circle_error(gimbal.position_ref, moto_yaw.ecd, 8191);
+    gimbal.position_error = circle_error(gimbal.position_ref, follow_yaw_data, 8191);
     gimbal.angle_error = gimbal.position_error  * (2.0f * PI / 8191.0f);
 
 
-   pid_calc(&pid_yaw_angle_9025, moto_yaw.ecd, moto_yaw.ecd + gimbal.position_error);
+   pid_calc(&pid_yaw_angle_9025, follow_yaw_data, follow_yaw_data+ gimbal.position_error);
    gimbal.pid.yaw_spd_9025_ref = pid_yaw_angle_9025.pos_out;
     gimbal.pid.yaw_spd_9025_fdb = YAW_9025.wspeed; // 陀螺仪速度反馈
     pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);
+		if( flag_ii == 1 && cnt_9025++ <250)
+		{
+			pid_yaw_angle_9025.iout=0;	
+			pid_yaw_spd_9025.pos_out =0;
+		}
+		else{
+		cnt_9025 =0;
+		flag_ii=0;	
+		pid_yaw_angle_9025.p = -0.04;
+		}
+
     gimbal.current[2] = pid_yaw_spd_9025.pos_out;
 #endif
     memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current)); // 赋值电流结果进CAN发送缓冲

@@ -55,6 +55,7 @@ typedef struct
   uint32_t msg_cnt;
 } moto_measure_t;
 extern uint8_t GAME_STATE;
+extern float follow_yaw_data;
 __BSP_CAN_EXT moto_measure_t moto_chassis[4];
 __BSP_CAN_EXT moto_measure_t moto_pit;
 __BSP_CAN_EXT moto_measure_t moto_yaw;

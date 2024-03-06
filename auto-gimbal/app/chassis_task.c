@@ -47,6 +47,8 @@ static void Chassis_queue_send(void);
 static void ROTATE_State_Check(void);
 static Chassis_Base *chassis_mode_switch(void);
 /**********测试变量声明********/
+float yaw_center = 74;
+uint8_t flag_ii=0;
 
 /**********结构体定义**********/
 chassis_t chassis;
@@ -98,6 +100,7 @@ static Chassis_Base *chassis_mode_switch(void)
 {
     /* 系统历史状态机 */
     static ctrl_mode_e last_ctrl_mode = PROTECT_MODE;
+		static chassis_mode_e last_chassis_mode;
     static Chassis_Base *p_re = NULL;
     /* 底盘状态机 */
     switch (ctrl_mode)
@@ -114,6 +117,9 @@ static Chassis_Base *chassis_mode_switch(void)
             chassis.mode = CHASSIS_MODE_REMOTER_FOLLOW;
         /* 底盘小陀螺模式 */
         ROTATE_State_Check();
+				if( last_chassis_mode  == CHASSIS_MODE_REMOTER_ROTATE && chassis.mode == CHASSIS_MODE_REMOTER_FOLLOW )
+					flag_ii = 1;
+				
         p_re = (Chassis_Base *)&Drv_REMOTER;
     }
     break;
@@ -129,6 +135,7 @@ static Chassis_Base *chassis_mode_switch(void)
     }
     /* 系统历史状态更新 */
     last_ctrl_mode = ctrl_mode;
+		last_chassis_mode = chassis.mode;
     return p_re;
 }
 
@@ -163,7 +170,7 @@ static void CHASSIS_MODE_AUTO_callback(void)
 
 static void CHASSIS_MODE_FOLL_ROTA_callback(void)
 {
-    chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET;
+    chassis.position_ref = yaw_center;
 //    chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
 	chassis.position_error = circle_error(chassis.position_ref, YAW_9025.encoder, 360);
     chassis.angle_error = chassis.position_error * (2.0f * PI /360.0f);
@@ -171,9 +178,9 @@ static void CHASSIS_MODE_FOLL_ROTA_callback(void)
 		
 //		chassis.angle_error = 0;
 		
-    chassis.spd_input.vx = 1.0f * (float)(rc.ch4 * scale.ch4 * cos(chassis.angle_error) - (-1.0f) * rc.ch3 * scale.ch3 * sin(chassis.angle_error));
-    chassis.spd_input.vy = 1.0f * (float)(-rc.ch4 * scale.ch4 * sin(chassis.angle_error) - (-1.0f) * rc.ch3 * scale.ch3 * cos(chassis.angle_error));
-    chassis.spd_input.vy = chassis.spd_input.vy; // 换模式加-
+    chassis.spd_input.vx = 1.0f * (float)(rc.ch4 * scale.ch4 * cos(chassis.angle_error) - (1.0f) * (rc.ch3) * scale.ch3 * sin(chassis.angle_error));
+    chassis.spd_input.vy = 1.0f * (float)(-rc.ch4 * scale.ch4 * sin(chassis.angle_error) - (1.0f) * (rc.ch3) * scale.ch3 * cos(chassis.angle_error));
+    chassis.spd_input.vy = -chassis.spd_input.vy; // 换模式加-
 
     if (chassis.mode == CHASSIS_MODE_REMOTER_FOLLOW)
     {

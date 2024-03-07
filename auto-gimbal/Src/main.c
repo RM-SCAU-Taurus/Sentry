@@ -110,12 +110,16 @@ int main(void)
   MX_DMA_Init();
   MX_CAN1_Init();
   MX_CAN2_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
+  MX_TIM13_Init();
   MX_UART5_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
+  MX_TIM12_Init();
+  MX_TIM4_Init();
   MX_CRC_Init();
-  MX_TIM5_Init();
 //  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 //    can_device_init();
@@ -125,7 +129,7 @@ int main(void)
 //    USER_UART_Init();
 //		vsn_init();
 ////		ust_tim_start();//微妙延时函数tim
-//    HAL_Delay(500);//最新代码 初始化放任务里
+    HAL_Delay(500);//最新代码 初始化放任务里
 		
 
   /* USER CODE END 2 */
@@ -227,10 +231,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-	 if (htim->Instance == TIM3) {
-    HAL_IncTick();
-		FreeRTOSRunTimeTicks++;
-	}
+//	 if (htim->Instance == TIM3) {
+//    HAL_IncTick();
+//		FreeRTOSRunTimeTicks++;
+//	}
   /* USER CODE END Callback 1 */
 }
 

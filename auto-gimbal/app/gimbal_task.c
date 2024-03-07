@@ -37,7 +37,8 @@ extern Game_Status_t Game_Status;
 extern void rm_queue_data(uint16_t cmd_id, void *buf, uint16_t len);
 extern vision_tx_msg_t vision_tx_msg;
 extern moto_mf_t YAW_9025;
-extern uint8_t flag_ii;
+extern uint8_t flag_out_ROTATE;
+extern uint8_t flag_in_ROTATE;
 /**********静态函数声明********/
 static void gimbal_pid_calcu(void);
 static void Gimbal_MODE_PROTECT_callback(void);
@@ -61,6 +62,7 @@ static Gimbal_Derived Drv_AUTO;
 /**********测试变量声明********/
 int8_t choose_pid_flag = 0, goback_flag = 0;
 uint16_t cnt_9025=0;
+float test_i =0.0003;
 void gimbal_param_init(void)
 {
     memset(&gimbal, 0, sizeof(gimbal_t));
@@ -202,12 +204,15 @@ static void Gimbal_MODE_PROTECT_callback(void)
     vision_ctrl.yaw = imu_data.yaw;
     for (uint8_t i = 0; i < 2; i++)
         gimbal.current[i] = 0;
+	pid_yaw_angle_9025.iout=0;	
 }
+
 
 static void Gimbal_MODE_REMOTER_callback(void)
 {
     gimbal.pid.pit_angle_ref += rc.ch2 * scale.ch2;
     gimbal.pid.yaw_angle_6020_ref += rc.ch1 * scale.ch1;
+		
     vision_ctrl.yaw = imu_data.yaw;
     vision.status = vFIRST_LOST;
 }
@@ -298,16 +303,30 @@ void gimbal_pid_calcu(void)
    gimbal.pid.yaw_spd_9025_ref = pid_yaw_angle_9025.pos_out;
     gimbal.pid.yaw_spd_9025_fdb = YAW_9025.wspeed; // 陀螺仪速度反馈
     pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);
-		if( flag_ii == 1 && cnt_9025++ <250)
+		if( flag_out_ROTATE == 1 && cnt_9025++ <250)
 		{
 			pid_yaw_angle_9025.iout=0;	
 			pid_yaw_spd_9025.pos_out =0;
 		}
 		else{
 		cnt_9025 =0;
-		flag_ii=0;	
-		pid_yaw_angle_9025.p = -0.04;
+		flag_out_ROTATE=0;	
 		}
+		
+		if(flag_in_ROTATE == 1 ){
+
+		pid_yaw_angle_9025.i =-test_i;
+			
+		}
+		else{
+		
+      PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 150, 50,
+
+                    -0.04f, -0.00005f, 0.0f);
+		}
+		
+		
+		
 
     gimbal.current[2] = pid_yaw_spd_9025.pos_out;
 #endif

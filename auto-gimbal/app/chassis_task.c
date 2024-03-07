@@ -48,7 +48,8 @@ static void ROTATE_State_Check(void);
 static Chassis_Base *chassis_mode_switch(void);
 /**********测试变量声明********/
 float yaw_center = 74;
-uint8_t flag_ii=0;
+uint8_t flag_out_ROTATE=0;
+uint8_t flag_in_ROTATE=0;
 
 /**********结构体定义**********/
 chassis_t chassis;
@@ -118,8 +119,11 @@ static Chassis_Base *chassis_mode_switch(void)
         /* 底盘小陀螺模式 */
         ROTATE_State_Check();
 				if( last_chassis_mode  == CHASSIS_MODE_REMOTER_ROTATE && chassis.mode == CHASSIS_MODE_REMOTER_FOLLOW )
-					flag_ii = 1;
-				
+					flag_out_ROTATE = 1;
+					if (chassis.mode == CHASSIS_MODE_REMOTER_ROTATE)	
+					flag_in_ROTATE = 1;		
+				else
+							flag_in_ROTATE=0;
         p_re = (Chassis_Base *)&Drv_REMOTER;
     }
     break;

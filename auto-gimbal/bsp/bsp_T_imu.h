@@ -11,7 +11,7 @@
 
 #define TIMU_PALSTANCE_ID   0x001
 #define TIMU_ANGLE_ID   	0x002
-
+#define TIMU_9025_ID   	0x130
 typedef struct
 {
     float pitch;
@@ -23,6 +23,7 @@ typedef struct
 } Taurus_imu_data_t;
 
 extern Taurus_imu_data_t   imu_data;
+extern Taurus_imu_data_t   imu_9025;
 void T_imu_calcu(uint32_t can_id,uint8_t * CAN_Rx_data);
 
 #endif

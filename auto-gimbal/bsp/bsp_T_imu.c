@@ -18,8 +18,11 @@
 
 float 	palstance_buffer[2];
 float 	angle_buffer[2];
+float 	imu_9025_buffer[2];
 
 Taurus_imu_data_t   imu_data;
+
+Taurus_imu_data_t   imu_9025;
 void T_imu_calcu(uint32_t can_id,uint8_t * CAN_Rx_data)
 {
     switch(can_id)
@@ -36,6 +39,13 @@ void T_imu_calcu(uint32_t can_id,uint8_t * CAN_Rx_data)
         memcpy(angle_buffer,CAN_Rx_data,8);
         imu_data.pitch = angle_buffer[0];  //当陀螺仪水平旋转180度时需要加-号
         imu_data.yaw   = angle_buffer[1];
+    }
+    break;
+		    case TIMU_9025_ID:			//角度
+    {
+        memcpy(imu_9025_buffer,CAN_Rx_data,8);
+        imu_9025.wz = imu_9025_buffer[0];  //当陀螺仪水平旋转180度时需要加-号
+        imu_9025.yaw   = imu_9025_buffer[1];
     }
     break;
     }

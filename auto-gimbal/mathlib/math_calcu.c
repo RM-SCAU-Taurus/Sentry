@@ -111,14 +111,14 @@ float GildeAverageValueFilter(float NewValue,float *Data)
     max=Data[0];
     min=Data[0];
     sum=Data[0];
-    for(i=7-1; i!=0; i--)
+    for(i=9-1; i!=0; i--)
     {
         if(Data[i]>max) max=Data[i];
         else if(Data[i]<min) min=Data[i];
         sum+=Data[i];
         Data[i]=Data[i-1];
     }
-    i=7-2;
+    i=9-2;
     sum=sum-max-min;
     sum=sum/i;
     return(sum);

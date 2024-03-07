@@ -23,10 +23,26 @@ uint8_t CAN2_Tx_data[8];
 uint8_t GAME_STATE;
 
 /* 定义中值滤波变量 */
-float RM6020_array[7] = {0};
+float RM6020_array[9] = {0};
 float follow_yaw_data=0;
 extern Game_Status_t Game_Status;
 moto_mf_t YAW_9025;
+
+/******************************MOVE************************************************/
+void can_device_init(void)
+{
+    uint32_t can_ID1[] = {0x300, TIMU_ANGLE_ID, POWER_CONTROL_ID, CAN_9025_M1_ID, CAN_9025_M2_ID, CAN_YAW_MOTOR_ID, 0xFFF};
+    uint32_t can_ID2[] = {TIMU_PALSTANCE_ID, TIMU_ANGLE_ID, CAN_PIT_MOTOR_ID, CAN_TRIGGER_MOTOR1_ID, 0xFFF};
+    canx_init(&hcan1, can_ID1, User_can1_callback);
+    canx_init(&hcan2, can_ID2, User_can2_callback);
+}
+
+
+
+
+/************************************************************************************/
+
+
 /**
  * @brief     CAN接受中断回调函数
  * @param     CAN_Rx_data ：CAN节点反馈的数据帧
@@ -57,6 +73,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
             //  can_msg_read(Rx1Message.StdId,CAN1_Rx_data);
             break;
         }
+				//				 case TIMU_9025_ID:
+//        {
+//            T_imu_calcu(Rx2Message.StdId, CAN2_Rx_data);
+//            break;
+//        }
         case POWER_CONTROL_ID:
         {
             Power_data_handler(Rx1Message.StdId, CAN1_Rx_data);
@@ -87,6 +108,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
             status.gyro_status[1] = 1;
             break;
         }
+
         case CAN_PIT_MOTOR_ID:
         {
             encoder_data_handler(&moto_pit, hcan, CAN2_Rx_data);

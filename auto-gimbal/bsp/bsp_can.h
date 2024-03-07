@@ -63,7 +63,7 @@ __BSP_CAN_EXT moto_measure_t motor_trigger;
 void encoder_data_handler(moto_measure_t *ptr, CAN_HandleTypeDef *hcan, uint8_t *CAN_Rx_data);
 void get_moto_offset(moto_measure_t *ptr, CAN_HandleTypeDef *hcan, uint8_t *CAN_Rx_data);
 
-void can_device_init(void);
+//void can_device_init(void);
 void game_data_handler(robot_judge_msg_t *robot_judge_msg_e);
 void can1_send_chassis_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, uint8_t iq4, uint8_t iq5);
 void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int16_t iq4);
@@ -71,4 +71,12 @@ void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 void send_message_mf(int16_t TX_ID,uint8_t Command_byte,int16_t iq1);
 void pit_data_handler(moto_measure_t *ptr, CAN_HandleTypeDef *hcan, uint8_t *CAN_Rx_data);
 void send_judge_msg(int16_t TX_ID, CAN_HandleTypeDef *hcan);
+
+
+
+/***********************************/
+void can_device_init(void);
+void canx_init(CAN_HandleTypeDef * hcan, uint32_t  * id, void (*pFunc)(uint32_t,uint8_t*));
+void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan);
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
 #endif

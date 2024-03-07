@@ -143,11 +143,15 @@ void DataWave(UART_HandleTypeDef* huart)
 //    DataScope_Get_Channel_Data(gimbal.pid.pit_spd_fdb);
 //    DataScope_Get_Channel_Data(pid_pit_spd.iout);
 //        
-			DataScope_Get_Channel_Data(pid_yaw_spd_9025.pos_out);
-	
+//			DataScope_Get_Channel_Data(pid_yaw_spd_9025.pos_out);
+	 
 //    DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_ref);
-//    DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_fdb);
-//    DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_6020_ref);
+//      DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_fdb);
+//      DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_6020_ref);
+//	
+//	 DataScope_Get_Channel_Data(imu_9025.wz);
+//	 DataScope_Get_Channel_Data(imu_9025.yaw);
+//	
 //    DataScope_Get_Channel_Data(gimbal.pid.yaw_spd_6020_fdb);
 
 //    DataScope_Get_Channel_Data((float) gimbal.pid.yaw_mecd_ref, 1 );
@@ -193,9 +197,9 @@ void DataWave(UART_HandleTypeDef* huart)
 
     /* Õ”¬›“« */
 //    DataScope_Get_Channel_Data(imu_data.pitch);
-//    DataScope_Get_Channel_Data(imu_data.yaw);
-//    DataScope_Get_Channel_Data(imu_data.wy);
-//    DataScope_Get_Channel_Data(imu_data.wz);
+    DataScope_Get_Channel_Data(imu_data.yaw);
+////    DataScope_Get_Channel_Data(imu_data.wy);
+    DataScope_Get_Channel_Data(imu_data.wz);
 
     /* Z÷·‘∆Ã® */
 //    DataScope_Get_Channel_Data((float) (zgim.pid_param.spd_ref), 1 );

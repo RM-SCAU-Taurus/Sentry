@@ -121,12 +121,12 @@ void gimbal_task(void const *argu)
     static Gimbal_Base *Action_ptr = NULL;
     for (;;)
     {
-         taskENTER_CRITICAL();
+        taskENTER_CRITICAL();
          Action_ptr = Gimbal_mode_check();
 
-         Action_ptr->c_Fun();
+          Action_ptr->c_Fun();
 
-         Gimbal_data_calc();
+        Gimbal_data_calc();
         /* 云台串级PID */
         gimbal_pid_calcu();
         osSignalSet(can_msg_send_task_t, GIMBAL_MOTOR_MSG_SEND);

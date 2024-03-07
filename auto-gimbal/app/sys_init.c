@@ -81,33 +81,33 @@ uint8_t InfoBuffer[1000];
 void CPU_RunTime(void const *argu)
 {
 	
-//	portTickType xLastWakeTime;
-//	xLastWakeTime = xTaskGetTickCount();
-//	HAL_TIM_Base_Start_IT(&htim3);//测试cpu占用
-//	while(1)
-//		{
-//			
-//		  osDelayUntil(&xLastWakeTime,1);//1000HZ
-////		  vTaskList((char *)&InfoBuffer);
-//		  vTaskGetRunTimeStats((char *)&InfoBuffer); 
-//	   if(1)
-//		   {
-////				 printf("=================================================\r\n");
-////				 printf("任务名        任务状态 优先级  剩余栈  任务号 \r\n");
-////				 printf("=================================================\r\n");
-////         printf("%s\r\n", InfoBuffer);
-////				 printf("  B：阻塞  R：就绪  D：删除  S：暂停  X：运行 \r\n");
-////				 printf("=================================================\r\n");
-//				 
+	portTickType xLastWakeTime;
+	xLastWakeTime = xTaskGetTickCount();
+	HAL_TIM_Base_Start_IT(&htim3);//测试cpu占用
+	while(1)
+		{
+			
+		  osDelayUntil(&xLastWakeTime,1);//1000HZ
+//		  vTaskList((char *)&InfoBuffer);
+		  vTaskGetRunTimeStats((char *)&InfoBuffer); 
+	   if(1)
+		   {
 //				 printf("=================================================\r\n");
-//			   printf("任务名         运行计数        CPU使用率 \r\n");
+//				 printf("任务名        任务状态 优先级  剩余栈  任务号 \r\n");
 //				 printf("=================================================\r\n");
-//		  	 printf("%s\r\n",InfoBuffer);
+//         printf("%s\r\n", InfoBuffer);
+//				 printf("  B：阻塞  R：就绪  D：删除  S：暂停  X：运行 \r\n");
 //				 printf("=================================================\r\n");
-//				 printf("=================================================\r\n\n\n");
-//				 vTaskDelay(1200);
-//		   }//获取CPU使用权总
-//    }	
+				 
+				 printf("=================================================\r\n");
+			   printf("任务名         运行计数        CPU使用率 \r\n");
+				 printf("=================================================\r\n");
+		  	 printf("%s\r\n",InfoBuffer);
+				 printf("=================================================\r\n");
+				 printf("=================================================\r\n\n\n");
+				 vTaskDelay(1200);
+		   }//获取CPU使用权总
+    }	
 }
 
 

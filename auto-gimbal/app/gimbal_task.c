@@ -300,8 +300,8 @@ void gimbal_pid_calcu(void)
 
 
    pid_calc(&pid_yaw_angle_9025, follow_yaw_data, follow_yaw_data+ gimbal.position_error);
-   gimbal.pid.yaw_spd_9025_ref =- pid_yaw_angle_9025.pos_out;
-    gimbal.pid.yaw_spd_9025_fdb = YAW_9025.wspeed; // 陀螺仪速度反馈
+   gimbal.pid.yaw_spd_9025_ref  = - pid_yaw_angle_9025.pos_out;
+    gimbal.pid.yaw_spd_9025_fdb = YAW_9025.wspeed; // 陀螺仪速度反1馈
 		gimbal.pid.yaw_spd_9025_fdb = imu_9025.wz; // 陀螺仪速度反馈
     pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);
 		if( flag_out_ROTATE == 1 && cnt_9025++ <250)

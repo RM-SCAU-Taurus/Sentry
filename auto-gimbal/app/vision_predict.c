@@ -24,6 +24,24 @@
 #include "us_tim.h"
 #include "vision_predict.h"
 #include "shoot_task.h"
+
+
+/* 搜索编码器限位*/
+
+typedef enum{ 
+    turn_L = 1,
+    TURN_R = 2,
+}scandir;
+
+scandir dir_6020 = TURN_R;
+#define encoder_L 2247
+#define encoder_R 6318
+
+float scan_dir = 1.0f;
+uint8_t spin_L=0;
+uint8_t spin_R=1;
+uint8_t close_flag =0;
+float text[2];
 /* 圆周率 */
 #ifndef PI
 #define PI 3.14159265358979323846f
@@ -360,6 +378,7 @@ void vsn_gimbal_ref_calc(void) {
 //                 gimbal.pid.pit_ecd_ref = vision.pit_angle_error+gimbal.pid.pit_ecd_fdb;
 //                gimbal.pid.yaw_angle_6020_ref = vision.gimbal_yaw_angle+vision.yaw_angle_6020_error+vision.yaw_predict_angle;
                 gimbal.pid.yaw_angle_6020_ref= vision.yaw_angle_6020_error;//视觉绝对角度
+//								gimbal.pid.yaw_angle_9025_ref= vision.yaw_angle_6020_error;//视觉绝对角度
                 gimbal.pid.pit_angle_ref  = vision.pit_angle_error;
                 
 //                gimbal.pid.pit_ecd_ref = vision.gimbal_pit_ecd + vision.pit_angle_error * 8191.0f / 360;
@@ -374,6 +393,7 @@ void vsn_gimbal_ref_calc(void) {
           //  gimbal.pid.pit_ecd_ref   = gimbal.pid.pit_ecd_fdb;
              gimbal.pid.pit_angle_ref = gimbal.pid.pit_angle_fdb;
             gimbal.pid.yaw_angle_6020_ref = gimbal.pid.yaw_angle_6020_fdb;
+						gimbal.pid.yaw_angle_9025_ref = gimbal.pid.yaw_angle_9025_fdb;
             break;
         }
         case vUNAIMING: {  /* 未识别到目标 */
@@ -385,17 +405,44 @@ void vsn_gimbal_ref_calc(void) {
 						{
 								if(vision_ctrl.speed_mode == 1 ){
 								vision_ctrl.speed_yaw = data_limit(vision_ctrl.speed_yaw, 250, -250);
-                gimbal.pid.yaw_spd_6020_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
+                gimbal.pid.yaw_spd_9025_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
 //                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要
+									if(     
+										 ( ABSv(moto_yaw.ecd - encoder_L) < 10 ||  ABSv(moto_yaw.ecd - encoder_R) < 10 )
+										&& close_flag==0
+										)
+									{
+												scan_dir = -scan_dir;
+												close_flag =1;
+									}
+									if(   
+										( 
+									ABSv(moto_yaw.ecd - encoder_L) > 100  ||  ABSv(moto_yaw.ecd - encoder_R) > 100 )
+										&& (   ABSv(moto_yaw.ecd - encoder_L) > 500  && ABSv(moto_yaw.ecd - encoder_R) > 500  )                       
+
+									)
+									close_flag =0;
+									
+									gimbal.pid.yaw_angle_6020_ref += scan_dir * 0.1f;
+
+								
 								gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
+									
+									
 								}
 								else{
 //								gimbal.pid.yaw_angle_6020_ref = vision.yaw_angle_6020_error;//由导航控制
 								gimbal.pid.yaw_angle_6020_ref = gimbal.pid.yaw_angle_6020_fdb;
                 gimbal.pid.pit_angle_ref      = vision.pit_angle_error;	
+								gimbal.pid.yaw_spd_9025_ref   = 	gimbal.pid.yaw_spd_9025_fdb;
+									}
+									/***************************NEW***************************/
+									
+									
+									/***************************NEW***************************/								
 									
 								}
-            }
+
             break;
         }
         default: {break;}

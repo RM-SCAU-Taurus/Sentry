@@ -91,6 +91,8 @@ typedef struct
 	float gimbal_pitch_rate_imu;
 	float super_cup_state;
 	float diff_base_to_gimbal;
+
+	
 	
 }chassis_odom_info_t;
 

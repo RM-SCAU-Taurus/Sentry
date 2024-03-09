@@ -47,7 +47,7 @@ static void Chassis_queue_send(void);
 static void ROTATE_State_Check(void);
 static Chassis_Base *chassis_mode_switch(void);
 /**********测试变量声明********/
-float yaw_center = 74;
+float yaw_center = 80;
 uint8_t flag_out_ROTATE=0;
 uint8_t flag_in_ROTATE=0;
 
@@ -157,17 +157,18 @@ static void CHASSIS_MODE_PROTECT_callback(void)
 static void CHASSIS_MODE_AUTO_callback(void)
 {
 
-    chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET;
-    chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
-    chassis.angle_error = chassis.position_error * (2.0f * PI / 8191.0f);
-    chassis.angle_dif_degree = chassis.position_error * (360.0f / 8191.0f);
-    gimbal.yaw_imu_offset = imu_data.yaw - chassis.angle_dif_degree;
+    chassis.position_ref = yaw_center;
+//    chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
+		chassis.position_error = circle_error(chassis.position_ref, YAW_9025.encoder, 360);
+    chassis.angle_error = chassis.position_error * (2.0f * PI /360.0f);
+    chassis.angle_dif_degree = chassis.position_error * (360.0f / 360.0f);
+    gimbal.yaw_imu_offset = imu_9025.yaw - chassis.angle_dif_degree;
 	
 	
-	  chassis.spd_input.vx = 1.0f * (float)(chassis_ctrl.vx * cos(chassis.angle_error) - (-1.0f) * (-chassis_ctrl.vy) * sin(chassis.angle_error));
-    chassis.spd_input.vy = 1.0f * (float)(-chassis_ctrl.vx * sin(chassis.angle_error) - (-1.0f) * (-chassis_ctrl.vy) * cos(chassis.angle_error));
+	  chassis.spd_input.vx = 1.0f * (float)(chassis_ctrl.vx * cos(chassis.angle_error) - (-1.0f) * (chassis_ctrl.vy) * sin(chassis.angle_error));
+    chassis.spd_input.vy = 1.0f * (float)(chassis_ctrl.vx * sin(chassis.angle_error) - (1.0f) * (chassis_ctrl.vy) * cos(chassis.angle_error));
 	
-		chassis.spd_input.vx  =  chassis.spd_input.vx / 0.375f * 19.0f * 57.3f;
+		chassis.spd_input.vx  = chassis.spd_input.vx / 0.375f * 19.0f * 57.3f;
 	   chassis.spd_input.vy = chassis.spd_input.vy /  0.375f * 19.0f * 57.3f;
     chassis.spd_input.vw = chassis_ctrl.vw / 0.375f * 19.0f * 57.3f * 0.25967f;
 }
@@ -176,7 +177,7 @@ static void CHASSIS_MODE_FOLL_ROTA_callback(void)
 {
     chassis.position_ref = yaw_center;
 //    chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
-	chassis.position_error = circle_error(chassis.position_ref, YAW_9025.encoder, 360);
+		chassis.position_error = circle_error(chassis.position_ref, YAW_9025.encoder, 360);
     chassis.angle_error = chassis.position_error * (2.0f * PI /360.0f);
     chassis.angle_dif_degree = chassis.position_error * (360.0f / 360.0f);
 		
@@ -211,12 +212,14 @@ static void ChassisOdom_calc(void)
 {
     chassis.odom.x += chassis.spd_fdb.vx * 0.001f;
     chassis.odom.y += chassis.spd_fdb.vy * 0.001f;
-    chassis_odom.diff_base_to_gimbal = chassis.angle_error;
+    
     chassis_odom.vx_fdb = chassis.spd_fdb.vx;
     chassis_odom.vy_fdb = chassis.spd_fdb.vy;
     chassis_odom.vw_fdb = chassis.spd_fdb.vw;
     chassis_odom.x_fdb = chassis.odom.x;
     chassis_odom.y_fdb = chassis.odom.y;
+		chassis_odom.diff_base_to_gimbal = chassis.angle_error;
+
     PowerParam_Update();
     if (supercap.volage > SUPERCAP_DISCHAGER_VOLAGE)
         chassis_odom.super_cup_state = 1;

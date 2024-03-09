@@ -96,7 +96,13 @@ float pid_calc(pid_t* pid, float get, float set) {
     if(pid->pid_mode == POSITION_PID) //位置式p
     {
         pid->pout = pid->p * pid->err[NOW];
+			
+			
         pid->iout += pid->i * pid->err[NOW];
+			
+			
+			
+			
         pid->d_error = pid->err[NOW] - pid->err[LAST];
         pid->dout = pid->d * (pid->err[NOW] - pid->err[LAST] );
         abs_limit(&(pid->iout), pid->IntegralLimit,0);
@@ -187,4 +193,16 @@ void abs_limit(float *a, float ABS_MAX,float offset)
         *a = -ABS_MAX+offset;
 }
 
+static void f_Changing_Integral_Rate(pid_t *pid,float ScalarB,float ScalarA)
+{
+
+
+        if (ABS(*pid->err) <= ScalarB)
+            pid->iout += pid->i * pid->err[NOW]; //完整积分
+        if (ABS(*pid->err) <= (ScalarA +ScalarB))
+            //使用线性函数过渡
+            pid->iout += (ScalarA- ABS(*pid->err) + ScalarB) / ScalarA * pid->i * pid->err[NOW]  ;
+        else
+            pid->iout += 0;//取消积分环节
+}
 

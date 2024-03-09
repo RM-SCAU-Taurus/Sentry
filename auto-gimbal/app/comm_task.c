@@ -1,3 +1,4 @@
+
 #include "comm_task.h"
 #include "bsp_can.h"
 #include "cmsis_os.h"
@@ -47,11 +48,15 @@ void can_msg_send_task(void const *argu)
             {
                 if( event.value.signals)
                 {
-//                    can1_send_message(GIMBAL_CAN_TX_ID, motor_cur.gimbal_cur[0], 0, motor_cur.trigger_cur, 0);
-                    can2_send_message(GIMBAL_CAN_TX_ID,  motor_cur.gimbal_cur[0], motor_cur.gimbal_cur[1], 0, 0);
+                    can1_send_message(GIMBAL_CAN_TX_ID, motor_cur.gimbal_cur[0], 0, motor_cur.trigger_cur, 0);
+                    can2_send_message(GIMBAL_CAN_TX_ID, 0, motor_cur.gimbal_cur[1], 0, 0);
 										send_message_mf(CAN_9025_YAW_TX_ID,TORQUE_COMMAND,motor_cur.gimbal_cur[2]);
 //										send_message_mf(CAN_9025_YAW_TX_ID,TORQUE_COMMAND,0);
 										send_judge_msg(0x09,&hcan1);
+									
+									
+									
+									
 								}
                 if( event.value.signals & CHASSIS_MOTOR_MSG_SEND )
                 {

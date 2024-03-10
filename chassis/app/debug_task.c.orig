@@ -1,0 +1,266 @@
+#include "debug_task.h"
+#include "cmsis_os.h"
+#include "usart.h"
+#include "data_scope.h"
+#include "status_task.h"
+
+/* 待添加头文件 */
+#include "math.h"
+//#include "pid.h"
+//#include "T_imu.h"
+#include "gimbal_task.h"
+#include "chassis_task.h"
+//#include "vision_rx.h"
+//#include "vision_predict.h"
+//#include "power_ctrl.h"
+//#include "dji_motor.h"
+#include "bsp_powerlimit.h"
+#include "bsp_can.h"
+//#define DEBUG_TASK_ENABLE
+
+#define ABS(x) ((x>0)? (x): (-(x)))
+
+//待打印变量
+//extern pid_t pid_trigger_ecd;
+//extern pid_t pid_trigger_spd;
+extern pid_t pid_pit_spd;
+//extern pid_t pid_chassis_angle;
+//extern float* last_imu_yaw_data;
+extern chassis_t chassis;
+extern float test_time;
+//extern float std;
+
+//extern float test_chassis_cur;
+//extern moto_measure_t moto_chassis[4];
+
+/* 用以选择打印的数据类型 */
+uint8_t debug_wave = 117; 
+
+/* --------------------------------------------------------------------------------------------------
+视觉调试步骤与涉及变量
+DataScope_Get_Channel_Data();
+0. 查看数据方差（p,y,d,t,pos）    vsn_std_switch, std
+1. 角度幅值匹配                   视觉侧的Z偏移量
+2. 角度相位匹配                   match_time_angle
+3. 角速度幅值匹配                 kal_R_angle, kal_R_yaw_aim_spd, kal_R_yaw_imu_spd
+   角速度相位匹配                 match_time_omega
+4. 延时测试                       offset_time
+5. 距离与飞行时间滤波与相位匹配   kal_R_dis_tof, match_time_dis_tof
+6. 视觉滤波器收敛时间             stable_time_flt
+-------------------------------------------------------------------------------------------------- */
+/* 视觉待打印数据采样 */
+static void VisionDataWavePkg(uint8_t wave_index) {
+    switch (debug_wave) {
+        /* ------------------------------------------ 原始数据 与 数据方差 ------------------------------------------ */
+        case 0: {  /* 数据滤波 与 方差 */
+           // DataScope_Get_Channel_Data(vd.yaw.vsn_agl_err.now);
+//            DataScope_Get_Channel_Data(vd.yaw.vsn_agl_err.kal);
+//            
+//            DataScope_Get_Channel_Data(vd.yaw.vsn_angular_speed.now);
+//            DataScope_Get_Channel_Data(vd.yaw.vsn_angular_speed.kal);
+//            
+//            DataScope_Get_Channel_Data(-vd.yaw.imu_angular_speed.now);
+//            DataScope_Get_Channel_Data(-vd.yaw.imu_angular_speed.kal);
+//            
+//            DataScope_Get_Channel_Data(vd.dis.now);
+////            DataScope_Get_Channel_Data(vd.dis.kal);
+//            
+//            DataScope_Get_Channel_Data(vd.tof.now);
+//            DataScope_Get_Channel_Data(vd.tof.kal);
+            
+//            DataScope_Get_Channel_Data(vd.test_period);
+                
+
+            break;
+        }
+        /* ------------------------------------------ 视觉自瞄调参 ------------------------------------------ */
+        case 1: {  /* 角度幅值匹配 —— 视觉侧调偏移量，平移曲线拟合 */
+          
+            break;
+        }
+        case 2: {  /* 角度相位匹配 */
+           
+            break;
+        }
+        case 3: {  /* 关掉预测，验证自瞄效果：目标突然出现时阶跃响应稳定 */
+           
+            break;
+        }
+        
+        /* ------------------------------------------ YAW预测调参 ------------------------------------------ */
+        case 4: {  /* 细调视觉角度滤波器 —— 数据平滑情况下，R尽可能小 */
+            
+            break;
+        }
+        case 5: {  /* 角速度幅值和相位匹配 —— 目标静止云台动时，|angular_speed|<±4 */
+           
+            break;
+        }
+        case 6: {  /* 细调预测量 */
+           
+            break;
+        }
+        
+        
+        
+//        case 6: {  /* 测量wz数据时间差 减去 角度相位匹配时间 作为距离相位匹配的参考时间 */
+//            DataScope_Get_Channel_Data(imu_data.wz/16.3835f);   /* 陀螺仪原始wz数据 */
+//            DataScope_Get_Channel_Data(vd.yaw.imu_angular_speed.kal);  /* 陀螺仪滤波并相位匹配后的wz数据 */
+//            break;
+//        }
+//        case 7: {  /* 距离与飞行时间滤波与相位匹配 —— 数据平滑情况下，R尽可能小；暂无法验证匹配情况 */
+//            DataScope_Get_Channel_Data(vd.dis.now);  /* 原始视觉距离 */
+//            DataScope_Get_Channel_Data(vd.dis.kal);  /* 滤波后的视觉距离 */
+//            DataScope_Get_Channel_Data(vd.dis.last); /* 视觉滤波且经相位匹配后的视觉距离 */
+//            break;
+//        }
+//        case 8: {  /* 视觉滤波器收敛时间 —— 目标突然出现时，radial_speed不会有脉冲 */
+//            DataScope_Get_Channel_Data(vd.dis.now);  /* 视觉原始相对距离数据 */
+//            DataScope_Get_Channel_Data(vd.dis.kal);  /* 视觉滤波后、没有经过相位匹配的相对距离数据 */
+//            DataScope_Get_Channel_Data(vd.yaw.radial_speed.now);  /* 验证距离的滤波器是否收敛 */
+//            break;
+//        }
+        case 9: {  /* 细调predict_angle滤波，测量时间差 加上 wz滞后时间 作为系统总滞后时间 */
+           
+            break;
+        }
+        
+        /* ------------------------------------------ 结果验证 ------------------------------------------ */
+        case 10: {  /* 静态预测效果验证 */
+            
+            
+            
+//            DataScope_Get_Channel_Data(vd.yaw.real_speed_angle.now);
+//            DataScope_Get_Channel_Data(vd.yaw.predict_angle.kal);
+//            
+//            DataScope_Get_Channel_Data(vision.pit_angle_error);
+//            DataScope_Get_Channel_Data(vision.pit_angle_error + vision.pit_predict_angle);
+//            DataScope_Get_Channel_Data(vd.pit.real_speed_angle.now);
+//            DataScope_Get_Channel_Data(vd.pit.predict_angle.kal);
+            break;
+        }
+        case 11: {  /* 动态预测效果 */
+          
+            break; 
+        }
+
+        
+        /* --------------------------------------- PIT视觉预测调参 ------------------------------------------ */
+        case 19: {  /* 细调视觉角度滤波器 —— 数据平滑情况下，R尽可能小 */
+           
+            break;
+        }
+        case 20: {  /* 角速度幅值和相位匹配 —— 目标静止云台动时，|angular_speed|<±4 */
+            
+            break;
+        }
+        /* --------------------------------------- 能量机关 --------------------------------------- */
+        case 21: { 
+            
+            break;
+        }
+        default: {break;}
+    }
+}
+
+/* 其他待打印数据采样 */
+static void OtherDataWavePkg(uint8_t debug_wave) {
+    switch (debug_wave) {
+        case 110: { /* 拨盘 */
+           // DataScope_Get_Channel_Data(pid_trigger_ecd.err[0]);
+           // DataScope_Get_Channel_Data(pid_trigger_spd.err[0]);
+            break;
+        }
+        case 111: { /* 云台PIT PID */
+
+            break;
+        }
+        case 112: { /* 云台YAW PID */
+           
+            break;
+        }
+        case 113: { /*云台编码器YAW模式 */
+            
+            break;
+        }
+        case 114: {
+            
+            break;
+        }
+        case 115: {  /* 底盘运动正运动学解算1 */
+//            DataScope_Get_Channel_Data(chassis.std_spd_fdb.vx);
+//            DataScope_Get_Channel_Data(chassis.std_spd_fdb.vy);
+//            DataScope_Get_Channel_Data(chassis.std_spd_fdb.vw);
+            break;
+        }
+        case 116: { /* 陀螺仪 */
+          
+            break;
+        }
+        case 117: { /* 功率控制 */
+//            DataScope_Get_Channel_Data(ABS(chassis.wheel_spd_fdb[0]));
+//            DataScope_Get_Channel_Data(ABS(chassis.wheel_spd_fdb[1]));
+//            DataScope_Get_Channel_Data(ABS(chassis.wheel_spd_fdb[2]));
+//            DataScope_Get_Channel_Data(ABS(chassis.wheel_spd_fdb[3]));
+					  DataScope_Get_Channel_Data(supercap.mode);
+					  DataScope_Get_Channel_Data(supercap.charge_power_ref);
+					  DataScope_Get_Channel_Data(powercontrol.chassis_3508_power);
+            DataScope_Get_Channel_Data(powercontrol.power_buffer);//缓存能量
+            DataScope_Get_Channel_Data(powercontrol.chassis_power);//底盘实时功率
+					  DataScope_Get_Channel_Data(chassis.wheel_max);
+            break;
+        }
+        case 118: { /* 底盘PID控制 */
+           
+            break;
+        }
+        case 119: { /* 底盘PID控制 */
+           DataScope_Get_Channel_Data(chassis.wheel_spd_ref[2]);
+					DataScope_Get_Channel_Data(moto_msg.chassis_3508[2].speed_rpm);
+					DataScope_Get_Channel_Data(motor_cur.chassis_cur_3508[2]);
+					DataScope_Get_Channel_Data(test_time);
+            break;
+        }
+        case 120: { /* 电机电流环 */
+            
+            break;
+        }
+        case 121: {
+            DataScope_Get_Channel_Data(supercap.volume_percent);
+            DataScope_Get_Channel_Data(supercap.charge_current_set);
+            DataScope_Get_Channel_Data(supercap.charge_power_ref);
+            break;
+        }
+        case 122: {
+           
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+}
+
+/* __weak void DataWavePkg(void)的实例：打包待发送数据 */
+void DataWavePkg(void) {
+    VisionDataWavePkg(debug_wave);
+    OtherDataWavePkg(debug_wave);
+}
+
+/* 串口上位机数据发送任务 */
+void debug_task(void const *argu) {
+    uint32_t thread_wake_time = osKernelSysTick();
+    for (;;) {
+        wdg_user_set_bit(WDG_BIT_TASK_DEBUG);
+//#ifdef DEBUG_TASK_ENABLE
+//        taskENTER_CRITICAL();
+        DataWave(&huart6);
+//        taskEXIT_CRITICAL();
+//        osDelayUntil(&thread_wake_time, 2);
+//#elseif
+      osDelay(10);  
+//#endif
+        
+    }
+}
+

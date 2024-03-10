@@ -1,8 +1,8 @@
 .\rm_main\func_generator.o: ..\mathlib\func_generator.c
 .\rm_main\func_generator.o: ..\mathlib\func_generator.h
-.\rm_main\func_generator.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
-.\rm_main\func_generator.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
-.\rm_main\func_generator.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\math.h
+.\rm_main\func_generator.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
+.\rm_main\func_generator.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\rm_main\func_generator.o: B:\Keil5\ARM\ARMCC\Bin\..\include\math.h
 .\rm_main\func_generator.o: ..\mathlib\math_calcu.h
 .\rm_main\func_generator.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 .\rm_main\func_generator.o: ../Inc/stm32f4xx_hal_conf.h
@@ -18,7 +18,7 @@
 .\rm_main\func_generator.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
 .\rm_main\func_generator.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 .\rm_main\func_generator.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-.\rm_main\func_generator.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
+.\rm_main\func_generator.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
 .\rm_main\func_generator.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
 .\rm_main\func_generator.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
 .\rm_main\func_generator.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
@@ -56,5 +56,5 @@
 .\rm_main\func_generator.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 .\rm_main\func_generator.o: ..\dsp\Include\arm_math.h
 .\rm_main\func_generator.o: ../Drivers/CMSIS/Include/core_cm4.h
-.\rm_main\func_generator.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\string.h
+.\rm_main\func_generator.o: B:\Keil5\ARM\ARMCC\Bin\..\include\string.h
 .\rm_main\func_generator.o: ..\control\control_def.h

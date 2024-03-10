@@ -151,8 +151,8 @@ void encoder_data_handler(moto_measure_t* ptr, uint8_t* rx_message)
   */
 void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int16_t iq4)
 {
-	uint8_t FreeTxNum = 0; 
-	static uint32_t MailBox;
+//	uint8_t FreeTxNum = 0; 
+	static uint32_t txmailbox;
 	Tx1Message.StdId = TX_ID;
 	Tx1Message.IDE 	 = CAN_ID_STD;
 	Tx1Message.RTR   = CAN_RTR_DATA;
@@ -168,14 +168,32 @@ void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 	CAN1_Tx_data[7] = iq4;
 	
 	/* 查询发送邮箱是否为空 */
-	FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);  
-	while(FreeTxNum == 0) 
-	{  
-    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);  
-  }
+//	FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);  
+//	while(FreeTxNum == 0) 
+//	{  
+//    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);  
+//  }
+		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0);      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
+	if ((hcan1.Instance->TSR & CAN_TSR_TME0) != RESET)     //如果邮箱0空闲
+	{
+		txmailbox =CAN_TX_MAILBOX0;
+	}
 
-	HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, &MailBox);
+	/* Check Tx Mailbox 1 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME1) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX1;
+	}
+
+	/* Check Tx Mailbox 2 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME2) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX2;
+	}
+	HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, (uint32_t *)txmailbox);
+	
 }
+
 
 /**
   * @brief  send calculated current to motor
@@ -183,8 +201,8 @@ void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
   */
 void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int16_t iq4)
 {
-	uint8_t FreeTxNum = 0; 
-	
+//	uint8_t FreeTxNum = 0; 
+	static uint32_t txmailbox;
 	Tx2Message.StdId = TX_ID;
 	Tx2Message.IDE 	 = CAN_ID_STD;
 	Tx2Message.RTR   = CAN_RTR_DATA;
@@ -200,13 +218,25 @@ void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 	CAN2_Tx_data[7] = iq4;
 	
 	/* 查询发送邮箱是否为空 */
-	FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);  
-	while(FreeTxNum == 0) 
-	{  
-    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);  
-  }
+		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0);      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
+	if ((hcan2.Instance->TSR & CAN_TSR_TME0) != RESET)     //如果邮箱0空闲
+	{
+		txmailbox =CAN_TX_MAILBOX0;
+	}
+
+	/* Check Tx Mailbox 1 status */
+	else if ((hcan2.Instance->TSR & CAN_TSR_TME1) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX1;
+	}
+
+	/* Check Tx Mailbox 2 status */
+	else if ((hcan2.Instance->TSR & CAN_TSR_TME2) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX2;
+	}
 	
-	HAL_CAN_AddTxMessage(&hcan2, &Tx2Message, CAN2_Tx_data, (uint32_t*)CAN_TX_MAILBOX0);
+	HAL_CAN_AddTxMessage(&hcan2, &Tx2Message, CAN2_Tx_data, (uint32_t*)txmailbox);
 }
 
 /**

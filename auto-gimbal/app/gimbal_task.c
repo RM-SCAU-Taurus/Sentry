@@ -81,7 +81,7 @@ void gimbal_param_init(void)
 	
       PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 5000, 500,
 
-                  5.0f, 0.0005f, 0.0f);
+                  5.0f, 0.0f, 0.0f);
     PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 800, 512,
                     pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
 

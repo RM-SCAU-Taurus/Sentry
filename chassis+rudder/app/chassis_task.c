@@ -53,7 +53,7 @@ void chassis_init()
 				
 		chassis.rudder_ecd_offset[0] = 5050;//100
 		chassis.rudder_ecd_offset[1] = 3597;//5300
-		chassis.rudder_ecd_offset[2] = 6253;//6350
+		chassis.rudder_ecd_offset[2] = 7657;//6350
 		chassis.rudder_ecd_offset[3] = 6668;//6500
 		
 		

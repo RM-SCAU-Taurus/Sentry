@@ -178,207 +178,37 @@
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal.pid.yaw_spd_6020_ref</ItemText>
+          <ItemText>result_wspeed</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>vision_ctrl.speed_yaw</ItemText>
+          <ItemText>ptr-&gt;wspeed</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>vision_ctrl.speed_pit</ItemText>
+          <ItemText>flag_ii</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal.pid.yaw_angle_6020_ref</ItemText>
+          <ItemText>flag_ii</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis.spd_input</ItemText>
+          <ItemText>last_chassis_mode</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis.wheel_max</ItemText>
+          <ItemText>imu_9025</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis_ctrl</ItemText>
-        </Ww>
-        <Ww>
-          <count>8</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>rc</ItemText>
-        </Ww>
-        <Ww>
-          <count>9</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>chassis_ctrl</ItemText>
-        </Ww>
-        <Ww>
-          <count>10</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>chassis.angle_error</ItemText>
-        </Ww>
-        <Ww>
-          <count>11</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>chassis.angle_dif_degree</ItemText>
-        </Ww>
-        <Ww>
-          <count>12</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>rc.ch4</ItemText>
-        </Ww>
-        <Ww>
-          <count>13</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>rc.ch3</ItemText>
-        </Ww>
-        <Ww>
-          <count>14</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>vision_ctrl.shoot_yaw_tole</ItemText>
-        </Ww>
-        <Ww>
-          <count>15</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>YAW_9025,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>16</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>pid_yaw_spd_9025,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>17</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>T_imu_calcu</ItemText>
-        </Ww>
-        <Ww>
-          <count>18</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>pid_yaw_angle_6020</ItemText>
-        </Ww>
-        <Ww>
-          <count>19</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbal.current[0]</ItemText>
-        </Ww>
-        <Ww>
-          <count>20</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbal.position_ref,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>21</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbal.position_error</ItemText>
-        </Ww>
-        <Ww>
-          <count>22</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbal.angle_error</ItemText>
-        </Ww>
-        <Ww>
-          <count>23</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>YAW_9025.encoder,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>24</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>chassis.angle_error</ItemText>
-        </Ww>
-        <Ww>
-          <count>25</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>chassis.position_error</ItemText>
-        </Ww>
-        <Ww>
-          <count>26</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>YAW_9025,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>27</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>result_wspeed</ItemText>
-        </Ww>
-        <Ww>
-          <count>28</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ptr-&gt;wspeed</ItemText>
-        </Ww>
-        <Ww>
-          <count>29</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>flag_ii</ItemText>
-        </Ww>
-        <Ww>
-          <count>30</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>cnt_9025</ItemText>
-        </Ww>
-        <Ww>
-          <count>31</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>flag_ii</ItemText>
-        </Ww>
-        <Ww>
-          <count>32</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>last_chassis_mode</ItemText>
-        </Ww>
-        <Ww>
-          <count>33</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>chassis.mode</ItemText>
-        </Ww>
-        <Ww>
-          <count>34</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>test_i</ItemText>
-        </Ww>
-        <Ww>
-          <count>35</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>flag_in_ROTATE</ItemText>
-        </Ww>
-        <Ww>
-          <count>36</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>chassis.angle_error</ItemText>
-        </Ww>
-        <Ww>
-          <count>37</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>chassis.spd_input</ItemText>
-        </Ww>
-        <Ww>
-          <count>38</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbal.pid.yaw_angle_9025_ref</ItemText>
-        </Ww>
-        <Ww>
-          <count>39</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbal.pid.yaw_angle_6020_ref</ItemText>
-        </Ww>
-        <Ww>
-          <count>40</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>vision_ctrl.speed_mode</ItemText>
-        </Ww>
-        <Ww>
-          <count>41</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>pid_pit_spd</ItemText>
+          <ItemText>pid_yaw_angle_9025</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -395,217 +225,27 @@
         <Ww>
           <count>2</count>
           <WinNumber>2</WinNumber>
-          <ItemText>rc,0x0A</ItemText>
+          <ItemText>usart_instance</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>2</WinNumber>
-          <ItemText>usart_instance</ItemText>
+          <ItemText>pid_yaw_spd_6020_P</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>2</WinNumber>
-          <ItemText>chassis.mode</ItemText>
+          <ItemText>initflag</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>2</WinNumber>
-          <ItemText>gimbal.current[2]</ItemText>
+          <ItemText>pid_yaw_spd_9025</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>2</WinNumber>
-          <ItemText>gimbal.pid.yaw_spd_9025_ref</ItemText>
-        </Ww>
-        <Ww>
-          <count>7</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\rm_main\../bsp/bsp_can.c\YAW_9025,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>8</count>
-          <WinNumber>2</WinNumber>
           <ItemText>imu_data</ItemText>
-        </Ww>
-        <Ww>
-          <count>9</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>pid_yaw_spd_6020_P</ItemText>
-        </Ww>
-        <Ww>
-          <count>10</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>pid_yaw_spd_6020</ItemText>
-        </Ww>
-        <Ww>
-          <count>11</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>gimbal.pid.yaw_angle_6020_ref</ItemText>
-        </Ww>
-        <Ww>
-          <count>12</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>moto_yaw,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>13</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>pid_yaw_angle_9025,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>14</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>moto_yaw.ecd,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>15</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>gimbal.pid.yaw_spd_9025_ref</ItemText>
-        </Ww>
-        <Ww>
-          <count>16</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>chassis.position_error</ItemText>
-        </Ww>
-        <Ww>
-          <count>17</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>yaw_center</ItemText>
-        </Ww>
-        <Ww>
-          <count>18</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>moto_yaw.ecd</ItemText>
-        </Ww>
-        <Ww>
-          <count>19</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>wspeed</ItemText>
-        </Ww>
-        <Ww>
-          <count>20</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>wspeed_n</ItemText>
-        </Ww>
-        <Ww>
-          <count>21</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>follow_yaw_data</ItemText>
-        </Ww>
-        <Ww>
-          <count>22</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>imu_9025</ItemText>
-        </Ww>
-        <Ww>
-          <count>23</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>pid_yaw_angle_9025,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>24</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>pid_yaw_spd_9025,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>25</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>pid_yaw_angle_6020</ItemText>
-        </Ww>
-        <Ww>
-          <count>26</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>pid_yaw_angle_6020</ItemText>
-        </Ww>
-        <Ww>
-          <count>27</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>vision_ctrl.speed_mode</ItemText>
-        </Ww>
-        <Ww>
-          <count>28</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>gimbal.pid.yaw_spd_9025_ref</ItemText>
-        </Ww>
-        <Ww>
-          <count>29</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>gimbal.pid.yaw_angle_6020_ref</ItemText>
-        </Ww>
-        <Ww>
-          <count>30</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>moto_yaw.ecd,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>31</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>vision_ctrl.speed_mode</ItemText>
-        </Ww>
-        <Ww>
-          <count>32</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>scan_dir</ItemText>
-        </Ww>
-        <Ww>
-          <count>33</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>gimbal.angle_error</ItemText>
-        </Ww>
-        <Ww>
-          <count>34</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>initflag</ItemText>
-        </Ww>
-        <Ww>
-          <count>35</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>spin_R</ItemText>
-        </Ww>
-        <Ww>
-          <count>36</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>spin_L</ItemText>
-        </Ww>
-        <Ww>
-          <count>37</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>close_flag</ItemText>
-        </Ww>
-        <Ww>
-          <count>38</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>text</ItemText>
-        </Ww>
-        <Ww>
-          <count>39</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>vision_ctrl.speed_yaw</ItemText>
-        </Ww>
-        <Ww>
-          <count>40</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>gimbal.current</ItemText>
-        </Ww>
-        <Ww>
-          <count>41</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>chassis.angle_error</ItemText>
-        </Ww>
-        <Ww>
-          <count>42</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>chassis.spd_input</ItemText>
-        </Ww>
-        <Ww>
-          <count>43</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>chassis.angle_dif_degree</ItemText>
-        </Ww>
-        <Ww>
-          <count>44</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>pid_pit_angle</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

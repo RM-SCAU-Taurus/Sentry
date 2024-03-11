@@ -32,6 +32,7 @@ void can_msg_send_task(void const *argu)
     osEvent event;
     for(;;)
     {
+				
 							if( ctrl_mode==PROTECT_MODE || !lock_flag )
           {
                 for(int i=0; i<4; i++)		motor_cur.chassis_cur_3508[i]= 0;
@@ -50,7 +51,7 @@ void can_msg_send_task(void const *argu)
 									 }
 										 else if(ctrl_mode==REMOTER_MODE)
 										 {
-						can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0], motor_cur.chassis_cur_3508[1], motor_cur.chassis_cur_3508[2], motor_cur.chassis_cur_3508[3]);
+						can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0],0,0, motor_cur.chassis_cur_3508[3]);
 						can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],0);
 //										can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0], motor_cur.chassis_cur_3508[1], motor_cur.chassis_cur_3508[2], motor_cur.chassis_cur_3508[3]);
 //										can1_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0],motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],motor_cur.chassis_cur_3508[3]);

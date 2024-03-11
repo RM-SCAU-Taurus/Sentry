@@ -28,7 +28,7 @@ float follow_yaw_data=0;
 extern Game_Status_t Game_Status;
 moto_mf_t YAW_9025;
 
-
+#define return_time 2
 
 struct can_rx_buff
 {
@@ -56,8 +56,8 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData);
 /******************************MOVE************************************************/
 void can_device_init(void)
 {
-    uint32_t can_ID1[] = {CAN_YAW_6020_MOTOR_ID,CAN_YAW_9025_MOTOR_ID, CHASSIS_MSG_ID, POWER_CONTROL_ID,0xFFF};
-    uint32_t can_ID2[] = {TIMU_PALSTANCE_ID,TIMU_9025_ID,TIMU_ANGLE_ID, CAN_PIT_MOTOR_ID, CAN_TRIGGER_MOTOR1_ID,0xFFF};
+    uint32_t can_ID1[] = {CAN_YAW_9025_MOTOR_ID, CHASSIS_MSG_ID, POWER_CONTROL_ID,0xFFF};
+    uint32_t can_ID2[] = {TIMU_PALSTANCE_ID,TIMU_9025_ID,TIMU_ANGLE_ID, CAN_PIT_MOTOR_ID, CAN_TRIGGER_MOTOR1_ID,CAN_YAW_6020_MOTOR_ID,0xFFF};
     canx_init(&hcan1, can_ID1, User_can1_callback);
     canx_init(&hcan2, can_ID2, User_can2_callback);
 }
@@ -239,12 +239,12 @@ static void User_can1_callback(uint32_t ID, uint8_t* CAN_RxData)
 {
     switch (ID)
     {
-					case CAN_YAW_6020_MOTOR_ID:
-        {
-            encoder_data_handler(&moto_yaw, &hcan1, CAN_RxData);
-            status.gimbal_status[0] = 1;
-            break;
-        }
+//					case CAN_YAW_6020_MOTOR_ID:
+//        {
+//            encoder_data_handler(&moto_yaw, &hcan1, CAN_RxData);
+//            status.gimbal_status[0] = 1;
+//            break;
+//        }
 				 case CAN_YAW_9025_MOTOR_ID:
         {
 						encoder_data_receive(&YAW_9025,CAN_RxData);
@@ -279,7 +279,13 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
 {
     switch (ID)
     {
-
+						case CAN_YAW_6020_MOTOR_ID:
+        {
+            encoder_data_handler(&moto_yaw, &hcan2, CAN_RxData);
+            status.gimbal_status[0] = 1;
+            break;
+        }
+				
 				case TIMU_PALSTANCE_ID:
         {
             T_imu_calcu(ID, CAN_RxData);
@@ -310,7 +316,7 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
             status.gimbal_status[2] = 1;
             break;
         }
-									case TIMU_9025_ID:
+						case TIMU_9025_ID:
         {
             T_imu_calcu(ID, CAN_RxData);
             break;
@@ -564,7 +570,7 @@ void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
 		{
 				time++;
-			if(time > 5)
+			if(time > return_time)
 			{
 			time=0;
 				return;
@@ -615,7 +621,7 @@ void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 			while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0)
 		{
 				time++;
-			if(time > 5)
+			if(time > return_time)
 			{
 			time=0;
 				return;
@@ -647,10 +653,11 @@ void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 
 void send_judge_msg(int16_t TX_ID, CAN_HandleTypeDef *hcan)
 {
-    uint8_t FreeTxNum = 0;
+//    uint8_t FreeTxNum = 0;
     CAN_TxHeaderTypeDef TxMessage;
     uint8_t judeg_msg_uint8_t[8] = {0};
     static uint32_t MailBox;
+		static uint16_t time;
     TxMessage.StdId = TX_ID;
     TxMessage.IDE = CAN_ID_STD;
     TxMessage.RTR = CAN_RTR_DATA;
@@ -661,12 +668,41 @@ void send_judge_msg(int16_t TX_ID, CAN_HandleTypeDef *hcan)
     memcpy(judeg_msg_uint8_t + 2, (void *)&Power_Heat_Data.chassis_power, sizeof(Power_Heat_Data.chassis_power));
     // memcpy(c);
 
-    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
-    while (FreeTxNum == 0)
-    {
-        FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
-    }
-    HAL_CAN_AddTxMessage(hcan, &TxMessage, judeg_msg_uint8_t, &MailBox);
+//    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
+//    while (FreeTxNum == 0)
+//    {
+//        FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
+//    }
+//    HAL_CAN_AddTxMessage(hcan, &TxMessage, judeg_msg_uint8_t, &MailBox);
+		
+			while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
+		{
+				time++;
+			if(time > return_time)
+			{
+			time=0;
+				return;
+			}
+		
+		}      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
+	if ((hcan1.Instance->TSR & CAN_TSR_TME0) != RESET)     //如果邮箱0空闲
+	{
+		MailBox =CAN_TX_MAILBOX0;
+	}
+
+	/* Check Tx Mailbox 1 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME1) != RESET)
+	{
+		MailBox =CAN_TX_MAILBOX1;
+	}
+
+	/* Check Tx Mailbox 2 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME2) != RESET)
+	{
+		MailBox =CAN_TX_MAILBOX2;
+	}
+	HAL_CAN_AddTxMessage(&hcan1, &TxMessage, judeg_msg_uint8_t, (uint32_t *)MailBox);
+	
 }
 /**
  * @brief  init the can transmit and receive
@@ -726,11 +762,11 @@ void pit_data_handler(moto_measure_t *ptr, CAN_HandleTypeDef *hcan, uint8_t *CAN
 
 void send_message_mf(int16_t TX_ID,uint8_t Command_byte,int16_t iq1)
 {
-    iq1 = data_limit(iq1,1024,-1024);
+    iq1 = data_limit(iq1,2024,-2024);
     CAN_TxHeaderTypeDef Tx1Message;
 		static uint32_t txmailbox;
     uint8_t CAN1_Tx_data[8];
-    uint8_t FreeTxNum = 0;
+//    uint8_t FreeTxNum = 0;
 		static uint16_t time;
     Tx1Message.StdId = TX_ID;
     Tx1Message.ExtId = 0x00;
@@ -747,19 +783,19 @@ void send_message_mf(int16_t TX_ID,uint8_t Command_byte,int16_t iq1)
     CAN1_Tx_data[6] = 0x00;
     CAN1_Tx_data[7] = 0x00;
 
-//    //查询发送邮箱是否为空
+    //查询发送邮箱是否为空
 //    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
 //    while(FreeTxNum == 0)
 //    {
 //        FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
 //    }
 
-//    HAL_CAN_AddTxMessage(&hcan1, &Tx1Message,CAN1_Tx_data,(uint32_t*)CAN_TX_MAILBOX0);
-		
+//    HAL_CAN_AddTxMessage(&hcan1, &Tx1Message,CAN1_Tx_data,(uint32_t*)CAN_TX_MAILBOX2);
+//		
 				while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
 		{
 				time++;
-			if(time > 5)
+			if(time > return_time)
 			{
 			time=0;
 				return;

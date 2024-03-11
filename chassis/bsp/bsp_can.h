@@ -28,7 +28,7 @@ typedef enum
 	CAN_6020_M4_ID    = 0x208,
 	
 	CAN_POWER_ID       = 0x003,
-	CAN_CHASSIS_MSG_ID = 0x08,
+	CAN_CHASSIS_MSG_ID = 0x1f1,
 	CAN_JUDGE_MSG_ID   = 0x09,
 } can2_id_e;
 

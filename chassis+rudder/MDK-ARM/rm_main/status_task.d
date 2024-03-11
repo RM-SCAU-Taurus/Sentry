@@ -7,7 +7,7 @@
 .\rm_main\status_task.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 .\rm_main\status_task.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
 .\rm_main\status_task.o: ../Drivers/CMSIS/Include/core_cm4.h
-.\rm_main\status_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
+.\rm_main\status_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 .\rm_main\status_task.o: ../Drivers/CMSIS/Include/cmsis_version.h
 .\rm_main\status_task.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
 .\rm_main\status_task.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
@@ -15,7 +15,7 @@
 .\rm_main\status_task.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
 .\rm_main\status_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 .\rm_main\status_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-.\rm_main\status_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
+.\rm_main\status_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
 .\rm_main\status_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
 .\rm_main\status_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
 .\rm_main\status_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
@@ -68,9 +68,9 @@
 .\rm_main\status_task.o: ..\bsp\bsp_FricMotor.h
 .\rm_main\status_task.o: ..\app\shoot_task.h
 .\rm_main\status_task.o: ..\app\gimbal_task.h
-.\rm_main\status_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\string.h
+.\rm_main\status_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\string.h
 .\rm_main\status_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
-.\rm_main\status_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\rm_main\status_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\rm_main\status_task.o: ..\mathlib\remote_msg.h
 .\rm_main\status_task.o: ..\app\modeswitch_task.h
 .\rm_main\status_task.o: ../Inc/iwdg.h

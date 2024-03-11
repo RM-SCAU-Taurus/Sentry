@@ -2,8 +2,8 @@ rm_main\debug_task.o: ..\app\debug_task.c
 rm_main\debug_task.o: ..\app\debug_task.h
 rm_main\debug_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 rm_main\debug_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-rm_main\debug_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
-rm_main\debug_task.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
+rm_main\debug_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
+rm_main\debug_task.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 rm_main\debug_task.o: ../Inc/FreeRTOSConfig.h
 rm_main\debug_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 rm_main\debug_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

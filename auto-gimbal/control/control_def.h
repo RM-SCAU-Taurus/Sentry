@@ -124,7 +124,7 @@
 #define pid_yaw_spd_9025_D 0.0f
 
 /* PIT轴PID系数 */
-#define pid_pit_angle_P 115.00f//180
+#define pid_pit_angle_P 50.0f//180
 #define pid_pit_angle_I 0.0f
 #define pid_pit_angle_D 0.0f
 
@@ -132,8 +132,8 @@
 #define pid_pit_ecd_I 0.0f
 #define pid_pit_ecd_D 0.0f
 
-#define pid_pit_spd_P 4.0f//10
-#define pid_pit_spd_I 0.075f//0.1
+#define pid_pit_spd_P -8.0f//10
+#define pid_pit_spd_I -0.1f//0.1
 #define pid_pit_spd_D 0.0f
 
 #endif

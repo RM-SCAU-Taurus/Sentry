@@ -46,7 +46,7 @@ void chassis_param_init(void)
 		chassis.rudder_ecd_offset[3] = 6668;//6500
     
 		chassis.spd_distribution = chassis_spd_distribution;
-		chassis.wheel_max = 9000;  /* 关掉功率控制时需要初始化 */
+		chassis.wheel_max = 6300;  /* 关掉功率控制时需要初始化 */
 }
 
 float chassis_power_user;

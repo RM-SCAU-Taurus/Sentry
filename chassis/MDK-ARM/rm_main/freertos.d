@@ -1,7 +1,7 @@
 rm_main\freertos.o: ../Src/freertos.c
 rm_main\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-rm_main\freertos.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
-rm_main\freertos.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
+rm_main\freertos.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
+rm_main\freertos.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 rm_main\freertos.o: ../Inc/FreeRTOSConfig.h
 rm_main\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 rm_main\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

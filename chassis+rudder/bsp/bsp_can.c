@@ -58,7 +58,7 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData);
 /******************************MOVE************************************************/
 void can_device_init(void)
 {
-    uint32_t can_ID1[] = {CAN_3508_M2_ID, CAN_3508_M3_ID,POWER_CONTROL_ID, CAN_JUDGE_MSG_ID,CHASSIS_CTRl_MSG_ID,0xFFF};
+    uint32_t can_ID1[] = {CAN_3508_M2_ID,CAN_3508_M3_ID,POWER_CONTROL_ID, CAN_JUDGE_MSG_ID,CHASSIS_CTRl_MSG_ID,0xFFF};
     uint32_t can_ID2[] = {CAN_6020_M4_ID,CAN_6020_M3_ID,CAN_6020_M2_ID, CAN_6020_M1_ID, CAN_3508_M1_ID,CAN_3508_M4_ID, 0xFFF};
     canx_init(&hcan1, can_ID1, User_can1_callback);
     canx_init(&hcan2, can_ID2, User_can2_callback);
@@ -308,8 +308,8 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
     switch (ID)
     {
 				case CAN_3508_M1_ID:
-//        case CAN_3508_M2_ID: //2
-//        case CAN_3508_M3_ID:
+        case CAN_3508_M2_ID: //2
+        case CAN_3508_M3_ID:
         case CAN_3508_M4_ID:
         {
 						
@@ -414,6 +414,7 @@ void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 {
 //	uint8_t FreeTxNum = 0; 
 	static uint32_t txmailbox;
+	static uint16_t time =0;
 	Tx1Message.StdId = TX_ID;
 	Tx1Message.IDE 	 = CAN_ID_STD;
 	Tx1Message.RTR   = CAN_RTR_DATA;
@@ -434,7 +435,16 @@ void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 //	{  
 //    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);  
 //  }
-		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0);      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
+		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
+		{
+				time++;
+			if(time > 5)
+			{
+			time=0;
+				return;
+			}
+		
+		}      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
 	if ((hcan1.Instance->TSR & CAN_TSR_TME0) != RESET)     //如果邮箱0空闲
 	{
 		txmailbox =CAN_TX_MAILBOX0;
@@ -459,6 +469,7 @@ void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 {
 //    uint8_t FreeTxNum = 0;
 			static uint32_t txmailbox;
+	static uint16_t time =0;
     Tx2Message.StdId = TX_ID;
     Tx2Message.IDE 	 = CAN_ID_STD;
     Tx2Message.RTR   = CAN_RTR_DATA;
@@ -473,7 +484,20 @@ void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
     CAN2_Tx_data[6] = iq4 >> 8;
     CAN2_Tx_data[7] = iq4;
 
-		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0);      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
+//		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0);      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
+	
+			while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0)
+		{
+				time++;
+			if(time > 5)
+			{
+			time=0;
+				return;
+			}
+		
+		}  
+		
+		
 	if ((hcan2.Instance->TSR & CAN_TSR_TME0) != RESET)     //如果邮箱0空闲
 	{
 		txmailbox =CAN_TX_MAILBOX0;

@@ -1,8 +1,8 @@
 rm_main\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
-rm_main\event_groups.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
+rm_main\event_groups.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 rm_main\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-rm_main\event_groups.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
-rm_main\event_groups.o: B:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
+rm_main\event_groups.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
+rm_main\event_groups.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 rm_main\event_groups.o: ../Inc/FreeRTOSConfig.h
 rm_main\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 rm_main\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

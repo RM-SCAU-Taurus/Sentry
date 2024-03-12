@@ -210,6 +210,26 @@
           <WinNumber>1</WinNumber>
           <ItemText>pid_yaw_angle_9025</ItemText>
         </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>pid_yaw_spd_9025</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>follow_yaw_data</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>moto_yaw,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>scan_speed</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -246,6 +266,11 @@
           <count>6</count>
           <WinNumber>2</WinNumber>
           <ItemText>imu_data</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>imu_9025</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

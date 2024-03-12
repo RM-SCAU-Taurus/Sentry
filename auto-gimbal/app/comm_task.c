@@ -44,7 +44,7 @@ void can_msg_send_task(void const *argu)
 //                can1_send_message(GIMBAL_CAN_TX_ID, 0, 0, 0, 0);
                 can2_send_message(GIMBAL_CAN_TX_ID, 0, 0, 0, 0);
 							mf_times_protect++;
-							if(mf_times_protect>=3)
+							if(mf_times_protect>=2)
 							{send_message_mf(CAN_9025_YAW_TX_ID,TORQUE_COMMAND,0);
 								mf_times_protect=0;
 							}
@@ -57,23 +57,21 @@ void can_msg_send_task(void const *argu)
 										mf_times++;
 //                    can1_send_message(GIMBAL_CAN_TX_ID, motor_cur.gimbal_cur[0], 0, motor_cur.trigger_cur, 0);
                     can2_send_message(GIMBAL_CAN_TX_ID, motor_cur.gimbal_cur[0], motor_cur.gimbal_cur[1], 0, 0);
-										if(mf_times>=3)
+										if(mf_times>=2)
 										{
-										send_message_mf(CAN_9025_YAW_TX_ID,TORQUE_COMMAND,motor_cur.gimbal_cur[2]);
-									
+										send_message_mf(CAN_9025_YAW_TX_ID,TORQUE_COMMAND,motor_cur.gimbal_cur[2]);								
 											mf_times=0;
 										}
-//										send_message_mf(CAN_9025_YAW_TX_ID,TORQUE_COMMAND,0);
-//										send_judge_msg(0x09,&hcan1);
+										send_judge_msg(0x09,&hcan1);
 									
 									
 									
 									
 								}
-                if( event.value.signals & CHASSIS_MOTOR_MSG_SEND )
+                else if( event.value.signals & SHOOT_MOTOR_MSG_SEND )
                 {
 									
-									
+//									can2_send_message
 								}
                // can1_send_supercap();
             }

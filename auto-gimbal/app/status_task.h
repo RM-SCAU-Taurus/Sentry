@@ -7,7 +7,7 @@
 typedef struct
 {
     uint8_t gyro_status[2];     //LED_A
-    uint8_t chassis_status[4];  //LED_B
+    uint8_t moto_fric[2];  //LED_B
     uint8_t gimbal_status[3];   //LED_C
     uint8_t vision_status;      //LED_D
     uint8_t power_control;      //LED_D

@@ -36,7 +36,7 @@ typedef enum{
 scandir dir_6020 = TURN_R;
 #define encoder_L 2247
 #define encoder_R 6318
-
+float scan_speed = 0.2f;
 float scan_dir = 1.0f;
 uint8_t spin_L=0;
 uint8_t spin_R=1;
@@ -423,7 +423,7 @@ void vsn_gimbal_ref_calc(void) {
 									)
 									close_flag =0;
 									
-									gimbal.pid.yaw_angle_6020_ref += scan_dir * 0.1f;
+									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed;
 
 								
 								gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
@@ -434,7 +434,7 @@ void vsn_gimbal_ref_calc(void) {
 //								gimbal.pid.yaw_angle_6020_ref = vision.yaw_angle_6020_error;//由导航控制
 								gimbal.pid.yaw_angle_6020_ref = gimbal.pid.yaw_angle_6020_fdb;
                 gimbal.pid.pit_angle_ref      = vision.pit_angle_error;	
-								gimbal.pid.yaw_spd_9025_ref   = 	gimbal.pid.yaw_spd_9025_fdb;
+								gimbal.pid.yaw_spd_9025_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
 									}
 									/***************************NEW***************************/
 									

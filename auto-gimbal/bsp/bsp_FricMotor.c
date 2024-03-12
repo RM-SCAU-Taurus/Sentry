@@ -29,6 +29,17 @@ uint16_t test_pwm = 590;
 void FricMotor_Control(void)
 {
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 void FricGunControl_PID(uint16_t pwm)

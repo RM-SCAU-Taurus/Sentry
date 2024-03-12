@@ -321,6 +321,16 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
             T_imu_calcu(ID, CAN_RxData);
             break;
         }
+						case CAN_3508_L_ID:
+						case CAN_3508_R_ID:
+		  	{
+														
+            static uint8_t i;
+            i = ID- CAN_3508_L_ID;
+            encoder_data_handler(&moto_fric[i],&hcan2,CAN_RxData);
+            status.moto_fric[i] = 1;
+            break;		
+				}
 
 						default:
         {
@@ -501,7 +511,7 @@ void encoder_data_handler(moto_measure_t *ptr, CAN_HandleTypeDef *hcan, uint8_t 
     ptr->last_ecd = ptr->ecd;
     ptr->ecd = (uint16_t)(CAN_Rx_data[0] << 8 | CAN_Rx_data[1]);
 
-		follow_yaw_data = GildeAverageValueFilter(ptr->ecd, RM6020_array);
+//		follow_yaw_data = GildeAverageValueFilter(ptr->ecd, RM6020_array);
 
     // 相对开机后的角度
     if (ptr->ecd - ptr->last_ecd > 4096)

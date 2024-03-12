@@ -21,10 +21,8 @@
 /* CAN send and receive ID */
 typedef enum
 {
-  CAN_3508_M1_ID = 0x201,
-  CAN_3508_M2_ID = 0x202,
-  CAN_3508_M3_ID = 0x203,
-  CAN_3508_M4_ID = 0x204,
+  CAN_3508_L_ID = 0x201,
+  CAN_3508_R_ID = 0x202,
   CAN_YAW_6020_MOTOR_ID = 0x205,
   CAN_YAW_9025_MOTOR_ID = 0x141,
   CAN_PIT_MOTOR_ID = 0x206,
@@ -56,7 +54,7 @@ typedef struct
 } moto_measure_t;
 extern uint8_t GAME_STATE;
 extern float follow_yaw_data;
-__BSP_CAN_EXT moto_measure_t moto_chassis[4];
+__BSP_CAN_EXT moto_measure_t moto_fric[2];
 __BSP_CAN_EXT moto_measure_t moto_pit;
 __BSP_CAN_EXT moto_measure_t moto_yaw;
 __BSP_CAN_EXT moto_measure_t motor_trigger;

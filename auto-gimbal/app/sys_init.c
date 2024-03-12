@@ -59,6 +59,7 @@ void sys_init_task(void const *argu)
 	taskENTER_CRITICAL();
 	can_device_init();
 	chassis_init();
+	shoot_init();
 	gimbal_param_init();
 	PowerControl_Init();
 	USER_UART_Init();

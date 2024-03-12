@@ -193,16 +193,16 @@ void abs_limit(float *a, float ABS_MAX,float offset)
         *a = -ABS_MAX+offset;
 }
 
-static void f_Changing_Integral_Rate(pid_t *pid,float ScalarB,float ScalarA)
-{
+// static void f_Changing_Integral_Rate(pid_t *pid,float ScalarB,float ScalarA)
+// {
 
 
-        if (ABS(*pid->err) <= ScalarB)
-            pid->iout += pid->i * pid->err[NOW]; //完整积分
-        if (ABS(*pid->err) <= (ScalarA +ScalarB))
-            //使用线性函数过渡
-            pid->iout += (ScalarA- ABS(*pid->err) + ScalarB) / ScalarA * pid->i * pid->err[NOW]  ;
-        else
-            pid->iout += 0;//取消积分环节
-}
+//         if (ABS(*pid->err) <= ScalarB)
+//             pid->iout += pid->i * pid->err[NOW]; //完整积分
+//         if (ABS(*pid->err) <= (ScalarA +ScalarB))
+//             //使用线性函数过渡
+//             pid->iout += (ScalarA- ABS(*pid->err) + ScalarB) / ScalarA * pid->i * pid->err[NOW]  ;
+//         else
+//             pid->iout += 0;//取消积分环节
+// }
 

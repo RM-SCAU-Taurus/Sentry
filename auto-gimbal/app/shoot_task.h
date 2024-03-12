@@ -32,6 +32,26 @@ typedef enum
     FIRC_MODE_STOP = 0,
     FIRC_MODE_RUN = 1
 } shoot_firc_mode_e;
+/* 摩擦轮保护模式 */
+typedef enum
+{
+	FRIC_PROTECT 	= 0,
+	FRIC_UNPROTECT 	= 1,
+	FRIC_SLOW_TO_PROTECT = 2
+} fric_protect_mode_e;
+/*摩擦轮pid相关数据*/
+typedef struct 
+{
+	float fric_ecd_ref;
+	float fric_ecd_fdb;
+	float fric_ecd_err;
+	
+	float fric_spd_ref;
+	float fric_spd_fdb;
+	float fric_spd_err;
+}fric_pid_t;
+
+
 
 /* 拨盘模式 */
 typedef enum
@@ -66,6 +86,7 @@ typedef struct
 typedef struct
 {
     shoot_firc_mode_e   firc_mode;
+	fric_protect_mode_e	fric_protect_mode;	//摩擦轮保护模式
     shoot_stir_mode_e   stir_mode;
     shoot_house_mode_e  house_mode;
     barrel_param_t      barrel;
@@ -73,13 +94,13 @@ typedef struct
     float               trigger_period;	//拨盘拨出一颗子弹的周期，体现射频
     uint8_t             shoot_speed_vision;//发给视觉的射速档位
 } shoot_t;
+
 typedef struct {
-    uint32_t init_cnt;
-    uint8_t init_flag;
-    uint8_t acc_flag;
-    uint16_t low_pwm;
-    uint16_t mid_pwm;
-    uint16_t high_pwm;
+    uint32_t 	protect_cnt;
+    uint8_t 	protect_flag;
+    uint8_t 	init_flag;
+	float 		set_speed;			//设置目标转速
+	fric_pid_t	Fric_Pid_Set[2];	//摩擦轮pid参数
 } fric_t;
 extern fric_t fric;
 void shoot_task(void const *argu);

@@ -3,7 +3,7 @@
 #ifndef __BSP_TRIIGERMOTOR_H
 #define __BSP_TRIIGERMOTOR_H
 
-#define TRIGGER_MOTOR_ECD   36859.0f  //²¦ÅÌÒ»¿Å×Óµ¯×ª¹ýµÄ±àÂëÖµ 8191 * 36 / 8 = 36859.5f
+#define TRIGGER_MOTOR_ECD   36859.0f  //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Óµï¿½×ªï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½Öµ 8191 * 36 / 8 = 36859.5f
 #define MIN_HEAT		    80
 
 void TriggerMotor_init(void);

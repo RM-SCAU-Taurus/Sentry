@@ -123,5 +123,5 @@ void TriggerMotor_control(void)
         break;
     }
     TriggerMotor_pidcal();
-    osSignalSet(can_msg_send_task_t, SHOOT_MOTOR_MSG_SEND);
+
 }

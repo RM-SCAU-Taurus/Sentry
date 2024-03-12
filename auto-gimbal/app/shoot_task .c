@@ -8,6 +8,7 @@
 #include "modeswitch_task.h"
 #include "comm_task.h"
 #include "shoot_task.h"
+#include "freertos.h"
 /**********数学库*************/
 
 /**********数据处理库**********/
@@ -32,6 +33,7 @@ static void shoot_mode_sw(void);
 /**********结构体定义**********/
 fric_t fric;
 shoot_t shoot;
+extern osThreadId can_msg_send_task_t;
 /**********变量声明*************/
 
 /**********测试变量声明********/
@@ -50,14 +52,14 @@ void shoot_task(void const *argu)
         fric_enable = !!Game_Robot_Status.mains_power_shooter_output;
         if (fric_enable && !last_fric_enable)
         {
-            fric.init_cnt = 0;
-            fric.init_flag = 0;
-            fric.acc_flag = 0;
+            shoot.fric_protect_mode = FRIC_PROTECT;
         }
         last_fric_enable = fric_enable;
+
         shoot_mode_sw();        /* 发射器模式切换 */
         FricMotor_Control();    /* 摩擦轮电机控制 */
         TriggerMotor_control(); /* 拨弹电机控制 */
+        osSignalSet(can_msg_send_task_t, SHOOT_MOTOR_MSG_SEND);
         taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, SHOOT_PERIOD);
     }
@@ -66,9 +68,11 @@ void shoot_task(void const *argu)
 void shoot_init(void)
 {
     /* 发射器底层初始化 */
+    FricMotor_init();    // 摩擦轮初始化
     TriggerMotor_init(); // 拨盘初始化
 
     shoot.firc_mode = FIRC_MODE_STOP;
+    shoot.fric_protect_mode = FRIC_PROTECT;
     shoot.stir_mode = STIR_MODE_PROTECT;
     shoot.house_mode = HOUSE_MODE_PROTECT;
     /* 枪管参数初始化 */
@@ -82,9 +86,12 @@ static void shoot_mode_sw(void)
 {
     /* 系统历史状态机 */
     static ctrl_mode_e last_ctrl_mode = PROTECT_MODE;
-
+    /*发射器电机保护标志位*/
+    if (!fric.init_flag)
+    {
+        fric.protect_flag = FRIC_PROTECT;
+    }
     /* 更新裁判系统参数 */
-
     ShootParam_Update();
     // 让导航控制射频
     if (vision_ctrl.shoot_cmd != 0 && vision_ctrl.shoot_cmd > 0)
@@ -111,6 +118,11 @@ static void shoot_mode_sw(void)
         shoot.firc_mode = FIRC_MODE_STOP;
         shoot.stir_mode = STIR_MODE_PROTECT;
         shoot.house_mode = HOUSE_MODE_PROTECT;
+        FricMotor_speed_set(0);
+        if (fric.protect_flag != FRIC_PROTECT)
+        {
+            fric.protect_flag = FRIC_SLOW_TO_PROTECT;
+        }
     }
     break;
     case REMOTER_MODE:
@@ -125,6 +137,7 @@ static void shoot_mode_sw(void)
             LASER_DOWN;
             shoot.firc_mode = FIRC_MODE_STOP;
             shoot.stir_mode = STIR_MODE_STOP;
+            FricMotor_speed_set(0);
         }
         break;
         case RC_MI:
@@ -133,9 +146,10 @@ static void shoot_mode_sw(void)
             if (fric.init_flag)
             {
                 shoot.firc_mode = FIRC_MODE_RUN; // 开启摩擦轮
+                FricMotor_speed_set(30);
             }
-//            shoot.stir_mode = STIR_MODE_STOP;
-             shoot.stir_mode = STIR_MODE_SINGLE;  //单发（测弹道用）
+            fric.protect_flag = FRIC_UNPROTECT;
+            shoot.stir_mode = STIR_MODE_STOP;
         }
         break;
         case RC_DN:
@@ -143,13 +157,10 @@ static void shoot_mode_sw(void)
             LASER_UP;
             if (fric.init_flag)
             {
-                shoot.firc_mode = FIRC_MODE_RUN; // //开启摩擦轮
-            }
+                shoot.firc_mode = FIRC_MODE_RUN;
+            } // 开启摩擦轮
+            fric.protect_flag = FRIC_UNPROTECT;
             shoot.stir_mode = STIR_MODE_SERIES; // 连发
-            if (!fric.acc_flag)
-            {
-                shoot.stir_mode = STIR_MODE_STOP; // 未完成加速不开播盘
-            }
         }
         break;
         default:

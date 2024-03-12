@@ -70,8 +70,8 @@ void can_msg_send_task(void const *argu)
 								}
                 else if( event.value.signals & SHOOT_MOTOR_MSG_SEND )
                 {
-									
-//									can2_send_message
+									can2_send_message(Fric_CAN_TX_ID, motor_cur.fric_cur[0],  motor_cur.fric_cur[1],0,0);
+                  can2_send_message(Trigger_CAN_TX_ID,0,0,0, motor_cur.trigger_cur);                           
 								}
                // can1_send_supercap();
             }
@@ -79,3 +79,5 @@ void can_msg_send_task(void const *argu)
 					
     }
 }
+
+

@@ -247,7 +247,7 @@ static void User_can1_callback(uint32_t ID, uint8_t* CAN_RxData)
 //        }
 				 case CAN_YAW_9025_MOTOR_ID:
         {
-						encoder_data_receive(&YAW_9025,CAN_RxData);
+			encoder_data_receive(&YAW_9025,CAN_RxData);
 //            status.gimbal_status[0] = 1;
             break;
         }
@@ -279,7 +279,7 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
 {
     switch (ID)
     {
-						case CAN_YAW_6020_MOTOR_ID:
+			case CAN_YAW_6020_MOTOR_ID:
         {
             encoder_data_handler(&moto_yaw, &hcan2, CAN_RxData);
             status.gimbal_status[0] = 1;
@@ -310,19 +310,19 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
             break;
         }
 				
-				        case CAN_TRIGGER_MOTOR1_ID: // 上枪管拨盘2006
+			 case CAN_TRIGGER_MOTOR1_ID: // 上枪管拨盘2006
         {
             motor_trigger.msg_cnt++ <= 50 ? get_moto_offset(&motor_trigger, &hcan2, CAN_RxData) : encoder_data_handler(&motor_trigger, &hcan2, CAN_RxData);
             status.gimbal_status[2] = 1;
             break;
         }
-						case TIMU_9025_ID:
+			case TIMU_9025_ID:
         {
             T_imu_calcu(ID, CAN_RxData);
             break;
         }
-						case CAN_3508_L_ID:
-						case CAN_3508_R_ID:
+			case CAN_3508_L_ID:
+			case CAN_3508_R_ID:
 		  	{
 														
             static uint8_t i;
@@ -332,7 +332,7 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
             break;		
 				}
 
-						default:
+		default:
         {
             break;
         }

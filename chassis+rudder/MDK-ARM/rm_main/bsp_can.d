@@ -67,11 +67,4 @@
 .\rm_main\bsp_can.o: ..\bsp\bsp_T_imu.h
 .\rm_main\bsp_can.o: ..\app\gimbal_task.h
 .\rm_main\bsp_can.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
-.\rm_main\bsp_can.o: ..\communication\protocol_camp.h
-.\rm_main\bsp_can.o: ..\app\struct_typedef.h
-.\rm_main\bsp_can.o: ..\mathlib\math_calcu.h
-.\rm_main\bsp_can.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\math.h
-.\rm_main\bsp_can.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
-.\rm_main\bsp_can.o: ..\dsp\Include\arm_math.h
-.\rm_main\bsp_can.o: ../Drivers/CMSIS/Include/core_cm4.h
 .\rm_main\bsp_can.o: ..\app\modeswitch_task.h

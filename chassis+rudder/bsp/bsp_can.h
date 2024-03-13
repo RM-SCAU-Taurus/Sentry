@@ -93,14 +93,5 @@ void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 void pit_data_handler(moto_measure_t* ptr, CAN_HandleTypeDef* hcan, uint8_t * CAN_Rx_data);
 void judge_msg_get(CAN_HandleTypeDef* hcan, uint8_t * CAN_Rx_data);
 void can1_send_supercap(int16_t TX_ID);
-
-
-void can_device_init(void);
-void canx_init(CAN_HandleTypeDef * hcan, uint32_t  * id, void (*pFunc)(uint32_t,uint8_t*));
-void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan);
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
-
-
-
 extern uint8_t gimbal_status;
 #endif

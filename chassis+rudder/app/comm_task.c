@@ -29,12 +29,9 @@ extern chassis_ctrl_info_t chassis_ctrl;
 int tent=0;
 void can_msg_send_task(void const *argu)
 {
-		static uint8_t times = 0;
-		static uint8_t times1 =0;
     osEvent event;
     for(;;)
     {
-				
 							if( ctrl_mode==PROTECT_MODE || !lock_flag )
           {
                 for(int i=0; i<4; i++)		motor_cur.chassis_cur_3508[i]= 0;
@@ -47,24 +44,14 @@ void can_msg_send_task(void const *argu)
             {
                    if(ctrl_mode==AUTO_MODE)
 									 { 
-										 times++;
-										 if(times >=2)
-										 {can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0],0,0, motor_cur.chassis_cur_3508[3]);
-											 can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],0);
-											 times=0;
-										 }
-//						can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],0);
+											can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0],0,motor_cur.chassis_cur_3508[2],0);
+										can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],0,motor_cur.chassis_cur_3508[3]);
                     can2_send_message(GIMBAL_CAN_TX_ID,motor_cur.chassis_cur_6020[0],motor_cur.chassis_cur_6020[1],motor_cur.chassis_cur_6020[2],motor_cur.chassis_cur_6020[3]);
 									 }
 										 else if(ctrl_mode==REMOTER_MODE)
 										 {
-																 times1++;
-										 if(times1 >=2)
-										 {can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0],0,0, motor_cur.chassis_cur_3508[3]);
-											 can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],0);
-											 times1=0;
-										 }
-//						can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],0);
+										can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0],0,0,motor_cur.chassis_cur_3508[3]);
+										can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],0);
 //										can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0], motor_cur.chassis_cur_3508[1], motor_cur.chassis_cur_3508[2], motor_cur.chassis_cur_3508[3]);
 //										can1_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0],motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],motor_cur.chassis_cur_3508[3]);
                     can2_send_message(GIMBAL_CAN_TX_ID,motor_cur.chassis_cur_6020[0],motor_cur.chassis_cur_6020[1],motor_cur.chassis_cur_6020[2],motor_cur.chassis_cur_6020[3]);
@@ -82,8 +69,8 @@ void can_msg_chassis_to_gimbal(void const *argu)
     uint32_t wake_up_time = osKernelSysTick();
     for(;;)
     {
-//				size = xPortGetFreeHeapSize();
-//				chassis.msg_send(CHASSIS_TO_Gimbal_CAN_TX_ID,chassis.spd_fdb.vx,chassis.spd_fdb.vy,chassis.spd_fdb.vw,0x00,0);//CAN1发送
+				size = xPortGetFreeHeapSize();
+				chassis.msg_send(CHASSIS_TO_Gimbal_CAN_TX_ID,chassis.spd_fdb.vx,chassis.spd_fdb.vy,chassis.spd_fdb.vw,0x00,0);//CAN1发送
 				can1_send_supercap(SUPERCAP_CAN_TX_ID);
 					//tent2++;
         osDelayUntil(&wake_up_time, 10);

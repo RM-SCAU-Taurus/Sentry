@@ -13,7 +13,7 @@
 
 //#define CHASSIS_CAN_TX_ID 	0x200
 #define GIMBAL_CAN_TX_ID  				0x1ff
-#define CHASSIS_CTRL_CAN_TX_ID  	0x001
+#define CHASSIS_CTRL_CAN_TX_ID  	0x1f1
 #define CAN_9025_YAW_TX_ID      	0x141
 #define TORQUE_COMMAND          0xA1
 #define Trigger_CAN_TX_ID  				0x1ff

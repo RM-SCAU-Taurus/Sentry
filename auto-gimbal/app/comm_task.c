@@ -38,21 +38,34 @@ void can_msg_send_task(void const *argu)
         {
             if( ctrl_mode==PROTECT_MODE || !lock_flag )
             {
-                for(int i=0; i<4; i++)		motor_cur.chassis_cur[i]= 0;
-                for(int i=0; i<2; i++)		motor_cur.gimbal_cur[i] = 0;
-                motor_cur.trigger_cur = 0;
-//                can1_send_message(GIMBAL_CAN_TX_ID, 0, 0, 0, 0);
-                can2_send_message(GIMBAL_CAN_TX_ID, 0, 0, 0, 0);
-							mf_times_protect++;
-							if(mf_times_protect>=2)
-							{send_message_mf(CAN_9025_YAW_TX_ID,TORQUE_COMMAND,0);
-								mf_times_protect=0;
-							}
+									if( event.value.signals & GIMBAL_MOTOR_MSG_SEND)
+                {
+										for(int i=0; i<4; i++)		motor_cur.chassis_cur[i]= 0;
+										for(int i=0; i<2; i++)		motor_cur.gimbal_cur[i] = 0;
+										motor_cur.trigger_cur = 0;
+										can2_send_message(GIMBAL_CAN_TX_ID, 0, 0, 0, 0);
+										mf_times_protect++;
+										if(mf_times_protect>=2)
+										{
+												send_message_mf(CAN_9025_YAW_TX_ID,TORQUE_COMMAND,0);
+												mf_times_protect=0;
+										}
+								}
+								else if( event.value.signals & SHOOT_MOTOR_MSG_SEND )
+								{
+										if( fric.protect_flag == FRIC_SLOW_TO_PROTECT)
+												can2_send_message(Fric_CAN_TX_ID, motor_cur.fric_cur[0],  motor_cur.fric_cur[1],motor_cur.trigger_cur,0);
+										else
+												can2_send_message(Fric_CAN_TX_ID, 0,0,0,0);	
+								
+								}
+								
+								
 								
 						}
             else if( lock_flag )  //有陀螺仪数据才给电流
             {
-                if( event.value.signals)
+                if( event.value.signals & GIMBAL_MOTOR_MSG_SEND)
                 {
 										mf_times++;
 //                    can1_send_message(GIMBAL_CAN_TX_ID, motor_cur.gimbal_cur[0], 0, motor_cur.trigger_cur, 0);
@@ -70,8 +83,8 @@ void can_msg_send_task(void const *argu)
 								}
                 else if( event.value.signals & SHOOT_MOTOR_MSG_SEND )
                 {
-									can2_send_message(Fric_CAN_TX_ID, motor_cur.fric_cur[0],  motor_cur.fric_cur[1],0,0);
-                  can2_send_message(Trigger_CAN_TX_ID,0,0,0, motor_cur.trigger_cur);                           
+									can2_send_message(Fric_CAN_TX_ID, motor_cur.fric_cur[0],  motor_cur.fric_cur[1],motor_cur.trigger_cur,0);
+                                   
 								}
                // can1_send_supercap();
             }

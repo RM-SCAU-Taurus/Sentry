@@ -31,7 +31,7 @@ void can_msg_send_task(void const *argu)
 {
 		static uint8_t times = 0;
 		static uint8_t times1 =0;
-    osEvent event;
+//    osEvent event;
     for(;;)
     {
 				
@@ -53,20 +53,16 @@ void can_msg_send_task(void const *argu)
 											 can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],0);
 											 times=0;
 										 }
-//						can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],0);
                     can2_send_message(GIMBAL_CAN_TX_ID,motor_cur.chassis_cur_6020[0],motor_cur.chassis_cur_6020[1],motor_cur.chassis_cur_6020[2],motor_cur.chassis_cur_6020[3]);
 									 }
 										 else if(ctrl_mode==REMOTER_MODE)
 										 {
 																 times1++;
 										 if(times1 >=2)
-										 {can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0],0,0, motor_cur.chassis_cur_3508[3]);
+										 { can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0],0,0, motor_cur.chassis_cur_3508[3]);
 											 can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],0);
 											 times1=0;
 										 }
-//						can1_send_message(CHASSIS_CAN_TX_ID,0,motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],0);
-//										can2_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0], motor_cur.chassis_cur_3508[1], motor_cur.chassis_cur_3508[2], motor_cur.chassis_cur_3508[3]);
-//										can1_send_message(CHASSIS_CAN_TX_ID,motor_cur.chassis_cur_3508[0],motor_cur.chassis_cur_3508[1],motor_cur.chassis_cur_3508[2],motor_cur.chassis_cur_3508[3]);
                     can2_send_message(GIMBAL_CAN_TX_ID,motor_cur.chassis_cur_6020[0],motor_cur.chassis_cur_6020[1],motor_cur.chassis_cur_6020[2],motor_cur.chassis_cur_6020[3]);
 									}
 								}

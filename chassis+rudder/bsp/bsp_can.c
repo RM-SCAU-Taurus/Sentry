@@ -381,7 +381,8 @@ void encoder_data_handler(moto_measure_t* ptr, CAN_HandleTypeDef* hcan, uint8_t 
 }
 void can1_send_chassis_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, uint8_t iq4,uint8_t iq5)
 {
-    uint8_t FreeTxNum = 0;
+    	static uint32_t txmailbox;
+	static uint16_t time =0;
 
     Tx1Message.StdId = TX_ID;
     Tx1Message.IDE 	 = CAN_ID_STD;
@@ -396,15 +397,33 @@ void can1_send_chassis_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t 
     CAN1_Tx_data[5] = iq3;
     CAN1_Tx_data[6] = iq4;
     CAN1_Tx_data[7] = iq5;
+		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
+		{
+				time++;
+			if(time > 5)
+			{
+			time=0;
+				return;
+			}
+		
+		}      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
+	if ((hcan1.Instance->TSR & CAN_TSR_TME0) != RESET)     //如果邮箱0空闲
+	{
+		txmailbox =CAN_TX_MAILBOX0;
+	}
 
-    //查询发送邮箱是否为空
-    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-    while(FreeTxNum == 0)
-    {
-        FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-    }
+	/* Check Tx Mailbox 1 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME1) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX1;
+	}
 
-    HAL_CAN_AddTxMessage(&hcan1, &Tx1Message,CAN1_Tx_data,(uint32_t*)CAN_TX_MAILBOX0);
+	/* Check Tx Mailbox 2 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME2) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX2;
+	}
+	HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, (uint32_t *)txmailbox);
 }
 /**
   * @brief  send calculated current to motor

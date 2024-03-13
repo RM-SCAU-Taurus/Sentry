@@ -57,7 +57,7 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData);
 void can_device_init(void)
 {
     uint32_t can_ID1[] = {CAN_YAW_9025_MOTOR_ID, CHASSIS_MSG_ID, POWER_CONTROL_ID,0xFFF};
-    uint32_t can_ID2[] = {TIMU_PALSTANCE_ID,TIMU_9025_ID,TIMU_ANGLE_ID, CAN_PIT_MOTOR_ID, CAN_TRIGGER_MOTOR1_ID,CAN_YAW_6020_MOTOR_ID,0xFFF};
+    uint32_t can_ID2[] = {TIMU_PALSTANCE_ID,TIMU_9025_ID,TIMU_ANGLE_ID, CAN_PIT_MOTOR_ID, CAN_TRIGGER_MOTOR1_ID,CAN_YAW_6020_MOTOR_ID,CAN_3508_R_ID,CAN_3508_L_ID,0xFFF};
     canx_init(&hcan1, can_ID1, User_can1_callback);
     canx_init(&hcan2, can_ID2, User_can2_callback);
 }

@@ -108,10 +108,10 @@
 
 /* YAW轴PID系数 */
 #define pid_yaw_angle_6020_P 120.0f//180
-#define pid_yaw_angle_6020_I 0.0f
+#define pid_yaw_angle_6020_I 0.1f
 #define pid_yaw_angle_6020_D 0.0f
 
-#define pid_yaw_spd_6020_P -12.0f//20
+#define pid_yaw_spd_6020_P 12.0f//20
 #define pid_yaw_spd_6020_I 0.0f//0.3
 #define pid_yaw_spd_6020_D 0.0f
 
@@ -119,8 +119,8 @@
 #define pid_yaw_angle_9025_I 0.0f
 #define pid_yaw_angle_9025_D 0.0f
 
-#define pid_yaw_spd_9025_P 2.0f//20
-#define pid_yaw_spd_9025_I 0.0001f//0.3
+#define pid_yaw_spd_9025_P 5.0f//20
+#define pid_yaw_spd_9025_I 0.005f//0.3
 #define pid_yaw_spd_9025_D 0.0f
 
 /* PIT轴PID系数 */
@@ -132,8 +132,8 @@
 #define pid_pit_ecd_I 0.0f
 #define pid_pit_ecd_D 0.0f
 
-#define pid_pit_spd_P -8.0f//10
-#define pid_pit_spd_I -0.1f//0.1
+#define pid_pit_spd_P 8.0f//10
+#define pid_pit_spd_I 0.1f//0.1
 #define pid_pit_spd_D 0.0f
 
 #endif

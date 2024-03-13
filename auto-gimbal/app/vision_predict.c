@@ -37,6 +37,7 @@ scandir dir_6020 = TURN_R;
 #define encoder_L 2247
 #define encoder_R 6318
 float scan_speed = 0.2f;
+float Kp=1.0f;
 float scan_dir = 1.0f;
 uint8_t spin_L=0;
 uint8_t spin_R=1;
@@ -401,9 +402,11 @@ void vsn_gimbal_ref_calc(void) {
                // gimbal.pid.pit_ecd_ref   += rc.ch2 * scale.ch2;
                   gimbal.pid.pit_angle_ref  +=rc.ch2 * 0.0008f;
                 gimbal.pid.yaw_angle_6020_ref += rc.ch1 * scale.ch1;
-            } else 
+            } 
+						
+						else if (ctrl_mode == AUTO_MODE)
 						{
-								if(vision_ctrl.speed_mode == 1 ){
+								{
 								vision_ctrl.speed_yaw = data_limit(vision_ctrl.speed_yaw, 250, -250);
                 gimbal.pid.yaw_spd_9025_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
 //                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要
@@ -418,23 +421,16 @@ void vsn_gimbal_ref_calc(void) {
 									if(   
 										( 
 									ABSv(moto_yaw.ecd - encoder_L) > 100  ||  ABSv(moto_yaw.ecd - encoder_R) > 100 )
-										&& (   ABSv(moto_yaw.ecd - encoder_L) > 500  && ABSv(moto_yaw.ecd - encoder_R) > 500  )                       
+										&& (   ABSv(moto_yaw.ecd - encoder_L) > 1000  && ABSv(moto_yaw.ecd - encoder_R) > 1000  )                       
 
 									)
 									close_flag =0;
 									
-									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed;
+									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp;
 
 								
 								gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
-									
-									
-								}
-								else{
-//								gimbal.pid.yaw_angle_6020_ref = vision.yaw_angle_6020_error;//由导航控制
-								gimbal.pid.yaw_angle_6020_ref = gimbal.pid.yaw_angle_6020_fdb;
-                gimbal.pid.pit_angle_ref      = vision.pit_angle_error;	
-								gimbal.pid.yaw_spd_9025_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
+
 									}
 									/***************************NEW***************************/
 									

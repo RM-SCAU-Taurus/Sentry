@@ -43,7 +43,7 @@ int cnt = 0;
 void shoot_task(void const *argu)
 {
     uint32_t mode_wake_time = osKernelSysTick();
-    shoot_init();
+    
     for (;;)
     {
         taskENTER_CRITICAL();

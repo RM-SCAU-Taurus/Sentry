@@ -253,25 +253,25 @@ void steering_calc(float vx, float vy, float vw, int16_t angle[], int16_t speed[
     rudder_angle[2] = atan2((vy-vw*0.707107f), (vx-vw*0.707107f)) * 57.3f;
     rudder_angle[3] = atan2((vy+vw*0.707107f), (vx+vw*0.707107f)) * 57.3f;
 	
-//					for(uint8_t i = 0;i<4; i++)
-//				{
+					for(uint8_t i = 0;i<4; i++)
+				{
 
-//				chassis.rudder_ecd_fdb[i] = (moto_chassis_6020[i].ecd - chassis.rudder_ecd_offset[i])*0.04395f;
-//				if(circle_error(rudder_angle[i],chassis.rudder_ecd_fdb[i],360)>90.0f)
-//				{
-//				rudder_angle[i] -= 180;
-//				wheel_rpm[i] = -wheel_rpm[i];
-//				}
-//				else if(circle_error(rudder_angle[i],chassis.rudder_ecd_fdb[i],360)<(-90.0f))
-//				{
-//				rudder_angle[i] += 180;
-//				wheel_rpm[i] = -wheel_rpm[i];
-//				}
-//				if(vx == 0 && vy == 0 && vw == 0)
-//				{
-//				rudder_angle[i] = 0;
-//				}
-//				}
+				chassis.rudder_ecd_fdb[i] = (moto_chassis_6020[i].ecd - chassis.rudder_ecd_offset[i])*0.04395f;
+				if(circle_error(rudder_angle[i],chassis.rudder_ecd_fdb[i],360)>90.0f)
+				{
+				rudder_angle[i] -= 180;
+				wheel_rpm[i] = -wheel_rpm[i];
+				}
+				else if(circle_error(rudder_angle[i],chassis.rudder_ecd_fdb[i],360)<(-90.0f))
+				{
+				rudder_angle[i] += 180;
+				wheel_rpm[i] = -wheel_rpm[i];
+				}
+				if(vx == 0 && vy == 0 && vw == 0)
+				{
+				rudder_angle[i] = 0;
+				}
+				}
 
 
 	      if(ABS(chassis.spd_input.vx)>rudder_deadband || ABS(chassis.spd_input.vy)>rudder_deadband || ABS(chassis.spd_input.vw)>rudder_deadband)

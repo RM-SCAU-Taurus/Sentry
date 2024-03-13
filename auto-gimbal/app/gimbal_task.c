@@ -83,7 +83,7 @@ void gimbal_param_init(void)
 
                   5.0f, 0.0f, 0.0f);
     PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 800, 512,
-                    3.0f, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
+                    pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
 
 		
 		
@@ -264,7 +264,7 @@ void gimbal_pid_calcu(void)
     gimbal.pid.pit_spd_fdb = imu_data.wy;           // pit角速度反馈传进PID结构体
     pid_calc(&pid_pit_spd, gimbal.pid.pit_spd_fdb, gimbal.pid.pit_spd_ref);
 
-    gimbal.current[1] = -pid_pit_spd.pos_out;
+    gimbal.current[1] = pid_pit_spd.pos_out;
     /*------------------------yaw轴串级pid计算------------------------*/
     // 位置反馈：陀螺仪角度
     // 速度反馈：陀螺仪WZ
@@ -284,7 +284,7 @@ void gimbal_pid_calcu(void)
         gimbal.pid.yaw_spd_6020_fdb = imu_data.wz; // 陀螺仪速度反馈
         pid_calc(&pid_yaw_spd_6020, gimbal.pid.yaw_spd_6020_fdb, gimbal.pid.yaw_spd_6020_ref);
 
-        gimbal.current[0] = -pid_yaw_spd_6020.pos_out;
+        gimbal.current[0] = pid_yaw_spd_6020.pos_out;
     
 
     /*------------------------下yaw轴串级pid计算------------------------*/
@@ -292,7 +292,7 @@ void gimbal_pid_calcu(void)
 
 			static float disconnect_flag;
 				
-			if (vision_ctrl.speed_mode == 1 && ctrl_mode ==AUTO_MODE && vision.status == vUNAIMING)
+			if (ctrl_mode ==AUTO_MODE && vision.status == vUNAIMING)
     {
         gimbal.pid.yaw_spd_9025_fdb = imu_9025.wz; // 陀螺仪速度反馈
         pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);

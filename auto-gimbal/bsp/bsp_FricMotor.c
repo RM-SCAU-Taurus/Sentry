@@ -42,8 +42,8 @@ void FricMotor_speed_set(uint16_t speed)
 
 	fric.set_speed = Fric_Speed_Target_Ramp.out;	
 
-	fric.Fric_Pid_Set[0].fric_spd_ref = -fric.set_speed;
-	fric.Fric_Pid_Set[1].fric_spd_ref = fric.set_speed;
+	fric.Fric_Pid_Set[0].fric_spd_ref = +fric.set_speed;
+	fric.Fric_Pid_Set[1].fric_spd_ref = -fric.set_speed;
 
 }
 

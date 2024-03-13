@@ -43,7 +43,7 @@ int cnt = 0;
 void shoot_task(void const *argu)
 {
     uint32_t mode_wake_time = osKernelSysTick();
-    shoot_init();
+//    shoot_init();
     for (;;)
     {
         taskENTER_CRITICAL();
@@ -201,5 +201,5 @@ static void ShootParam_Update(void)
     if (shoot.barrel.heat < 0)
         shoot.barrel.heat = 0;
     shoot.barrel.heat_remain = shoot.barrel.heat_max - shoot.barrel.heat; //
-    //		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用
+    		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用
 }

@@ -119,7 +119,7 @@
 #define pid_yaw_angle_9025_I 0.0f
 #define pid_yaw_angle_9025_D 0.0f
 
-#define pid_yaw_spd_9025_P 5.0f//20
+#define pid_yaw_spd_9025_P 4.0f//20
 #define pid_yaw_spd_9025_I 0.005f//0.3
 #define pid_yaw_spd_9025_D 0.0f
 

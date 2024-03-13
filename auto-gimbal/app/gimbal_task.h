@@ -115,6 +115,12 @@ typedef struct {
     float wz;
 } gim_msg_t;
 
+typedef enum {
+	hit_check,
+	hit_out,
+	hit_save,
+}hit_check_e;
+
 extern gimbal_t gimbal;
 extern  ubf_t gim_msg_ubf;   /* 锟斤拷台锟斤拷态锟斤拷史锟斤拷锟斤拷 */
 void gimbal_task(void const *argu);

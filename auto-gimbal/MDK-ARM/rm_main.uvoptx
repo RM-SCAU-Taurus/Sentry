@@ -245,6 +245,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>Kp</ItemText>
         </Ww>
+        <Ww>
+          <count>15</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>pid_pit_angle</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -275,7 +280,7 @@
         <Ww>
           <count>5</count>
           <WinNumber>2</WinNumber>
-          <ItemText>pid_yaw_spd_9025</ItemText>
+          <ItemText>pid_yaw_spd_9025,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
@@ -316,6 +321,31 @@
           <count>13</count>
           <WinNumber>2</WinNumber>
           <ItemText>vision_ctrl.speed_yaw</ItemText>
+        </Ww>
+        <Ww>
+          <count>14</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>vision_ctrl.speed_yaw</ItemText>
+        </Ww>
+        <Ww>
+          <count>15</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>close_flag</ItemText>
+        </Ww>
+        <Ww>
+          <count>16</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>scan_dir</ItemText>
+        </Ww>
+        <Ww>
+          <count>17</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>gimbal.pid.yaw_angle_6020_ref</ItemText>
+        </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>hit_flag</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

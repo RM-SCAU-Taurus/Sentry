@@ -36,13 +36,16 @@ typedef enum{
 scandir dir_6020 = TURN_R;
 #define encoder_L 2247
 #define encoder_R 6318
+#define encoder_CENTER 187
 float scan_speed = 0.2f;
-float Kp=1.0f;
+float Kp=0.005f;
 float scan_dir = 1.0f;
 uint8_t spin_L=0;
 uint8_t spin_R=1;
 uint8_t close_flag =0;
-float text[2];
+hit_check_e hit_flag = hit_save;
+
+
 /* 圆周率 */
 #ifndef PI
 #define PI 3.14159265358979323846f
@@ -411,24 +414,27 @@ void vsn_gimbal_ref_calc(void) {
                 gimbal.pid.yaw_spd_9025_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
 //                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要
 									if(     
-										 ( ABSv(moto_yaw.ecd - encoder_L) < 10 ||  ABSv(moto_yaw.ecd - encoder_R) < 10 )
-										&& close_flag==0
+										 ( ABSv(moto_yaw.ecd - encoder_L) < 10 ||  ABSv(moto_yaw.ecd - encoder_R) <100  )
+										&& (close_flag==0) || hit_flag == hit_check
 										)
 									{
 												scan_dir = -scan_dir;
 												close_flag =1;
+												hit_flag = hit_out;
 									}
-									if(   
-										( 
-									ABSv(moto_yaw.ecd - encoder_L) > 100  ||  ABSv(moto_yaw.ecd - encoder_R) > 100 )
-										&& (   ABSv(moto_yaw.ecd - encoder_L) > 1000  && ABSv(moto_yaw.ecd - encoder_R) > 1000  )                       
-
-									)
-									close_flag =0;
+									if(  ABSv(moto_yaw.ecd - encoder_CENTER) < 10)
+									{close_flag =0;
+									hit_flag = hit_save;
+									}
+									if(ABSv(moto_yaw.ecd - 4700) < 30 && hit_flag == hit_save)
+										hit_flag=hit_check;
 									
+									if(vision_ctrl.speed_yaw && scan_dir==1)
+									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp *2;
+									else if(vision_ctrl.speed_yaw && scan_dir==-1) 
 									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp;
-
-								
+									else 
+									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed ;		
 								gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
 
 									}

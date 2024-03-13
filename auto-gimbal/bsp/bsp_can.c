@@ -57,7 +57,7 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData);
 void can_device_init(void)
 {
     uint32_t can_ID1[] = {CAN_YAW_9025_MOTOR_ID, CHASSIS_MSG_ID, POWER_CONTROL_ID,0xFFF};
-    uint32_t can_ID2[] = {TIMU_PALSTANCE_ID,TIMU_9025_ID,TIMU_ANGLE_ID, CAN_PIT_MOTOR_ID, CAN_TRIGGER_MOTOR1_ID,CAN_YAW_6020_MOTOR_ID,CAN_3508_L_ID,CAN_3508_R_ID,0xFFF};
+    uint32_t can_ID2[] = {TIMU_PALSTANCE_ID,TIMU_9025_ID,TIMU_ANGLE_ID, CAN_PIT_MOTOR_ID, CAN_TRIGGER_MOTOR1_ID,CAN_YAW_6020_MOTOR_ID,0xFFF};
     canx_init(&hcan1, can_ID1, User_can1_callback);
     canx_init(&hcan2, can_ID2, User_can2_callback);
 }
@@ -523,8 +523,7 @@ void encoder_data_handler(moto_measure_t *ptr, CAN_HandleTypeDef *hcan, uint8_t 
 }
 void can1_send_chassis_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, uint8_t iq4, uint8_t iq5)
 {
-static uint32_t txmailbox;
-	static uint16_t time =0;
+    uint8_t FreeTxNum = 0;
 
     Tx1Message.StdId = TX_ID;
     Tx1Message.IDE = CAN_ID_STD;
@@ -540,34 +539,14 @@ static uint32_t txmailbox;
     CAN1_Tx_data[6] = iq4;
     CAN1_Tx_data[7] = iq5;
 
-  while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
-		{
-				time++;
-			if(time > 5)
-			{
-			time=0;
-				return;
-			}
-		
-		}      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
-	if ((hcan1.Instance->TSR & CAN_TSR_TME0) != RESET)     //如果邮箱0空闲
-	{
-		txmailbox =CAN_TX_MAILBOX0;
-	}
+    // 查询发送邮箱是否为空
+    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
+    while (FreeTxNum == 0)
+    {
+        FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
+    }
 
-	/* Check Tx Mailbox 1 status */
-	else if ((hcan1.Instance->TSR & CAN_TSR_TME1) != RESET)
-	{
-		txmailbox =CAN_TX_MAILBOX1;
-	}
-
-	/* Check Tx Mailbox 2 status */
-	else if ((hcan1.Instance->TSR & CAN_TSR_TME2) != RESET)
-	{
-		txmailbox =CAN_TX_MAILBOX2;
-	}
-	HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, (uint32_t *)txmailbox);
-	
+    HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, (uint32_t *)CAN_TX_MAILBOX0);
 }
 /**
   * @brief  send calculated current to motor

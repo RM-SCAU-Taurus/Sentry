@@ -383,7 +383,7 @@ void vsn_gimbal_ref_calc(void) {
                 gimbal.pid.yaw_angle_6020_ref += rc.ch1 * scale.ch1;
             } else 
 						{
-								if(vision_ctrl.speed_mode == 1 ){
+								if(1){
 								vision_ctrl.speed_yaw = data_limit(vision_ctrl.speed_yaw, 250, -250);
                 gimbal.pid.yaw_spd_6020_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
 //                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要

@@ -169,7 +169,7 @@
 //#define SPEED_PWM_14        510     //14m/s射速  射速上限为15m/s  连发时：13.8-14.6 单发时：14.3-14.6
 #define SPEED_PWM_14        200     //14m/s射速  射速上限为15m/s  连发时：13.8-14.6 单发时：14.3-14.6
 #define SPEED_PWM_17        570     //16m/s射速  射速上限为18m/s  连发时：15.8-16.7 单发时：16.9-17.2
-#define SPEED_PWM_28        800//915     //28m/s射速  射速上限为30m/s  连发时：25.0-28.2 单发时：28.0-28.5
+#define SPEED_PWM_28        750//915     //28m/s射速  射速上限为30m/s  连发时：25.0-28.2 单发时：28.0-28.5
 #define LOW_SPEED           SPEED_PWM_14   //校准时改成1100 (烧程序时调拨杆) 调试拨盘时，可以设置成200
 #define MID_SPEED	        SPEED_PWM_17	
 #define HIGH_SPEED	        SPEED_PWM_28

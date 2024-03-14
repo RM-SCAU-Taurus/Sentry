@@ -239,7 +239,7 @@ void gimbal_pid_calcu(void)
     /*------------------------pit轴串级pid计算------------------------*/
     // 位置反馈：编码器位置
     // 速度反馈：陀螺仪速度
-    gimbal.pid.pit_angle_ref = data_limit(gimbal.pid.pit_angle_ref, 31, -18); // 目标值限幅
+    gimbal.pid.pit_angle_ref = data_limit(gimbal.pid.pit_angle_ref, 10, -30); // 目标值限幅
     gimbal.pid.pit_angle_fdb = imu_data.pitch;
     gimbal.pid.pit_angle_err = gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb;
     pid_calc(&pid_pit_angle, gimbal.pid.pit_angle_fdb, gimbal.pid.pit_angle_fdb + gimbal.pid.pit_angle_err);
@@ -254,7 +254,7 @@ void gimbal_pid_calcu(void)
     // 速度反馈：陀螺仪WZ
 
     /*------------------------下yaw轴串级pid计算------------------------*/
-	if (vision_ctrl.speed_mode == 1 && ctrl_mode ==AUTO_MODE)
+	if (vision.status == vUNAIMING && ctrl_mode ==AUTO_MODE)
     {
         gimbal.pid.yaw_spd_6020_fdb = imu_data.wz; // 陀螺仪速度反馈
         pid_calc(&pid_yaw_spd_6020, gimbal.pid.yaw_spd_6020_fdb, gimbal.pid.yaw_spd_6020_ref);

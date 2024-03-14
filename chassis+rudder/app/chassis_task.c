@@ -50,13 +50,16 @@ void chassis_init()
 //		chassis.rudder_ecd_offset[2] = 6350;//6350
 //		chassis.rudder_ecd_offset[3] = 3880;//6500
 		
-				
-		chassis.rudder_ecd_offset[0] = 5050;//100
+			/*old_sentry*/
+//		chassis.rudder_ecd_offset[0] = 2230;//100
+//		chassis.rudder_ecd_offset[1] = 5121;//5300
+//		chassis.rudder_ecd_offset[2] = 6265;//6350
+//		chassis.rudder_ecd_offset[3] = 3795;//6500
+		/*new_sentry*/
+				chassis.rudder_ecd_offset[0] = 5050;//100
 		chassis.rudder_ecd_offset[1] = 3597;//5300
 		chassis.rudder_ecd_offset[2] = 7657;//6350
 		chassis.rudder_ecd_offset[3] = 6668;//6500
-		
-		
 		
     scale.ch3 = RC_CH3_SCALE;
     scale.ch4 = RC_CH4_SCALE;

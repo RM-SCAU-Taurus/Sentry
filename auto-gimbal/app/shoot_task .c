@@ -43,7 +43,7 @@ int cnt = 0;
 void shoot_task(void const *argu)
 {
     uint32_t mode_wake_time = osKernelSysTick();
-    
+
     for (;;)
     {
         taskENTER_CRITICAL();
@@ -166,17 +166,7 @@ static void shoot_mode_sw(void)
         default:
             break;
         }
-        /* 弹舱盖模式切换 */
-        static uint8_t house_switch_enable = 1;
-        if (last_ctrl_mode != REMOTER_MODE)
-            shoot.house_mode = HOUSE_MODE_CLOSE;
-        if (rc.ch5 == 0)
-            house_switch_enable = 1;
-        if (house_switch_enable && rc.ch5 == -660) // 
-        {
-            house_switch_enable = 0;
-            shoot.house_mode = (shoot_house_mode_e)(!(uint8_t)shoot.house_mode); // 
-        }
+       
     }
     break;
     default:
@@ -201,5 +191,5 @@ static void ShootParam_Update(void)
     if (shoot.barrel.heat < 0)
         shoot.barrel.heat = 0;
     shoot.barrel.heat_remain = shoot.barrel.heat_max - shoot.barrel.heat; //
-//   		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用
+    //   		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用
 }

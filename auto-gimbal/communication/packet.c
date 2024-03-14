@@ -65,11 +65,11 @@ void rm_dequeue_send_data(void* buf,uint16_t len)
 			  encode_send_data(CHASSIS_ODOM_FDB_ID,((uint8_t*)buf+2),sizeof(chassis_odom_info_t));
 		}
 		break;
-//		case GAME_STATUS_FDB_ID:
-//		{
-//			  encode_send_data(GAME_STATUS_FDB_ID,((uint8_t*)buf+2),sizeof(Game_Status));
-//		}
-//		break;
+		case GAME_STATUS_FDB_ID:
+		{
+			  encode_send_data(GAME_STATUS_FDB_ID,((uint8_t*)buf+2),sizeof(Game_Status));
+		}
+		break;
 
 	}
 	

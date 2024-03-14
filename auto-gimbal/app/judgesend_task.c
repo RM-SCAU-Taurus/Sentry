@@ -39,14 +39,6 @@ extern map_data_t map_data;
   */
 void judge_send_task(void const *argu)
 {
-//		Sentry_map.start_position_x=70;
-//	Sentry_map.start_position_y=30;
-//	int i=0;
-//	for(i=0;i<49;i++)
-//	{
-//	Sentry_map.delta_x[i]=1;
-//	Sentry_map.delta_y[i]=1;
-//	}	
     for(;;)
     {	
 			judge_get_basedata();

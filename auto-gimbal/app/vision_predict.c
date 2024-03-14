@@ -379,16 +379,9 @@ void vsn_gimbal_ref_calc(void) {
                 /* 清除标志，防止重复处理同一帧 */
                 vision.new_frame_flag = 0;
                 /* 修改云台设定值 */
-//                 gimbal.pid.pit_ecd_ref = vision.pit_angle_error+gimbal.pid.pit_ecd_fdb;
-//                gimbal.pid.yaw_angle_6020_ref = vision.gimbal_yaw_angle+vision.yaw_angle_6020_error+vision.yaw_predict_angle;
+
                 gimbal.pid.yaw_angle_6020_ref= vision.yaw_angle_6020_error;//视觉绝对角度
-//								gimbal.pid.yaw_angle_9025_ref= vision.yaw_angle_6020_error;//视觉绝对角度
                 gimbal.pid.pit_angle_ref  = vision.pit_angle_error;
-                
-//                gimbal.pid.pit_ecd_ref = vision.gimbal_pit_ecd + vision.pit_angle_error * 8191.0f / 360;
-//                gimbal.pid.yaw_angle_6020_ref = vision.gimbal_yaw_angle + vision.yaw_angle_6020_error;
-                
-							// gimbal.pid.pit_ecd_ref  = vision.gimbal_pit_ecd + ((vision.pit_angle_error + vision.pit_predict_angle) * 8191.0f / 360.0f);
             }
             break;
         }
@@ -435,8 +428,11 @@ void vsn_gimbal_ref_calc(void) {
 									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp;
 						
 									else 
-									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed ;		
-								gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
+									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed ;	
+
+                                    
+                                    	
+								    gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
 
 									}
 									/***************************NEW***************************/

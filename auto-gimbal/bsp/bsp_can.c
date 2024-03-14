@@ -676,14 +676,6 @@ void send_judge_msg(int16_t TX_ID, CAN_HandleTypeDef *hcan)
     judeg_msg_uint8_t[0] = (uint8_t)Power_Heat_Data.chassis_power_buffer;
     judeg_msg_uint8_t[1] = (uint8_t)powercontrol.max_power;
     memcpy(judeg_msg_uint8_t + 2, (void *)&Power_Heat_Data.chassis_power, sizeof(Power_Heat_Data.chassis_power));
-    // memcpy(c);
-
-//    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
-//    while (FreeTxNum == 0)
-//    {
-//        FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(hcan);
-//    }
-//    HAL_CAN_AddTxMessage(hcan, &TxMessage, judeg_msg_uint8_t, &MailBox);
 		
 			while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
 		{

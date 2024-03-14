@@ -124,20 +124,20 @@ void TriggerMotor_control(void)
                 && shoot.barrel.heat_remain >= MIN_HEAT                               // 热量控制
                 )                                                                     // 一个周期打一颗  射频控制
             {
-								if(frequency_cnt > 100)
+								if(frequency_cnt > 49)
                 {
 									frequency_cnt=0;
 								shoot_time = osKernelSysTick();
                 shoot.barrel.shoot_period = shoot_time - shoot_last_time; 
 									
-								shoot.barrel.heat += 10 *  (((motor_trigger.total_ecd - last_total_ecd) / TRIGGER_MOTOR_ECD) *9.0f );
+								shoot.barrel.heat += 10 *  (((motor_trigger.total_ecd - last_total_ecd) / TRIGGER_MOTOR_ECD_Circle) *9.0f );
 									
 								Fric_hz = (((motor_trigger.total_ecd - last_total_ecd) / TRIGGER_MOTOR_ECD_Circle) *9.0f ) / (shoot.barrel.shoot_period/1000.0f);
 									
 								shoot_last_time = shoot_time;
 								 last_total_ecd = motor_trigger.total_ecd;
 								}
-							  shoot.barrel.pid.trigger_spd_ref = shoot_spd;
+							  shoot.barrel.pid.trigger_spd_ref = TRIGGER_10hz;
 
 
 							

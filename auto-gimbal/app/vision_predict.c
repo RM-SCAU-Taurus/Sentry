@@ -433,6 +433,7 @@ void vsn_gimbal_ref_calc(void) {
 									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp *2;
 									else if(vision_ctrl.speed_yaw && scan_dir==-1) 
 									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp;
+						
 									else 
 									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed ;		
 								gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	

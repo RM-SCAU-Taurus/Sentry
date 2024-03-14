@@ -18,6 +18,10 @@
 typedef struct
 {
     /* position ecd loop */
+		float trigger_hz_ref;
+    float trigger_hz_fdb;
+    float trigger_hz_error;
+	
     float trigger_ecd_ref;
     float trigger_ecd_fdb;
     float trigger_ecd_error;

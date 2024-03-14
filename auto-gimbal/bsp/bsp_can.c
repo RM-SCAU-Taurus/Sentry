@@ -247,7 +247,7 @@ static void User_can1_callback(uint32_t ID, uint8_t* CAN_RxData)
 //        }
 				 case CAN_YAW_9025_MOTOR_ID:
         {
-			encoder_data_receive(&YAW_9025,CAN_RxData);
+		  	encoder_data_receive(&YAW_9025,CAN_RxData);
 //            status.gimbal_status[0] = 1;
             break;
         }
@@ -770,7 +770,7 @@ void pit_data_handler(moto_measure_t *ptr, CAN_HandleTypeDef *hcan, uint8_t *CAN
     ptr->total_ecd = ptr->round_cnt * 8192 + ptr->ecd - ptr->offset_ecd;
 }
 
-void send_message_mf(int16_t TX_ID,uint8_t Command_byte,int16_t iq1)
+void send_message_mf(int16_t TX_ID,uint8_t Command_byte,int16_t iq1,int16_t iq2,int16_t iq3)
 {
     iq1 = data_limit(iq1,2024,-2024);
     CAN_TxHeaderTypeDef Tx1Message;
@@ -786,12 +786,12 @@ void send_message_mf(int16_t TX_ID,uint8_t Command_byte,int16_t iq1)
 
     CAN1_Tx_data[0] = Command_byte;
     CAN1_Tx_data[1] = 0x00;
-    CAN1_Tx_data[2] = 0x00;
-    CAN1_Tx_data[3] = 0x00;
+    CAN1_Tx_data[2] = iq2 ;
+    CAN1_Tx_data[3] = iq2>> 8;
     CAN1_Tx_data[4] = iq1;
     CAN1_Tx_data[5] = iq1 >> 8;
-    CAN1_Tx_data[6] = 0x00;
-    CAN1_Tx_data[7] = 0x00;
+    CAN1_Tx_data[6] = iq3;
+    CAN1_Tx_data[7] = iq3>> 8;
 
     //查询发送邮箱是否为空
 //    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);

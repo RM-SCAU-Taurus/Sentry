@@ -172,10 +172,10 @@ static void shoot_mode_sw(void)
             shoot.house_mode = HOUSE_MODE_CLOSE;
         if (rc.ch5 == 0)
             house_switch_enable = 1;
-        if (house_switch_enable && rc.ch5 == -660) // 鍒囨崲寮硅埍寮�鍏崇姸鎬佹爣蹇椾綅
+        if (house_switch_enable && rc.ch5 == -660) // 
         {
             house_switch_enable = 0;
-            shoot.house_mode = (shoot_house_mode_e)(!(uint8_t)shoot.house_mode); // 寮�鍏冲脊鑸辩洊
+            shoot.house_mode = (shoot_house_mode_e)(!(uint8_t)shoot.house_mode); // 
         }
     }
     break;
@@ -201,5 +201,5 @@ static void ShootParam_Update(void)
     if (shoot.barrel.heat < 0)
         shoot.barrel.heat = 0;
     shoot.barrel.heat_remain = shoot.barrel.heat_max - shoot.barrel.heat; //
-    //		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用
+   		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用
 }

@@ -104,6 +104,7 @@ __PID_EXT pid_t pid_9025_i;
 __PID_EXT pid_t pid_yaw_mecd;
 __PID_EXT pid_t pid_yaw_mspd;
 /* -------------------------------------- Trigger -------------------------------------- */
+__PID_EXT pid_t pid_trigger_hz;
 __PID_EXT pid_t pid_trigger_ecd;
 __PID_EXT pid_t pid_trigger_spd;
 

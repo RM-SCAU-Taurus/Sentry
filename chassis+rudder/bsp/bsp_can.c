@@ -6,9 +6,13 @@
 #include "string.h"
 #include "bsp_T_imu.h"
 #include "bsp_powerlimit.h"
-#include "modeswitch_task.h"
 #include "bsp_judge.h"
+#include "protocol_camp.h"
+#include "math_calcu.h"
 #include "comm_task.h"
+#include "modeswitch_task.h"
+
+
 CAN_TxHeaderTypeDef Tx1Message;
 CAN_RxHeaderTypeDef Rx1Message;
 CAN_TxHeaderTypeDef Tx2Message;
@@ -18,120 +22,327 @@ uint8_t CAN1_Rx_data[8];
 uint8_t CAN1_Tx_data[8];
 uint8_t CAN2_Rx_data[8];
 uint8_t CAN2_Tx_data[8];
+uint8_t GAME_STATE;
+
 uint8_t gimbal_status;
+
 Game_Status_t Game_Status;
+
+extern Game_Status_t Game_Status;
+
+
+
+struct can_rx_buff
+{
+    CAN_RxHeaderTypeDef header;
+    uint8_t             data[8];
+} can_rx_data;
+
+/* 本地变量，CAN中断回调函数指针 */
+static void (*pCAN1_RxFifo0CpltCallback)(uint32_t,uint8_t*);
+static void (*pCAN2_RxFifo1CpltCallback)(uint32_t,uint8_t*);
+
+static void CAN_Filter_IDList_Config(CAN_HandleTypeDef * hcan, uint32_t  * ID);
+static void CAN1_FilterEnd_Config(CAN_HandleTypeDef * hcan,CAN_FilterTypeDef  *Can_Fliter,uint8_t num);
+static void CAN2_FilterEnd_Config(CAN_HandleTypeDef * hcan,CAN_FilterTypeDef  *Can_Fliter,uint8_t num);
+static void CAN1_IDList_Config(CAN_HandleTypeDef * hcan,CAN_FilterTypeDef  *Can_Fliter,uint32_t  * ID);
+static void CAN2_IDList_Config(CAN_HandleTypeDef * hcan,CAN_FilterTypeDef  *Can_Fliter,uint32_t  * ID);
+
+
+static void User_can1_callback(uint32_t ID, uint8_t* CAN_RxData);
+static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData);
+
+
+
+
+/******************************MOVE************************************************/
+void can_device_init(void)
+{
+    uint32_t can_ID1[] = {CAN_3508_M2_ID,CAN_3508_M3_ID,POWER_CONTROL_ID, CAN_JUDGE_MSG_ID,CHASSIS_CTRl_MSG_ID,0xFFF};
+    uint32_t can_ID2[] = {CAN_6020_M4_ID,CAN_6020_M3_ID,CAN_6020_M2_ID, CAN_6020_M1_ID, CAN_3508_M1_ID,CAN_3508_M4_ID, 0xFFF};
+    canx_init(&hcan1, can_ID1, User_can1_callback);
+    canx_init(&hcan2, can_ID2, User_can2_callback);
+}
+
 /**
-  * @brief     CAN接受中断回调函数
-  * @param     CAN_Rx_data ：CAN节点反馈的数据帧
-  * @attention
-  */
-	int tent1;
-	int judge_tent;
+* @brief  Initialize CAN Bus
+* @param  hcan: CANx created by CubeMX. id:an array of ListID. (*pFunc):USER_Callback_Func
+* @return None.
+*/
+void canx_init(CAN_HandleTypeDef * hcan, uint32_t  * id, void (*pFunc)(uint32_t,uint8_t*))
+{
+    CAN_Filter_IDList_Config(hcan,id);
+    HAL_CAN_Start(hcan);
+    if (CAN1 == hcan->Instance)
+    {
+        pCAN1_RxFifo0CpltCallback = pFunc;
+        HAL_CAN_ActivateNotification(hcan,CAN_IT_RX_FIFO0_MSG_PENDING);
+        __HAL_CAN_ENABLE_IT(hcan,CAN_IT_RX_FIFO0_MSG_PENDING);
+    }
+    else if (CAN2 == hcan->Instance)
+    {
+        pCAN2_RxFifo1CpltCallback = pFunc;
+        HAL_CAN_ActivateNotification(hcan,CAN_IT_RX_FIFO1_MSG_PENDING);
+        __HAL_CAN_ENABLE_IT(hcan,CAN_IT_RX_FIFO1_MSG_PENDING);
+    }
+}
+
+
+
+/**
+* @brief  Initialize CAN Filter
+* @param  hcan: CANx created by CubeMX. id:an array of ListID.
+* @return None.
+*/
+static void CAN_Filter_IDList_Config(CAN_HandleTypeDef * hcan, uint32_t  * ID)
+{
+    /* can filter config */
+    CAN_FilterTypeDef  can_filter;
+
+    can_filter.FilterMode = CAN_FILTERMODE_IDLIST;
+    can_filter.FilterScale = CAN_FILTERSCALE_16BIT;
+    can_filter.SlaveStartFilterBank = 14;
+    //Config IDList
+    if (CAN1 == hcan->Instance)
+        CAN1_IDList_Config(hcan,&can_filter,ID);
+    else if (CAN2 == hcan->Instance)
+        CAN2_IDList_Config(hcan,&can_filter,ID);
+}
+
+/**
+* @brief  Initialize Register about IDlist for CAN1
+* @param  hcan: CANx created by CubeMX. Can_Fliter: CAN filter configuration structure.id:an array of ListID.
+* @return None.
+*/
+static void CAN1_IDList_Config(CAN_HandleTypeDef * hcan,CAN_FilterTypeDef  *Can_Fliter,uint32_t  * ID)
+{
+    uint8_t i = 0;
+    while(ID[i]!=0xFFF)
+    {
+        switch (i%4)
+        {
+        case 0:
+            Can_Fliter->FilterIdHigh = ID[i]<<5;
+            break;
+        case 1:
+            Can_Fliter->FilterIdLow = ID[i]<<5;
+            break;
+        case 2:
+            Can_Fliter->FilterMaskIdHigh = ID[i]<<5;
+            break;
+        case 3:
+        {
+            Can_Fliter->FilterMaskIdLow = ID[i]<<5;
+            CAN1_FilterEnd_Config(hcan,Can_Fliter,i);
+            break;
+        }
+        }
+        if (ID[i+1]==0xFFF)
+        {
+            CAN1_FilterEnd_Config(hcan,Can_Fliter,i);
+        }
+        i++;
+    }
+}
+
+/**
+* @brief  Initialize Register about IDlist for CAN2
+* @param  hcan: CANx created by CubeMX. Can_Fliter: CAN filter configuration structure.id:an array for ListID.
+* @return None.
+*/
+static void CAN2_IDList_Config(CAN_HandleTypeDef * hcan,CAN_FilterTypeDef  *Can_Fliter,uint32_t  * ID)
+{
+    uint8_t i = 0;
+    while(ID[i]!=0xFFF)
+    {
+        switch (i%4)
+        {
+        case 0:
+            Can_Fliter->FilterIdHigh = ID[i]<<5;
+            break;
+        case 1:
+            Can_Fliter->FilterIdLow = ID[i]<<5;
+            break;
+        case 2:
+            Can_Fliter->FilterMaskIdHigh = ID[i]<<5;
+            break;
+        case 3:
+        {
+            Can_Fliter->FilterMaskIdLow = ID[i]<<5;
+            CAN2_FilterEnd_Config(hcan,Can_Fliter,i);
+            break;
+        }
+        }
+        if (ID[i+1]==0xFFF)
+        {
+            CAN2_FilterEnd_Config(hcan,Can_Fliter,i);
+        }
+        i++;
+    }
+}
+
+/**
+* @brief  Finish initialize register about IDlist for CAN1
+* @param  hcan: CANx created by CubeMX. Can_Fliter: CAN filter configuration structure. num: the index of ID array
+* @return None.
+*/
+static void CAN1_FilterEnd_Config(CAN_HandleTypeDef * hcan,CAN_FilterTypeDef  *Can_Fliter,uint8_t num)
+{
+    Can_Fliter->FilterBank  = num/4;
+    Can_Fliter->FilterFIFOAssignment = CAN_FILTER_FIFO0;
+    Can_Fliter->FilterActivation = CAN_FILTER_ENABLE;
+    HAL_CAN_ConfigFilter(hcan,Can_Fliter);
+}
+
+/**
+* @brief  Finish initialize register about IDlist for CAN2
+* @param  hcan: CANx created by CubeMX. Can_Fliter: CAN filter configuration structure. num: the index of ID array
+* @return None.
+*/
+static void CAN2_FilterEnd_Config(CAN_HandleTypeDef * hcan,CAN_FilterTypeDef  *Can_Fliter,uint8_t num)
+{
+    Can_Fliter->FilterBank  = num/4+14;
+    Can_Fliter->FilterFIFOAssignment = CAN_FILTER_FIFO1;
+    Can_Fliter->FilterActivation = CAN_FILTER_ENABLE;
+    HAL_CAN_ConfigFilter(hcan,Can_Fliter);
+}
+
+
+/*HAL库FIFO0中断*/
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-    if(hcan == &hcan1)
+    if (hcan->Instance ==CAN1)
     {
-        HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO0, &Rx1Message, CAN1_Rx_data);
-        switch (Rx1Message.StdId)
-        {
+        if (HAL_CAN_GetRxMessage(hcan,CAN_FILTER_FIFO0,&can_rx_data.header,can_rx_data.data) == HAL_ERROR) {};
+        pCAN1_RxFifo0CpltCallback(can_rx_data.header.StdId,can_rx_data.data);
+    }
+}
+
+/*HAL库FIFO1中断*/
+void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+    if (hcan->Instance == CAN2)
+    {
+        if (HAL_CAN_GetRxMessage(hcan,CAN_FILTER_FIFO1,&can_rx_data.header,can_rx_data.data)==HAL_ERROR) {};
+        pCAN2_RxFifo1CpltCallback(can_rx_data.header.StdId,can_rx_data.data);
+    }
+}
+
+
+
+/************************************************************************************/
+
+
+
+/***************CALLBACK***********************/
+
+
+static void User_can1_callback(uint32_t ID, uint8_t* CAN_RxData)
+{
+    switch (ID)
+    {
+
 //        case CAN_3508_M1_ID:
         case CAN_3508_M2_ID:
         case CAN_3508_M3_ID:
 //        case CAN_3508_M4_ID:
         {
             static uint8_t i;
-            i = Rx1Message.StdId - CAN_3508_M1_ID;
-            encoder_data_handler(&moto_chassis[i],&hcan1,CAN1_Rx_data);
+            i = ID- CAN_3508_M1_ID;
+            encoder_data_handler(&moto_chassis[i],&hcan1,CAN_RxData);
             status.chassis_status[i] = 1;
             break;
         }
         case POWER_CONTROL_ID:
         {
-            Power_data_handler(Rx1Message.StdId,CAN1_Rx_data);
+            Power_data_handler(ID,CAN_RxData);
             status.power_control = 1;
             break;
         }
 					case CAN_JUDGE_MSG_ID:
 			{
-                judge_msg_get(&hcan1, CAN1_Rx_data);
-								judge_tent++;
+                judge_msg_get(&hcan1, CAN_RxData);
                 break;
 			}
-        case CHASSIS_CTRl_MSG_ID:
+				 case CHASSIS_CTRl_MSG_ID:
         {
-						gimbal_status=1;
-           chassis.spd_input.vx =(int16_t)( CAN1_Rx_data[0]<<8|CAN1_Rx_data[1]);
-           chassis.spd_input.vy = (int16_t)(CAN1_Rx_data[2]<<8|CAN1_Rx_data[3]);
-           chassis.spd_input.vw =(int16_t)( CAN1_Rx_data[4]<<8|CAN1_Rx_data[5]);
+					 gimbal_status=1;
+           chassis.spd_input.vx =(int16_t)( CAN_RxData[0]<<8|CAN_RxData[1]);
+           chassis.spd_input.vy = (int16_t)(CAN_RxData[2]<<8|CAN_RxData[3]);
+           chassis.spd_input.vw =(int16_t)( CAN_RxData[4]<<8|CAN_RxData[5]);
 					//tent1++;
-           if (CAN1_Rx_data[6]==0x00)
+           if (CAN_RxData[6]==0x00)
            {
                ctrl_mode=PROTECT_MODE;
                /* code */
            }
-           else if (CAN1_Rx_data[6]==0x01)
+           else if (CAN_RxData[6]==0x01)
            {
                ctrl_mode=REMOTER_MODE;
                /* code */
            }
-           else if (CAN1_Rx_data[6]==0x02)
+           else if (CAN_RxData[6]==0x02)
            {
                ctrl_mode=AUTO_MODE;
                /* code */
            }
             break;
         }
+
         default:
         {
             break;
         }
-        };
-        __HAL_CAN_ENABLE_IT(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
-    }
-    else if( hcan == &hcan2 )
+			}		
+				
+}
+
+
+static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
+{
+
+
+
+
+
+    switch (ID)
     {
-        HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO0, &Rx2Message, CAN2_Rx_data);
-        switch( Rx2Message.StdId )//1 3
-        {
 				case CAN_3508_M1_ID:
-//        case CAN_3508_M2_ID: //2
-//        case CAN_3508_M3_ID:
+        case CAN_3508_M2_ID: //2
+        case CAN_3508_M3_ID:
         case CAN_3508_M4_ID:
         {
 						
             static uint8_t i;
-            i = Rx2Message.StdId - CAN_3508_M1_ID;
-            encoder_data_handler(&moto_chassis[i],&hcan2,CAN2_Rx_data);
+            i = ID- CAN_3508_M1_ID;
+            encoder_data_handler(&moto_chassis[i],&hcan2,CAN_RxData);
             status.chassis_status[i] = 1;
             break;
         }
-        case TIMU_PALSTANCE_ID:
-        {
-            T_imu_calcu(Rx2Message.StdId, CAN2_Rx_data);
-            status.gyro_status[0] = 1;
-					break;
-        }
-        case TIMU_ANGLE_ID:
-        {
-            T_imu_calcu(Rx2Message.StdId, CAN2_Rx_data);
-            status.gyro_status[1] = 1;
-            break;
-        }
+
 			case CAN_6020_M1_ID:
 			case CAN_6020_M2_ID:
 			case CAN_6020_M3_ID:
 			case CAN_6020_M4_ID:				
 			{
 				static uint8_t j;
-				j = Rx2Message.StdId - CAN_6020_M1_ID;
-				encoder_data_handler(&moto_chassis_6020[j],&hcan2, CAN2_Rx_data);
+				j = ID - CAN_6020_M1_ID;
+				encoder_data_handler(&moto_chassis_6020[j],&hcan2, CAN_RxData);
 				
 				break;
 			}
+        
+
+						default:
+        {
+            break;
         }
-        __HAL_CAN_ENABLE_IT(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
+				
     }
 }
+
+
+/***************CALLBACK***********************/
 
 /**
   * @brief     get motor initialize offset value
@@ -170,7 +381,8 @@ void encoder_data_handler(moto_measure_t* ptr, CAN_HandleTypeDef* hcan, uint8_t 
 }
 void can1_send_chassis_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, uint8_t iq4,uint8_t iq5)
 {
-    uint8_t FreeTxNum = 0;
+    	static uint32_t txmailbox;
+	static uint16_t time =0;
 
     Tx1Message.StdId = TX_ID;
     Tx1Message.IDE 	 = CAN_ID_STD;
@@ -185,48 +397,98 @@ void can1_send_chassis_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t 
     CAN1_Tx_data[5] = iq3;
     CAN1_Tx_data[6] = iq4;
     CAN1_Tx_data[7] = iq5;
+		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
+		{
+				time++;
+			if(time > 5)
+			{
+			time=0;
+				return;
+			}
+		
+		}      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
+	if ((hcan1.Instance->TSR & CAN_TSR_TME0) != RESET)     //如果邮箱0空闲
+	{
+		txmailbox =CAN_TX_MAILBOX0;
+	}
 
-    //查询发送邮箱是否为空
-    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-    while(FreeTxNum == 0)
-    {
-        FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-    }
+	/* Check Tx Mailbox 1 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME1) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX1;
+	}
 
-    HAL_CAN_AddTxMessage(&hcan1, &Tx1Message,CAN1_Tx_data,(uint32_t*)CAN_TX_MAILBOX0);
+	/* Check Tx Mailbox 2 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME2) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX2;
+	}
+	HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, (uint32_t *)txmailbox);
 }
+/**
+  * @brief  send calculated current to motor
+  * @param  CAN1 motor current
+  */
 void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int16_t iq4)
 {
-    uint8_t FreeTxNum = 0;
+//	uint8_t FreeTxNum = 0; 
+	static uint32_t txmailbox;
+	static uint16_t time =0;
+	Tx1Message.StdId = TX_ID;
+	Tx1Message.IDE 	 = CAN_ID_STD;
+	Tx1Message.RTR   = CAN_RTR_DATA;
+  Tx1Message.DLC   = 0x08;
+	
+	CAN1_Tx_data[0] = iq1 >> 8;
+	CAN1_Tx_data[1] = iq1;
+	CAN1_Tx_data[2] = iq2 >> 8 ;
+	CAN1_Tx_data[3] = iq2;
+	CAN1_Tx_data[4] = iq3 >> 8;
+	CAN1_Tx_data[5] = iq3;
+	CAN1_Tx_data[6] = iq4 >> 8;
+	CAN1_Tx_data[7] = iq4;
+	
+	/* 查询发送邮箱是否为空 */
+//	FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);  
+//	while(FreeTxNum == 0) 
+//	{  
+//    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);  
+//  }
+		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
+		{
+				time++;
+			if(time > 5)
+			{
+			time=0;
+				return;
+			}
+		
+		}      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
+	if ((hcan1.Instance->TSR & CAN_TSR_TME0) != RESET)     //如果邮箱0空闲
+	{
+		txmailbox =CAN_TX_MAILBOX0;
+	}
 
-    Tx1Message.StdId = TX_ID;
-    Tx1Message.IDE 	 = CAN_ID_STD;
-    Tx1Message.RTR   = CAN_RTR_DATA;
-    Tx1Message.DLC   = 0x08;
+	/* Check Tx Mailbox 1 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME1) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX1;
+	}
 
-    CAN1_Tx_data[0] = iq1 >> 8;
-    CAN1_Tx_data[1] = iq1;
-    CAN1_Tx_data[2] = iq2 >> 8 ;
-    CAN1_Tx_data[3] = iq2;
-    CAN1_Tx_data[4] = iq3 >> 8;
-    CAN1_Tx_data[5] = iq3;
-    CAN1_Tx_data[6] = iq4 >> 8;
-    CAN1_Tx_data[7] = iq4;
-
-    //查询发送邮箱是否为空
-    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-    while(FreeTxNum == 0)
-    {
-        FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-    }
-
-    HAL_CAN_AddTxMessage(&hcan1, &Tx1Message,CAN1_Tx_data,(uint32_t*)CAN_TX_MAILBOX0);
+	/* Check Tx Mailbox 2 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME2) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX2;
+	}
+	HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, (uint32_t *)txmailbox);
+	
 }
 
 void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int16_t iq4)
 {
-    uint8_t FreeTxNum = 0;
-
+//    uint8_t FreeTxNum = 0;
+			static uint32_t txmailbox;
+	static uint16_t time =0;
     Tx2Message.StdId = TX_ID;
     Tx2Message.IDE 	 = CAN_ID_STD;
     Tx2Message.RTR   = CAN_RTR_DATA;
@@ -241,49 +503,39 @@ void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
     CAN2_Tx_data[6] = iq4 >> 8;
     CAN2_Tx_data[7] = iq4;
 
-    //查询发送邮箱是否为空
-    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);
-    while(FreeTxNum == 0)
-    {
-        FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);
-    }
+//		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0);      //如果三个邮箱都阻塞了就等一会儿，直到其中某个邮箱空闲
+	
+			while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0)
+		{
+				time++;
+			if(time > 5)
+			{
+			time=0;
+				return;
+			}
+		
+		}  
+		
+		
+	if ((hcan2.Instance->TSR & CAN_TSR_TME0) != RESET)     //如果邮箱0空闲
+	{
+		txmailbox =CAN_TX_MAILBOX0;
+	}
 
-    HAL_CAN_AddTxMessage(&hcan2, &Tx2Message,CAN2_Tx_data,(uint32_t*)CAN_TX_MAILBOX0);
+	/* Check Tx Mailbox 1 status */
+	else if ((hcan2.Instance->TSR & CAN_TSR_TME1) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX1;
+	}
+
+	/* Check Tx Mailbox 2 status */
+	else if ((hcan2.Instance->TSR & CAN_TSR_TME2) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX2;
+	}
+	HAL_CAN_AddTxMessage(&hcan2, &Tx2Message, CAN2_Tx_data, (uint32_t *)txmailbox);
 }
 
-/**
-  * @brief  init the can transmit and receive
-  * @param  None
-  */
-void can_device_init(void)
-{
-    //can1 filter config
-    CAN_FilterTypeDef  can_filter;
-
-    can_filter.FilterBank           = 0;
-    can_filter.FilterMode           = CAN_FILTERMODE_IDMASK;
-    can_filter.FilterScale          = CAN_FILTERSCALE_32BIT;
-    can_filter.FilterIdHigh         = 0x0000;
-    can_filter.FilterIdLow          = 0x0000;
-    can_filter.FilterMaskIdHigh     = 0x0000;
-    can_filter.FilterMaskIdLow      = 0x0000;
-    can_filter.FilterFIFOAssignment = CAN_FilterFIFO0;
-    can_filter.SlaveStartFilterBank = 0;
-    can_filter.FilterActivation     = ENABLE;
-
-    HAL_CAN_ConfigFilter(&hcan1, &can_filter);
-    while (HAL_CAN_ConfigFilter(&hcan1, &can_filter) != HAL_OK);
-
-    can_filter.FilterBank           = 14;
-    HAL_CAN_ConfigFilter(&hcan2, &can_filter);
-    while (HAL_CAN_ConfigFilter(&hcan2, &can_filter) != HAL_OK);
-
-    HAL_Delay(100);
-    HAL_CAN_Start(&hcan1);
-    HAL_CAN_ActivateNotification(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING);
-    HAL_CAN_Start(&hcan2);
-    HAL_CAN_ActivateNotification(&hcan2,CAN_IT_RX_FIFO0_MSG_PENDING);
-}
 
 void pit_data_handler(moto_measure_t* ptr, CAN_HandleTypeDef* hcan, uint8_t * CAN_Rx_data)
 {

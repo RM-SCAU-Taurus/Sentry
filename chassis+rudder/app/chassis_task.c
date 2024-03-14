@@ -50,13 +50,16 @@ void chassis_init()
 //		chassis.rudder_ecd_offset[2] = 6350;//6350
 //		chassis.rudder_ecd_offset[3] = 3880;//6500
 		
-				
-		chassis.rudder_ecd_offset[0] = 5050;//100
-		chassis.rudder_ecd_offset[1] = 3597;//5300
-		chassis.rudder_ecd_offset[2] = 6253;//6350
-		chassis.rudder_ecd_offset[3] = 6668;//6500
-		
-		
+			/*old_sentry*/
+		chassis.rudder_ecd_offset[0] = 2230;//100
+		chassis.rudder_ecd_offset[1] = 5121;//5300
+		chassis.rudder_ecd_offset[2] = 6265;//6350
+		chassis.rudder_ecd_offset[3] = 3795;//6500
+		/*new_sentry*/
+//				chassis.rudder_ecd_offset[0] = 5050;//100
+//		chassis.rudder_ecd_offset[1] = 3597;//5300
+//		chassis.rudder_ecd_offset[2] = 7657;//6350
+//		chassis.rudder_ecd_offset[3] = 6668;//6500
 		
     scale.ch3 = RC_CH3_SCALE;
     scale.ch4 = RC_CH4_SCALE;
@@ -253,25 +256,25 @@ void steering_calc(float vx, float vy, float vw, int16_t angle[], int16_t speed[
     rudder_angle[2] = atan2((vy-vw*0.707107f), (vx-vw*0.707107f)) * 57.3f;
     rudder_angle[3] = atan2((vy+vw*0.707107f), (vx+vw*0.707107f)) * 57.3f;
 	
-//					for(uint8_t i = 0;i<4; i++)
-//				{
+					for(uint8_t i = 0;i<4; i++)
+				{
 
-//				chassis.rudder_ecd_fdb[i] = (moto_chassis_6020[i].ecd - chassis.rudder_ecd_offset[i])*0.04395f;
-//				if(circle_error(rudder_angle[i],chassis.rudder_ecd_fdb[i],360)>90.0f)
-//				{
-//				rudder_angle[i] -= 180;
-//				wheel_rpm[i] = -wheel_rpm[i];
-//				}
-//				else if(circle_error(rudder_angle[i],chassis.rudder_ecd_fdb[i],360)<(-90.0f))
-//				{
-//				rudder_angle[i] += 180;
-//				wheel_rpm[i] = -wheel_rpm[i];
-//				}
-//				if(vx == 0 && vy == 0 && vw == 0)
-//				{
-//				rudder_angle[i] = 0;
-//				}
-//				}
+				chassis.rudder_ecd_fdb[i] = (moto_chassis_6020[i].ecd - chassis.rudder_ecd_offset[i])*0.04395f;
+				if(circle_error(rudder_angle[i],chassis.rudder_ecd_fdb[i],360)>90.0f)
+				{
+				rudder_angle[i] -= 180;
+				wheel_rpm[i] = -wheel_rpm[i];
+				}
+				else if(circle_error(rudder_angle[i],chassis.rudder_ecd_fdb[i],360)<(-90.0f))
+				{
+				rudder_angle[i] += 180;
+				wheel_rpm[i] = -wheel_rpm[i];
+				}
+				if(vx == 0 && vy == 0 && vw == 0)
+				{
+				rudder_angle[i] = 0;
+				}
+				}
 
 
 	      if(ABS(chassis.spd_input.vx)>rudder_deadband || ABS(chassis.spd_input.vy)>rudder_deadband || ABS(chassis.spd_input.vw)>rudder_deadband)

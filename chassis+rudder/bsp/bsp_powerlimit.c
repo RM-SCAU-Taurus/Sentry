@@ -143,7 +143,7 @@ void supercap_mode_update(void) {
 			supercap.mode = CAP_CHARGE_MODE;
 		}
 		else  {  /*<! 哨兵默认使用电容 !>*/
-        if (supercap.volage >= 14.0) {  /* 电容能量足够 */
+        if (supercap.volage >= 14.0f) {  /* 电容能量足够 */
             supercap.mode = CAP_DISCHARGE_MODE;
         } else if (powercontrol.judge_power_buffer <= 30) {  /* 缓存能量较低，功率无剩余 */
             supercap.mode = CAP_PROTECT_MODE;

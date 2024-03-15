@@ -291,7 +291,7 @@ void gimbal_pid_calcu(void)
 #ifdef __9025ready
 
 			static float disconnect_flag;
-				
+			static uint8_t times;
 			if (ctrl_mode ==AUTO_MODE && vision.status == vUNAIMING)
     {
         gimbal.pid.yaw_spd_9025_fdb = imu_9025.wz; // 陀螺仪速度反馈
@@ -316,7 +316,11 @@ void gimbal_pid_calcu(void)
 		
 	}
 				if(imu_9025.wz == disconnect_flag)
-		pid_yaw_spd_9025.pos_out = 0 ;			
+				times++;
+				if(times >100)
+				{pid_yaw_spd_9025.pos_out = 0 ;	
+					times=0;
+				}
 		disconnect_flag = imu_9025.wz;
     gimbal.current[2] = pid_yaw_spd_9025.pos_out;
 #endif

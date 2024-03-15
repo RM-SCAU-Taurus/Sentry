@@ -153,6 +153,7 @@ void Trigger_STOP_or_PROTECT(void)
     shoot.barrel.pid.trigger_spd_ref = 0;
     pid_trigger_spd.iout = 0;
     motor_cur.trigger_cur = 0;
+    TriggerMotor_pidcal();
 }
 
 void Trigger_SINGLE_or_SERIES(void)
@@ -162,19 +163,10 @@ void Trigger_SINGLE_or_SERIES(void)
     static uint8_t shoot_enable = 1;             // 打能量机关单发使能标志
     static uint32_t shoot_time, shoot_last_time; // 计算射击周期
 
+    frequency_cnt++;
+
     /* 利用遥控器切换单发连发模式 */
     if (rc_FSM_check(RC_LEFT_LU)) // 遥控器上电前，左拨杆置左上
-    {
-        shoot.stir_mode = STIR_MODE_SINGLE; // 单发
-    }
-    else if (rc_FSM_check(RC_LEFT_RU)) // 遥控器上电前，左拨杆置右上
-    {
-        shoot.stir_mode = STIR_MODE_SERIES; // 连发
-    }
-    frequency_cnt++;
-    
-		
-    if (STIR_MODE_SINGLE == shoot.stir_mode) // 拨盘单发模式
     {
         if ((rc.mouse.l == 0 && ctrl_mode == AUTO_MODE) ||
             (rc.ch5 == 0 && ctrl_mode == REMOTER_MODE))
@@ -185,10 +177,8 @@ void Trigger_SINGLE_or_SERIES(void)
             shoot.barrel.heat += 10;
         }
     }
-		
-    else if (shoot.stir_mode == STIR_MODE_SERIES)
+    else if (1) // 遥控器上电前，左拨杆置右上
     {
-
         if (
             (ctrl_mode == REMOTER_MODE ||
              (ctrl_mode == AUTO_MODE && vision.shoot_enable)) &&
@@ -220,4 +210,6 @@ void Trigger_SINGLE_or_SERIES(void)
             motor_cur.trigger_cur = 0;
         }
     }
+
+    TriggerMotor_pidcal();
 }

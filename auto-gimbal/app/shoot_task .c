@@ -48,6 +48,7 @@ void shoot_task(void const *argu)
 {
     uint32_t mode_wake_time = osKernelSysTick();
     static shoot_class_parent_t *Action_ptr = NULL;
+	    for (;;)
     {
         taskENTER_CRITICAL();
         /* 电调初始化 */

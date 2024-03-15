@@ -1,11 +1,13 @@
 /**********C库****************/
-
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
 /**********硬件外设库******/
 #include "tim.h"
 #include "usart.h"
 /**********任务库*************/
-#include "cmsis_os.h"
-#include "modeswitch_task.h"
+
 #include "comm_task.h"
 #include "shoot_task.h"
 #include "freertos.h"
@@ -21,13 +23,15 @@
 #include "bsp_FricMotor.h"
 #include "bsp_TriggerMotor.h"
 #include "bsp_judge.h"
+#include "bsp_shoot_class.h"
 /**********外部变量声明********/
 extern vision_ctrl_info_t vision_ctrl;
 /**********外部函数声明********/
 
 /**********静态函数声明********/
 static void ShootParam_Update(void);
-static void shoot_mode_sw(void);
+static shoot_class_parent_t *shoot_mode_check(void);
+static void Shoot_power_check(void);
 /**********宏定义声明**********/
 #define __SHOOT_TASK_GLOBALS
 /**********结构体定义**********/
@@ -43,22 +47,17 @@ int cnt = 0;
 void shoot_task(void const *argu)
 {
     uint32_t mode_wake_time = osKernelSysTick();
-
-    for (;;)
+    static shoot_class_parent_t *Action_ptr = NULL;
     {
         taskENTER_CRITICAL();
         /* 电调初始化 */
-        static uint8_t last_fric_enable, fric_enable;
-        fric_enable = !!Game_Robot_Status.mains_power_shooter_output;
-        if (fric_enable && !last_fric_enable)
-        {
-            shoot.fric_protect_mode = FRIC_PROTECT;
-        }
-        last_fric_enable = fric_enable;
-
-        shoot_mode_sw();        /* 发射器模式切换 */
-        FricMotor_Control();    /* 摩擦轮电机控制 */
-        TriggerMotor_control(); /* 拨弹电机控制 */
+        Shoot_power_check();
+        /* 发射器模式切换 ,父类指针赋值*/
+        Action_ptr = shoot_mode_check();
+        /*父类指针调用子类函数*/
+        Action_ptr->Fric_action();
+        Action_ptr->Trigger_action();
+			
         osSignalSet(can_msg_send_task_t, SHOOT_MOTOR_MSG_SEND);
         taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, SHOOT_PERIOD);
@@ -82,11 +81,8 @@ void shoot_init(void)
     shoot.shoot_speed = 30;
 }
 
-static void shoot_mode_sw(void)
+static shoot_class_parent_t *shoot_mode_check(void)
 {
-    /* 系统历史状态机 */
-    static ctrl_mode_e last_ctrl_mode = PROTECT_MODE;
-    /*发射器电机保护标志位*/
     if (!fric.init_flag)
     {
         fric.protect_flag = FRIC_PROTECT;
@@ -110,72 +106,66 @@ static void shoot_mode_sw(void)
         shoot.trigger_period = TRIGGER_PERIOD;
     }
 
-    /* 模式切换 */
+    static shoot_class_parent_t *p_return = NULL;
+
     switch (ctrl_mode)
+
     {
+
     case PROTECT_MODE:
+
     {
-        shoot.firc_mode = FIRC_MODE_STOP;
-        shoot.stir_mode = STIR_MODE_PROTECT;
-        shoot.house_mode = HOUSE_MODE_PROTECT;
-        FricMotor_speed_set(0);
-        if (fric.protect_flag != FRIC_PROTECT)
-        {
-            fric.protect_flag = FRIC_SLOW_TO_PROTECT;
-        }
+
+        p_return = (shoot_class_parent_t *)&PROTECT_choice;
     }
+
     break;
+
     case REMOTER_MODE:
     case AUTO_MODE:
+
     {
+
         /* 摩擦轮和拨盘模式切换 */
         switch (rc.sw2)
         {
         case RC_UP:
         {
-            // LASER_UP;
-            LASER_DOWN;
-            shoot.firc_mode = FIRC_MODE_STOP;
-            shoot.stir_mode = STIR_MODE_STOP;
-            FricMotor_speed_set(0);
+            p_return = (shoot_class_parent_t *)&RC_UP_choice;
         }
         break;
         case RC_MI:
         {
-            LASER_UP;
-            if (fric.init_flag)
-            {
-                shoot.firc_mode = FIRC_MODE_RUN; // 开启摩擦轮
-                FricMotor_speed_set(30);
-            }
-            fric.protect_flag = FRIC_UNPROTECT;
-            shoot.stir_mode = STIR_MODE_STOP;
+            p_return = (shoot_class_parent_t *)&RC_MI_choice;
         }
         break;
         case RC_DN:
         {
-            LASER_UP;
-            if (fric.init_flag)
-            {
-                shoot.firc_mode = FIRC_MODE_RUN;
-            } // 开启摩擦轮
-            fric.protect_flag = FRIC_UNPROTECT;
-            shoot.stir_mode = STIR_MODE_SERIES; // 连发
+            p_return = (shoot_class_parent_t *)&RC_DN_choice;
         }
         break;
         default:
             break;
         }
-       
     }
     break;
     default:
         break;
     }
-    /* 历史状态更新 */
-    last_ctrl_mode = ctrl_mode;
+
+    return p_return;
 }
 
+static void Shoot_power_check(void)
+{
+    static uint8_t last_fric_enable, fric_enable;
+    fric_enable = !!Game_Robot_Status.mains_power_shooter_output;
+    if (fric_enable && !last_fric_enable)
+    {
+        shoot.fric_protect_mode = FRIC_PROTECT;
+    }
+    last_fric_enable = fric_enable;
+}
 /* 发射器裁判系统数据更新 */
 static void ShootParam_Update(void)
 {

@@ -148,3 +148,76 @@ void TriggerMotor_control(void)
     }
     TriggerMotor_pidcal();
 }
+void Trigger_STOP_or_PROTECT(void)
+{
+    shoot.barrel.pid.trigger_spd_ref = 0;
+    pid_trigger_spd.iout = 0;
+    motor_cur.trigger_cur = 0;
+}
+
+void Trigger_SINGLE_or_SERIES(void)
+{
+    /* 局部全局变量 */
+    static uint16_t frequency_cnt = 0;           // 射频计算
+    static uint8_t shoot_enable = 1;             // 打能量机关单发使能标志
+    static uint32_t shoot_time, shoot_last_time; // 计算射击周期
+
+    /* 利用遥控器切换单发连发模式 */
+    if (rc_FSM_check(RC_LEFT_LU)) // 遥控器上电前，左拨杆置左上
+    {
+        shoot.stir_mode = STIR_MODE_SINGLE; // 单发
+    }
+    else if (rc_FSM_check(RC_LEFT_RU)) // 遥控器上电前，左拨杆置右上
+    {
+        shoot.stir_mode = STIR_MODE_SERIES; // 连发
+    }
+    frequency_cnt++;
+    
+		
+    if (STIR_MODE_SINGLE == shoot.stir_mode) // 拨盘单发模式
+    {
+        if ((rc.mouse.l == 0 && ctrl_mode == AUTO_MODE) ||
+            (rc.ch5 == 0 && ctrl_mode == REMOTER_MODE))
+            shoot_enable = 1;
+        if (shoot_enable && (rc.mouse.l || rc.ch5 == 660))
+        {
+            shoot_enable = 0;
+            shoot.barrel.heat += 10;
+        }
+    }
+		
+    else if (shoot.stir_mode == STIR_MODE_SERIES)
+    {
+
+        if (
+            (ctrl_mode == REMOTER_MODE ||
+             (ctrl_mode == AUTO_MODE && vision.shoot_enable)) &&
+            shoot.barrel.heat_remain >= MIN_HEAT // 热量控制
+            )                                    // 一个周期打一颗  射频控制
+        {
+            if (frequency_cnt > 49)
+            {
+                frequency_cnt = 0;
+                shoot_time = osKernelSysTick();
+                shoot.barrel.shoot_period = shoot_time - shoot_last_time;
+
+                shoot.barrel.heat += 10 * (((motor_trigger.total_ecd - last_total_ecd) / TRIGGER_MOTOR_ECD_Circle) * 9.0f);
+
+                Fric_hz = (((motor_trigger.total_ecd - last_total_ecd) / TRIGGER_MOTOR_ECD_Circle) * 9.0f) / (shoot.barrel.shoot_period / 1000.0f);
+
+                shoot_last_time = shoot_time;
+                last_total_ecd = motor_trigger.total_ecd;
+            }
+            shoot.barrel.pid.trigger_spd_ref = TRIGGER_10hz;
+
+            /* 获取射击周期 */
+        }
+
+        if ((ctrl_mode == AUTO_MODE && !vision.shoot_enable) || shoot.barrel.heat_remain < MIN_HEAT)
+        {
+            shoot.barrel.pid.trigger_spd_ref = 0;
+            pid_trigger_spd.iout = 0;
+            motor_cur.trigger_cur = 0;
+        }
+    }
+}

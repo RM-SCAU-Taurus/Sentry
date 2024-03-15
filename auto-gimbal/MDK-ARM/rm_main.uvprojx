@@ -856,6 +856,11 @@
               <FileType>1</FileType>
               <FilePath>..\bsp\bsp_Mf_Motor.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_shoot_class.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\bsp_shoot_class.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

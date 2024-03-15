@@ -9,10 +9,14 @@
 
 #include "stm32f4xx_hal.h"
 #include "bsp_FricMotor.h"
-
+#include "cmsis_os.h"
+#include "modeswitch_task.h"
 /* 红外激光 */
 #define LASER_UP		HAL_GPIO_WritePin(GPIOE,GPIO_PIN_12,GPIO_PIN_SET)
 #define LASER_DOWN	    HAL_GPIO_WritePin(GPIOE,GPIO_PIN_12,GPIO_PIN_RESET)
+
+typedef void (*Fric_callback)();
+typedef void (*Trigger_callback)();
 
 /* 拨盘闭环控制变量结构 */
 typedef struct
@@ -106,6 +110,25 @@ typedef struct {
 	float 		set_speed;			//设置目标转速
 	fric_pid_t	Fric_Pid_Set[2];	//摩擦轮pid参数
 } fric_t;
+
+/*简单工厂*/
+
+
+typedef struct{
+	ctrl_mode_e mode;
+	Fric_callback Fric_action;
+	Trigger_callback  Trigger_action;
+	struct mode_t *next;
+}shoot_class_parent_t;
+
+
+typedef struct{
+		shoot_class_parent_t base;
+}shoot_class_child_t;
+
+
+
+
 extern fric_t fric;
 void shoot_task(void const *argu);
 void shoot_init(void);

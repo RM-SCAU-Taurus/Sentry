@@ -15,9 +15,10 @@
 #define GIMBAL_CAN_TX_ID  				0x1ff
 #define CHASSIS_CTRL_CAN_TX_ID  	0x1f1
 #define CAN_9025_YAW_TX_ID      	0x141
-#define TORQUE_COMMAND          0xA1
+#define TORQUE_COMMAND        	  0xA1
 #define Trigger_CAN_TX_ID  				0x1ff
-#define Fric_CAN_TX_ID          0x200
+#define Fric_CAN_TX_ID          	0x200
+#define CAN_Fric_Ctrl_ID  				0x777
 #define JUDGE_MSG_PUT    				  ( 1 << 4 )
 #define DBUS_MSG_PUT    				  ( 1 << 5 )
 #define GIMBAL_MOTOR_MSG_SEND     ( 1 << 6 )

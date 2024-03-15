@@ -138,7 +138,7 @@ void USER_HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart)
 					usart_instance[i]->module_callback(usart_instance[i]->usart_handle, Memory_change(usart_instance[i]));//Memory_change返回上一帧使用的缓冲区
 				}
 			}
-			break;
+		
 		}
 	}
 }

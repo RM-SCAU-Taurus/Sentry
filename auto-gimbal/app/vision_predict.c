@@ -402,25 +402,32 @@ void vsn_gimbal_ref_calc(void) {
 						
 						else if (ctrl_mode == AUTO_MODE)
 						{
+								static uint8_t protect_mode;
+								static uint8_t error_times;
 								{
 								vision_ctrl.speed_yaw = data_limit(vision_ctrl.speed_yaw, 250, -250);
                 gimbal.pid.yaw_spd_9025_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
 //                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要
 									if(     
-										 ( ABSv(moto_yaw.ecd - encoder_L) < 10 ||  ABSv(moto_yaw.ecd - encoder_R) <100  )
-										&& (close_flag==0) || hit_flag == hit_check
+										 (( ABSv(moto_yaw.ecd - encoder_L) < 10 ||  ABSv(moto_yaw.ecd - encoder_R) <100  )
+										&& (close_flag==0) ) || (protect_mode)
 										)
 									{
 												scan_dir = -scan_dir;
 												close_flag =1;
-												hit_flag = hit_out;
+												protect_mode = 0;
 									}
 									if(  ABSv(moto_yaw.ecd - encoder_CENTER) < 10)
 									{close_flag =0;
-									hit_flag = hit_save;
+										protect_mode = 0;
 									}
-									if(ABSv(moto_yaw.ecd - 4700) < 30 && hit_flag == hit_save)
-										hit_flag=hit_check;
+									if(ABSv(moto_yaw.ecd - 4700) < 30 && 	error_times++>100 )
+									{
+										protect_mode=1;
+										error_times = 0 ;
+									
+									}
+									
 									
 									if(vision_ctrl.speed_yaw && scan_dir==1)
 									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp *2;

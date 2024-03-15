@@ -178,7 +178,7 @@ void chassis_task(void const *argu)
 					 chassis.spd_distribution();
 						chassis_pid_calcu();//舵轮pid计算
 						/* 功率控制 */
-						powercontrol.ParamUpdate();
+						PowerParam_Update();
 						Power_Control(chassis.current,chassis.current_6020);
 						     for(uint8_t i=0; i<4; i++)//转舵保护
 		        {

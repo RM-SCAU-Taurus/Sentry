@@ -217,8 +217,8 @@ void Power_Control(int16_t * current,int16_t* current_6020)
             {
 								if(powercontrol.power_buffer<= 30)//增加6020功率控制
 								{
-//									current_6020[i]/=( ABS(powercontrol.limit_temp)*1.3 + 1.0f );
-										current_6020[i]/=( 1.0f );
+								current_6020[i]/=( ABS(powercontrol.limit_temp)*1.3 + 1.0f );
+//										current_6020[i]/=( 1.0f );
 								}
 						}
         }
@@ -241,9 +241,9 @@ void Power_Control(int16_t * current,int16_t* current_6020)
             powerlimit_cnt_35++;
             for(uint8_t i=0; i<4; i++)
             {
-//                current[i] /= ( ABS(powercontrol.limit_temp) + 1.0f ) ;
+                current[i] /= ( ABS(powercontrol.limit_temp) + 1.0f ) ;
 							
-						       current[i] /=  ( 1.0f ) ;	
+//						       current[i] /=  ( 1.0f ) ;	
 						}
         }
 				   if ( powerlimit_cnt_35 >= POWERLIMIT_CNT )

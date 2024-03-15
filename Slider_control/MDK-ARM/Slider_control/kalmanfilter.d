@@ -1,0 +1,10 @@
+slider_control\kalmanfilter.o: ..\BSP\KalmanFilter.c
+slider_control\kalmanfilter.o: ..\BSP\KalmanFilter.h
+slider_control\kalmanfilter.o: ..\BSP\arm_math.h
+slider_control\kalmanfilter.o: ../Drivers/CMSIS/Include/core_cm4.h
+slider_control\kalmanfilter.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
+slider_control\kalmanfilter.o: ../Drivers/CMSIS/Include/cmsis_version.h
+slider_control\kalmanfilter.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+slider_control\kalmanfilter.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+slider_control\kalmanfilter.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\string.h
+slider_control\kalmanfilter.o: D:\ZGH\Keil5\ARM\ARMCC\Bin\..\include\math.h

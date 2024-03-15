@@ -87,7 +87,7 @@ void Fric_protect(void)
 	FricMotor_speed_set(0);
 	pid_calc(&l_pid_spd, fric.Fric_Pid_Set[0].fric_spd_fdb, fric.Fric_Pid_Set[0].fric_spd_ref);
 	pid_calc(&r_pid_spd, fric.Fric_Pid_Set[1].fric_spd_fdb, fric.Fric_Pid_Set[1].fric_spd_ref);
-		motor_cur.fric_cur[0] = l_pid_spd.pos_out;
+	motor_cur.fric_cur[0] = l_pid_spd.pos_out;
 	motor_cur.fric_cur[1] = r_pid_spd.pos_out;
 }
 

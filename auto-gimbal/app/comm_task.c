@@ -30,7 +30,6 @@ void can_msg_send_task(void const *argu)
     static uint8_t mf_times;
     static uint8_t mf_times_protect;
     static uint16_t fric_protect_times;
-		static uint16_t fric_times;
     for (;;)
     {
         event = osSignalWait(GIMBAL_MOTOR_MSG_SEND | \
@@ -59,7 +58,7 @@ void can_msg_send_task(void const *argu)
             {
                 if (fric.protect_flag == FRIC_SLOW_TO_PROTECT && (fric_protect_times++ <= 50))
 								{ 	can2_send_message(Fric_CAN_TX_ID, motor_cur.fric_cur[0], motor_cur.fric_cur[1], 0, 0);
-										can1_send_message(CAN_Fric_Ctrl_ID,0,fric.Fric_Pid_Set[0].fric_spd_ref,fric.Fric_Pid_Set[1].fric_spd_ref,0);}
+								}
                 else
                 {
                     can2_send_message(Fric_CAN_TX_ID, 0, 0, 0, 0);
@@ -83,12 +82,8 @@ void can_msg_send_task(void const *argu)
             }
             else if (event.value.signals & SHOOT_MOTOR_MSG_SEND)
             {
-                can2_send_message(Fric_CAN_TX_ID,0,0, motor_cur.trigger_cur, 0);
-							  if (++fric_times >= 100)
-								{
-								can1_send_message(CAN_Fric_Ctrl_ID,0,fric.Fric_Pid_Set[0].fric_spd_ref,fric.Fric_Pid_Set[1].fric_spd_ref,0);
-								fric_times=0;
-								}
+                can2_send_message(Fric_CAN_TX_ID,fric.Fric_Pid_Set[0].fric_spd_ref,fric.Fric_Pid_Set[1].fric_spd_ref, motor_cur.trigger_cur, 0);
+
             }
         }
     }

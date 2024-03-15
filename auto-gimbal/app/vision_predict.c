@@ -35,7 +35,7 @@ typedef enum{
 
 scandir dir_6020 = TURN_R;
 #define encoder_L 2247
-#define encoder_R 6318
+#define encoder_R 6600
 #define encoder_CENTER 187
 float scan_speed = 0.2f;
 float Kp=0.005f;

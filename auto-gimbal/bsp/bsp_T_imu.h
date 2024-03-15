@@ -22,6 +22,7 @@ typedef struct
     float kal_az;
 } Taurus_imu_data_t;
 
+extern float clean_wz;
 extern Taurus_imu_data_t   imu_data;
 extern Taurus_imu_data_t   imu_9025;
 void T_imu_calcu(uint32_t can_id,uint8_t * CAN_Rx_data);

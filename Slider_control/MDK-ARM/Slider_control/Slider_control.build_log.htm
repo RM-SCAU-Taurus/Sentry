@@ -21,13 +21,20 @@ Target DLL:      CMSIS_AGDI.dll V1.29.10.0
 Dialog DLL:      TCM.DLL V1.35.1.0
  
 <h2>Project:</h2>
-C:\Users\ZhuanZ\Desktop\мсбщрг\Slider_control\MDK-ARM\Slider_control.uvprojx
+D:\Github\Sentry\Slider_control\MDK-ARM\Slider_control.uvprojx
 Project File Date:  03/14/2024
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\ZGH\Keil5\ARM\ARMCC\Bin'
 Build target 'Slider_control'
-"Slider_control\Slider_control.axf" - 0 Error(s), 0 Warning(s).
+compiling bsp_can.c...
+..\BSP\bsp_can.c(257): warning:  #177-D: variable "MailBox"  was declared but never referenced
+      static uint32_t MailBox;
+..\BSP\bsp_can.c: 1 warning, 0 errors
+linking...
+Program Size: Code=14188 RO-data=552 RW-data=164 ZI-data=18620  
+FromELF: creating hex file...
+"Slider_control\Slider_control.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -50,7 +57,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.2.0
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

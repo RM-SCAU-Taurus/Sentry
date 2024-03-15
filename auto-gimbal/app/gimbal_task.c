@@ -311,13 +311,14 @@ void gimbal_pid_calcu(void)
 		
 		gimbal.pid.yaw_spd_9025_ref = -pid_yaw_angle_9025.pos_out;
 //    gimbal.pid.yaw_spd_9025_fdb = YAW_9025.wspeed; // 陀螺仪速度反馈
-		gimbal.pid.yaw_spd_9025_fdb = imu_9025.wz; // 陀螺仪速度反馈		
+//		gimbal.pid.yaw_spd_9025_fdb = imu_9025.wz; // 陀螺仪速度反馈		
+		gimbal.pid.yaw_spd_9025_fdb =	clean_wz;
     pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);
 		
 	}
 				if(imu_9025.wz == disconnect_flag)
 				times++;
-				if(times >100)
+				if(times >5)
 				{pid_yaw_spd_9025.pos_out = 0 ;	
 					times=0;
 				}

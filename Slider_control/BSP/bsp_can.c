@@ -258,7 +258,8 @@ void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 
     CAN_TxHeaderTypeDef Tx1Message;
     uint8_t CAN1_Tx_data[8];
-    uint8_t FreeTxNum = 0;
+    static uint32_t txmailbox;
+	  static uint16_t time =0;
 
     Tx1Message.StdId = TX_ID;
     Tx1Message.IDE 	 = CAN_ID_STD;
@@ -274,13 +275,35 @@ void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
     CAN1_Tx_data[6] = iq4 >> 8;
     CAN1_Tx_data[7] = iq4;
 
-    //²éÑ¯·¢ËÍÓÊÏäÊÇ·ñÎª¿Õ
-    FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-    while(FreeTxNum == 0)
-    {
-        FreeTxNum = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-    }
-    HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, &MailBox);
+			while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
+		{
+				time++;
+			if(time > 2)
+			{
+			time=0;
+				return;
+			}
+		
+		}  
+		
+		
+	if ((hcan1.Instance->TSR & CAN_TSR_TME0) != RESET)     //Èç¹ûÓÊÏä0¿ÕÏÐ
+	{
+		txmailbox =CAN_TX_MAILBOX0;
+	}
+
+	/* Check Tx Mailbox 1 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME1) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX1;
+	}
+
+	/* Check Tx Mailbox 2 status */
+	else if ((hcan1.Instance->TSR & CAN_TSR_TME2) != RESET)
+	{
+		txmailbox =CAN_TX_MAILBOX2;
+	}
+    HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, &txmailbox);
 }
 
 void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int16_t iq4)

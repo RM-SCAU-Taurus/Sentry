@@ -69,7 +69,7 @@ typedef enum
     LEN_judge_warning		=		2,
     LEN_darts_remaining_tim = 1,
 
-    LEN_robot_status		=		27,
+    LEN_robot_status		=		13,
     LEN_robot_power			=		16,
     LEN_robot_position 	=		16,
     LEN_robot_buff			=   1,
@@ -169,24 +169,40 @@ typedef __packed struct
 } ext_dart_remaining_time_t;
 
 /* 比赛机器人状态：0x0201。发送频率：10Hz，发送范围：单一机器人。*/
+//typedef __packed struct
+//{
+//    uint8_t	 robot_id;
+//    uint8_t	 robot_level;
+//    uint16_t remain_HP;
+//    uint16_t max_HP;
+
+//    uint16_t shooter_id1_17mm_cooling_rate;
+//    uint16_t shooter_id1_17mm_cooling_limit;
+//    uint16_t shooter_id1_17mm_speed_limit;
+//    uint16_t shooter_id2_17mm_cooling_rate;
+//    uint16_t shooter_id2_17mm_cooling_limit;
+//    uint16_t shooter_id2_17mm_speed_limit;
+//    uint16_t shooter_id1_42mm_cooling_rate;
+//    uint16_t shooter_id1_42mm_cooling_limit;
+//    uint16_t shooter_id1_42mm_speed_limit;
+
+//    uint16_t chassis_power_limit;
+
+//    uint8_t	 mains_power_gimbal_output : 1;
+//    uint8_t	 mains_power_chassis_output : 1;
+//    uint8_t	 mains_power_shooter_output : 1;
+//} ext_game_robot_status_t;
+
 typedef __packed struct
 {
-    uint8_t	 robot_id;
-    uint8_t	 robot_level;
-    uint16_t remain_HP;
-    uint16_t max_HP;
 
-    uint16_t shooter_id1_17mm_cooling_rate;
-    uint16_t shooter_id1_17mm_cooling_limit;
-    uint16_t shooter_id1_17mm_speed_limit;
-    uint16_t shooter_id2_17mm_cooling_rate;
-    uint16_t shooter_id2_17mm_cooling_limit;
-    uint16_t shooter_id2_17mm_speed_limit;
-    uint16_t shooter_id1_42mm_cooling_rate;
-    uint16_t shooter_id1_42mm_cooling_limit;
-    uint16_t shooter_id1_42mm_speed_limit;
-
-    uint16_t chassis_power_limit;
+		uint8_t robot_id;
+		uint8_t robot_level;
+		uint16_t current_HP; 
+		uint16_t maximum_HP;
+		uint16_t shooter_barrel_cooling_value;
+		uint16_t shooter_barrel_heat_limit;
+		uint16_t chassis_power_limit; 
 
     uint8_t	 mains_power_gimbal_output : 1;
     uint8_t	 mains_power_chassis_output : 1;
@@ -259,15 +275,10 @@ typedef __packed struct
 /* 飞镖机器人客户端指令数据：0x020A。发送频率：10Hz，发送范围：单一机器人。*/
 typedef __packed struct
 {
-    uint8_t  dart_launch_opening_status;
-    uint8_t  dart_attack_target;
-    uint16_t target_change_time;
-    uint8_t  first_dart_speed;
-    uint8_t  second_dart_speed;
-    uint8_t  third_dart_speed;
-    uint8_t  fourth_dart_speed;
-    uint16_t last_dart_launch_time;
-    uint16_t operate_launch_cmd_time;
+ uint8_t dart_launch_opening_status;
+ uint8_t reserved;
+ uint16_t target_change_time;
+ uint16_t latest_launch_cmd_time;
 } ext_dart_client_cmd_t;
 
 

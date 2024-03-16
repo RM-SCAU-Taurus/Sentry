@@ -11,6 +11,7 @@
 #include "bsp_can.h"
 ramp_function_source_t Fric_Speed_Target_Ramp;
 
+#define test 100
 /*3508摩擦轮电机电机*/
 moto_measure_t fric_motor_l;
 moto_measure_t fric_motor_r;
@@ -38,6 +39,10 @@ void FricMotor_speed_set(uint16_t speed)
 	{
 		ramp_calc(&Fric_Speed_Target_Ramp, SHOOT_PERIOD, 10.0f, 7500, 0);
 	}
+	else if(speed == test )
+	{
+		ramp_calc(&Fric_Speed_Target_Ramp, SHOOT_PERIOD, 10.0f, 1500, 0);
+	}
 	else if (speed == 0)
 	{
 		Fric_Speed_Target_Ramp.out = 0;
@@ -52,31 +57,31 @@ void FricMotor_speed_set(uint16_t speed)
 void FricMotor_Control(void)
 {
 	// fric.Fric_Pid_Set[0].fric_spd_fdb = fric_motor_l.speed_rpm;
-	// fric.Fric_Pid_Set[1].fric_spd_fdb = fric_motor_r.speed_rpm;
-	fric.Fric_Pid_Set[0].fric_spd_fdb = moto_fric[0].speed_rpm;
-	fric.Fric_Pid_Set[1].fric_spd_fdb = moto_fric[1].speed_rpm;
+//	// fric.Fric_Pid_Set[1].fric_spd_fdb = fric_motor_r.speed_rpm;
+//	fric.Fric_Pid_Set[0].fric_spd_fdb = moto_fric[0].speed_rpm;
+//	fric.Fric_Pid_Set[1].fric_spd_fdb = moto_fric[1].speed_rpm;
 
-	switch (shoot.firc_mode)
-	{
-	case FIRC_MODE_STOP:
-	{
-		FricMotor_speed_set(0);
-		pid_calc(&l_pid_spd, fric.Fric_Pid_Set[0].fric_spd_fdb, fric.Fric_Pid_Set[0].fric_spd_ref);
-		pid_calc(&r_pid_spd, fric.Fric_Pid_Set[1].fric_spd_fdb, fric.Fric_Pid_Set[1].fric_spd_ref);
-		break;
-	}
-	case FIRC_MODE_RUN:
-	{
-		FricMotor_speed_set(30);
-		pid_calc(&l_pid_spd, fric.Fric_Pid_Set[0].fric_spd_fdb, fric.Fric_Pid_Set[0].fric_spd_ref);
-		pid_calc(&r_pid_spd, fric.Fric_Pid_Set[1].fric_spd_fdb, fric.Fric_Pid_Set[1].fric_spd_ref);
-		break;
-	}
-	default:
-		break;
-	}
-	motor_cur.fric_cur[0] = l_pid_spd.pos_out;
-	motor_cur.fric_cur[1] = r_pid_spd.pos_out;
+//	switch (shoot.firc_mode)
+//	{
+//	case FIRC_MODE_STOP:
+//	{
+//		FricMotor_speed_set(0);
+//		pid_calc(&l_pid_spd, fric.Fric_Pid_Set[0].fric_spd_fdb, fric.Fric_Pid_Set[0].fric_spd_ref);
+//		pid_calc(&r_pid_spd, fric.Fric_Pid_Set[1].fric_spd_fdb, fric.Fric_Pid_Set[1].fric_spd_ref);
+//		break;
+//	}
+//	case FIRC_MODE_RUN:
+//	{
+//		FricMotor_speed_set(30);
+//		pid_calc(&l_pid_spd, fric.Fric_Pid_Set[0].fric_spd_fdb, fric.Fric_Pid_Set[0].fric_spd_ref);
+//		pid_calc(&r_pid_spd, fric.Fric_Pid_Set[1].fric_spd_fdb, fric.Fric_Pid_Set[1].fric_spd_ref);
+//		break;
+//	}
+//	default:
+//		break;
+//	}
+//	motor_cur.fric_cur[0] = l_pid_spd.pos_out;
+//	motor_cur.fric_cur[1] = r_pid_spd.pos_out;
 }
 
 void Fric_protect(void)
@@ -96,7 +101,7 @@ void Fric_unprotect(void)
 
 	fric.Fric_Pid_Set[0].fric_spd_fdb = moto_fric[0].speed_rpm;
 	fric.Fric_Pid_Set[1].fric_spd_fdb = moto_fric[1].speed_rpm;
-	FricMotor_speed_set(30);
+	FricMotor_speed_set(test);
 	pid_calc(&l_pid_spd, fric.Fric_Pid_Set[0].fric_spd_fdb, fric.Fric_Pid_Set[0].fric_spd_ref);
 	pid_calc(&r_pid_spd, fric.Fric_Pid_Set[1].fric_spd_fdb, fric.Fric_Pid_Set[1].fric_spd_ref);
 		motor_cur.fric_cur[0] = l_pid_spd.pos_out;

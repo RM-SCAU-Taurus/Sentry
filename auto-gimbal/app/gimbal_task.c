@@ -63,7 +63,7 @@ static Gimbal_Derived Drv_AUTO;
 /**********测试变量声明********/
 int8_t choose_pid_flag = 0, goback_flag = 0;
 uint16_t cnt_9025=0;
-float test_i =0.0003;
+uint16_t test_i =0;
 void gimbal_param_init(void)
 {
     memset(&gimbal, 0, sizeof(gimbal_t));
@@ -300,7 +300,8 @@ void gimbal_pid_calcu(void)
 		else{
 		
     gimbal.position_ref = GIMBAL_YAW_9025_OFFSET;
-    gimbal.position_error = circle_error(gimbal.position_ref,moto_yaw.ecd, 8191);
+//    gimbal.position_error = circle_error(gimbal.position_ref,moto_yaw.ecd, 8191);
+		gimbal.position_error = circle_error(gimbal.position_ref,follow_yaw_data, 8191);	
     gimbal.angle_error = gimbal.position_error  * (2.0f * PI / 8191.0f);
 //		
 //		gimbal.pid.yaw_angle_9025_fdb = imu_9025.yaw; // 陀螺仪角度反馈
@@ -317,12 +318,20 @@ void gimbal_pid_calcu(void)
 		
 	}
 				if(imu_9025.wz == disconnect_flag)
-				times++;
-				if(times >5)
 				{pid_yaw_spd_9025.pos_out = 0 ;	
-					times=0;
+					test_i++;
 				}
+
 		disconnect_flag = imu_9025.wz;
+	
+
+//     if(	clean_wz == disconnect_flag)
+//		 {	
+//			 pid_yaw_spd_9025.pos_out = 0 ;	
+//			 test_i++;
+//		 }
+		disconnect_flag =	clean_wz;
+	
     gimbal.current[2] = pid_yaw_spd_9025.pos_out;
 #endif
     memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current)); // 赋值电流结果进CAN发送缓冲

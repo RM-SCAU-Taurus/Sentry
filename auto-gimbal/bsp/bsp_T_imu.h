@@ -11,7 +11,7 @@
 
 #define TIMU_PALSTANCE_ID   0x001
 #define TIMU_ANGLE_ID   	0x002
-#define TIMU_9025_ID   	0x130
+#define TIMU_9025_ID   	0x004
 typedef struct
 {
     float pitch;

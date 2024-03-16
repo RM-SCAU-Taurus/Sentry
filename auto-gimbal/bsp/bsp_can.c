@@ -23,7 +23,7 @@ uint8_t CAN2_Tx_data[8];
 uint8_t GAME_STATE;
 
 /* 定义中值滤波变量 */
-float RM6020_array[9] = {0};
+float RM6020_array[5] = {0};
 float follow_yaw_data=0;
 extern Game_Status_t Game_Status;
 moto_mf_t YAW_9025;
@@ -282,8 +282,11 @@ static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
 			case CAN_YAW_6020_MOTOR_ID:
         {
             encoder_data_handler(&moto_yaw, &hcan2, CAN_RxData);
+						follow_yaw_data = GildeAverageValueFilter(moto_yaw.ecd, RM6020_array);
             status.gimbal_status[0] = 1;
             break;
+					
+					
         }
 				
 				case TIMU_PALSTANCE_ID:
@@ -363,6 +366,46 @@ void get_moto_offset(moto_measure_t *ptr, CAN_HandleTypeDef *hcan, uint8_t *CAN_
 uint32_t test_run_period1 = 0;
 void game_data_handler(robot_judge_msg_t *robot_judge_msg_e)
 {
+//    static uint32_t run_time, last_run_time = 0;
+//    run_time = HAL_GetTick();
+//    test_run_period1 = run_time - last_run_time;
+//    robot_judge_msg_copy(); // 裁判系统结构体拷贝
+//    /*裁判系统数据赋值*/
+//    Game_Status.game_type = (float)robot_judge_msg_e->Game_State_data.game_type;
+//    Game_Status.game_progress = (float)robot_judge_msg_e->Game_State_data.game_progress;
+//    Game_Status.shooter_id1_17mm_cooling_rate = robot_judge_msg_e->Game_Robot_Status_data.shooter_id1_17mm_speed_limit;
+//    Game_Status.shooter_id1_17mm_speed_limit = robot_judge_msg_e->Game_Robot_Status_data.shooter_id1_17mm_speed_limit;
+//    Game_Status.shooter_id1_17mm_cooling_limit = robot_judge_msg_e->Game_Robot_Status_data.shooter_id1_17mm_cooling_limit;
+//    Game_Status.robot_id = robot_judge_msg_e->Game_Robot_Status_data.robot_id;
+//    Game_Status.remain_HP = robot_judge_msg_e->Game_Robot_Status_data.remain_HP;
+//    Game_Status.max_HP = robot_judge_msg_e->Game_Robot_Status_data.max_HP;
+//    Game_Status.armor_id = robot_judge_msg_e->Robot_Hurt_data.armor_id;
+//    Game_Status.hurt_type = robot_judge_msg_e->Robot_Hurt_data.hurt_type;
+//    Game_Status.bullet_freq = robot_judge_msg_e->Shoot_Data_data.bullet_freq;
+//    Game_Status.bullet_speed = robot_judge_msg_e->Shoot_Data_data.bullet_speed;
+//    Game_Status.bullet_remaining_num_17mm = robot_judge_msg_e->Bullet_Remaining_data.bullet_remaining_num_17mm;
+//    Game_Status.game_time = (float)robot_judge_msg_e->Game_State_data.stage_remain_time;
+
+//    if (robot_judge_msg_e->Game_Robot_Status_data.robot_id < 100) // 发送敌方哨兵数据
+//    {
+//        Game_Status.Enemy_Sentry_HP = robot_judge_msg_e->RobotHP_data.blue_7_robot_HP;  // 敌方哨兵
+//        Game_Status.Self_outpost_HP = robot_judge_msg_e->RobotHP_data.red_outpost_HP;   // 我方前哨战
+//        Game_Status.Enemy_outpost_HP = robot_judge_msg_e->RobotHP_data.blue_outpost_HP; // 敌方前哨战
+//    }
+//    else
+//    {
+//        Game_Status.Enemy_Sentry_HP = robot_judge_msg_e->RobotHP_data.red_7_robot_HP;  // 敌方哨兵
+//        Game_Status.Enemy_outpost_HP = robot_judge_msg_e->RobotHP_data.red_outpost_HP; // 敌方前哨战
+//        Game_Status.Self_outpost_HP = robot_judge_msg_e->RobotHP_data.blue_outpost_HP; // 我方前哨战
+//    }
+//    Game_Status.commd_keyboard = robot_judge_msg_e->Robot_command_Data.commd_keyboard;
+//    Game_Status.target_robot_ID = robot_judge_msg_e->Robot_command_Data.target_robot_ID;
+//    Game_Status.target_position_x = robot_judge_msg_e->Robot_command_Data.target_position_x;
+//    Game_Status.target_position_y = robot_judge_msg_e->Robot_command_Data.target_position_y;
+//    Game_Status.target_position_z = robot_judge_msg_e->Robot_command_Data.target_position_z;
+//    Game_Status.red_y = robot_judge_msg_e->Radar_Data.red_y;
+//    Game_Status.red_confiden = robot_judge_msg_e->Radar_Data.red_confiden;
+
     static uint32_t run_time, last_run_time = 0;
     run_time = HAL_GetTick();
     test_run_period1 = run_time - last_run_time;
@@ -370,12 +413,12 @@ void game_data_handler(robot_judge_msg_t *robot_judge_msg_e)
     /*裁判系统数据赋值*/
     Game_Status.game_type = (float)robot_judge_msg_e->Game_State_data.game_type;
     Game_Status.game_progress = (float)robot_judge_msg_e->Game_State_data.game_progress;
-    Game_Status.shooter_id1_17mm_cooling_rate = robot_judge_msg_e->Game_Robot_Status_data.shooter_id1_17mm_speed_limit;
-    Game_Status.shooter_id1_17mm_speed_limit = robot_judge_msg_e->Game_Robot_Status_data.shooter_id1_17mm_speed_limit;
-    Game_Status.shooter_id1_17mm_cooling_limit = robot_judge_msg_e->Game_Robot_Status_data.shooter_id1_17mm_cooling_limit;
+    Game_Status.shooter_id1_17mm_cooling_rate = robot_judge_msg_e->Game_Robot_Status_data.shooter_barrel_cooling_value;
+//    Game_Status.shooter_id1_17mm_speed_limit = robot_judge_msg_e->Game_Robot_Status_data.shooter_id1_17mm_speed_limit;
+    Game_Status.shooter_id1_17mm_cooling_limit = robot_judge_msg_e->Game_Robot_Status_data.shooter_barrel_heat_limit;
     Game_Status.robot_id = robot_judge_msg_e->Game_Robot_Status_data.robot_id;
-    Game_Status.remain_HP = robot_judge_msg_e->Game_Robot_Status_data.remain_HP;
-    Game_Status.max_HP = robot_judge_msg_e->Game_Robot_Status_data.max_HP;
+    Game_Status.remain_HP = robot_judge_msg_e->Game_Robot_Status_data.current_HP;
+    Game_Status.max_HP = robot_judge_msg_e->Game_Robot_Status_data.maximum_HP;
     Game_Status.armor_id = robot_judge_msg_e->Robot_Hurt_data.armor_id;
     Game_Status.hurt_type = robot_judge_msg_e->Robot_Hurt_data.hurt_type;
     Game_Status.bullet_freq = robot_judge_msg_e->Shoot_Data_data.bullet_freq;
@@ -402,6 +445,8 @@ void game_data_handler(robot_judge_msg_t *robot_judge_msg_e)
     Game_Status.target_position_z = robot_judge_msg_e->Robot_command_Data.target_position_z;
     Game_Status.red_y = robot_judge_msg_e->Radar_Data.red_y;
     Game_Status.red_confiden = robot_judge_msg_e->Radar_Data.red_confiden;
+		
+		
 }
 
 /**

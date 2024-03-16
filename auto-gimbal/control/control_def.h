@@ -71,7 +71,7 @@
 
 /* 拨盘频率 */
 #define TRIGGER_PERIOD    200  //射击周期（ms）	15HZ66.7ms 11HZ 90ms
-#define TRIGGER_10hz    2400  //射击周期（ms）	15HZ66.7ms 11HZ 90ms
+#define TRIGGER_10hz    2400  //速度环
 /*-----------------------------chassis---------------------------*/
 #define RC_CH4_SCALE    12     
 #define RC_CH3_SCALE    12
@@ -84,6 +84,7 @@
 #define SPEED_60W		5300.0f
 #define SPEED_80W		6500.0f
 #define SPEED_100W      7300.0f
+//#define SPEED_100W      7500.0f
 #define SPEED_120W      8000.0f
 #define SPEED_SUPERCAP  8000.0f
 

@@ -279,7 +279,7 @@ void gimbal_pid_calcu(void)
     }
 
     /*------------------------下yaw轴串级pid计算------------------------*/
-#ifdef __9025ready
+#ifdef __9025ready 
 
 
     gimbal.position_ref = GIMBAL_YAW_9025_OFFSET;

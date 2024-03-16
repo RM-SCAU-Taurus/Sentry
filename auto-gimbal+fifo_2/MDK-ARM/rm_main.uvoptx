@@ -250,6 +250,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>imu_data</ItemText>
         </Ww>
+        <Ww>
+          <count>16</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>pid_yaw_spd_6020</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -281,6 +286,16 @@
           <count>5</count>
           <WinNumber>2</WinNumber>
           <ItemText>send_buf,0x10</ItemText>
+        </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>ctrl_mode</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>vision_ctrl.speed_yaw</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

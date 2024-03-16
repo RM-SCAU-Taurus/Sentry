@@ -1,0 +1,76 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.25.2.0
+Copyright (C) 2018 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 1 3105902829@qq.com, 1, LIC=HN0UH-WZKXN-8RUXR-KBEQR-L92MR-04GXG
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.25.2.0
+Toolchain Path:  D:\ZGH\Keil5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 6 (build 750)
+Assembler:       Armasm.exe V5.06 update 6 (build 750)
+Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
+Library Manager: ArmAr.exe V5.06 update 6 (build 750)
+Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
+CPU DLL:         SARMCM3.DLL V5.25.2.0
+Dialog DLL:      DCM.DLL V1.17.1.0
+Target DLL:      CMSIS_AGDI.dll V1.29.10.0
+Dialog DLL:      TCM.DLL V1.35.1.0
+ 
+<h2>Project:</h2>
+D:\Github\Sentry\auto-gimbal\MDK-ARM\rm_main.uvprojx
+Project File Date:  03/15/2024
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\ZGH\Keil5\ARM\ARMCC\Bin'
+Build target 'rm_main'
+compiling freertos.c...
+compiling modeswitch_task.c...
+compiling main.c...
+compiling vision_predict.c...
+compiling shoot_task .c...
+compiling chassis_task.c...
+compiling sys_init.c...
+compiling judgesend_task.c...
+compiling comm_task.c...
+compiling bsp_FricMotor.c...
+compiling bsp_TriggerMotor.c...
+compiling bsp_shoot_class.c...
+..\bsp\bsp_shoot_class.c(30): warning:  #1-D: last line of file ends without a newline
+  		
+..\bsp\bsp_shoot_class.c: 1 warning, 0 errors
+compiling DataScope_DP.C...
+compiling bsp_judge.c...
+linking...
+Program Size: Code=59008 RO-data=2128 RW-data=1160 ZI-data=41552  
+FromELF: creating hex file...
+".\rm_main\rm_main.axf" - 0 Error(s), 1 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.5.1.pack
+                ARM.CMSIS.5.5.1
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.2.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.13.0.pack
+                Keil.STM32F4xx_DFP.2.13.0
+                STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_rm_main
+  D:\ZGH\Keil5\ARM\PACK\ARM\CMSIS\5.5.1\CMSIS\Core\Include
+  D:\ZGH\Keil5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.2.0
+Build Time Elapsed:  00:00:22
+</pre>
+</body>
+</html>

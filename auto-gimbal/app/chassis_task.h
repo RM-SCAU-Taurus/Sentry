@@ -61,6 +61,15 @@ typedef struct
     float vy;
     float vw;
 } spd_t;
+
+//struct spd_t
+//{
+//    float vx;
+//    float vy;
+//    float vw;
+//};
+
+
 typedef struct
 {
     /* data */

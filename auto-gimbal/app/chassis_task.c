@@ -61,6 +61,10 @@ static Chassis_Derived Drv_AUTO;
 
 /**********函数定义************/
 
+spd_t car_1;
+spd_t car_2;
+
+
 /**
  * @brief chassis_task
  * @param

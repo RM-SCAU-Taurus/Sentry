@@ -281,6 +281,11 @@ typedef __packed struct
  uint16_t latest_launch_cmd_time;
 } ext_dart_client_cmd_t;
 
+typedef __packed struct
+{
+uint32_t sentry_cmd; 
+} sentry_cmd_t;
+
 
 /**************************************************************************/
 /*

@@ -111,9 +111,8 @@ typedef struct {
 	fric_pid_t	Fric_Pid_Set[2];	//摩擦轮pid参数
 } fric_t;
 
+
 /*简单工厂*/
-
-
 typedef struct{
 	ctrl_mode_e mode;
 	Fric_callback Fric_action;
@@ -135,4 +134,5 @@ void shoot_init(void);
 
 __SHOOT_TASK_EXT shoot_t shoot;    //发射器控制中心结构
 extern int flag;
+
 #endif

@@ -62,6 +62,123 @@ void can_device_init(void)
     canx_init(&hcan2, can_ID2, User_can2_callback);
 }
 
+
+/************************************************************************************/
+
+/***************CALLBACK***********************/
+
+
+static void User_can1_callback(uint32_t ID, uint8_t* CAN_RxData)
+{
+    switch (ID)
+    {
+//					case CAN_YAW_6020_MOTOR_ID:
+//        {
+//            encoder_data_handler(&moto_yaw, &hcan1, CAN_RxData);
+//            status.gimbal_status[0] = 1;
+//            break;
+//        }
+				 case CAN_YAW_9025_MOTOR_ID:
+        {
+		  	encoder_data_receive(&YAW_9025,CAN_RxData);
+//            status.gimbal_status[0] = 1;
+            break;
+        }
+        case CHASSIS_MSG_ID:
+        {
+            chassis.msg_handle(ID, CAN_RxData);
+            //  can_msg_read(Rx1Message.StdId,CAN1_Rx_data);
+            break;
+        }
+
+        case POWER_CONTROL_ID:
+        {
+            Power_data_handler(ID, CAN_RxData);
+            status.power_control = 1;
+            break;
+        }
+
+
+        default:
+        {
+            break;
+        }
+			}		
+				
+}
+
+
+static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
+{
+    switch (ID)
+    {
+			case CAN_YAW_6020_MOTOR_ID:
+        {
+            encoder_data_handler(&moto_yaw, &hcan2, CAN_RxData);
+						follow_yaw_data = GildeAverageValueFilter(moto_yaw.ecd, RM6020_array);
+            status.gimbal_status[0] = 1;
+            break;
+					
+					
+        }
+				
+				case TIMU_PALSTANCE_ID:
+        {
+            T_imu_calcu(ID, CAN_RxData);
+            status.gyro_status[0] = 1;
+        }
+        case TIMU_ANGLE_ID:
+        {
+            T_imu_calcu(ID, CAN_RxData);
+            status.gyro_status[1] = 1;
+            break;
+        }
+
+        case CAN_PIT_MOTOR_ID:
+        {
+            encoder_data_handler(&moto_pit, &hcan2, CAN_RxData);
+            status.gimbal_status[1] = 1;
+            /* 当机械零点在pit轴运动范围内,拓展编码值范围 */
+            //            if( gimbal.pid.pit_ecd_fdb < 5000 )  //确定电机编码值在零点附近时，当正向越界，从8191到1阶跃
+            //            {
+            //                gimbal.pid.pit_ecd_fdb += 8191;
+            //            }
+            break;
+        }
+				
+			 case CAN_TRIGGER_MOTOR1_ID: // 上枪管拨盘2006
+        {
+            motor_trigger.msg_cnt++ <= 50 ? get_moto_offset(&motor_trigger, &hcan2, CAN_RxData) : encoder_data_handler(&motor_trigger, &hcan2, CAN_RxData);
+            status.gimbal_status[2] = 1;
+            break;
+        }
+			case TIMU_9025_ID:
+        {
+            T_imu_calcu(ID, CAN_RxData);
+            break;
+        }
+			case CAN_3508_L_ID:
+			case CAN_3508_R_ID:
+		  	{
+														
+            static uint8_t i;
+            i = ID- CAN_3508_L_ID;
+            encoder_data_handler(&moto_fric[i],&hcan2,CAN_RxData);
+            status.moto_fric[i] = 1;
+            break;		
+				}
+
+		default:
+        {
+            break;
+        }
+				
+    }
+}
+
+
+/***************CALLBACK***********************/
+
 /**
 * @brief  Initialize CAN Bus
 * @param  hcan: CANx created by CubeMX. id:an array of ListID. (*pFunc):USER_Callback_Func
@@ -228,123 +345,6 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 
 
-/************************************************************************************/
-
-
-
-/***************CALLBACK***********************/
-
-
-static void User_can1_callback(uint32_t ID, uint8_t* CAN_RxData)
-{
-    switch (ID)
-    {
-//					case CAN_YAW_6020_MOTOR_ID:
-//        {
-//            encoder_data_handler(&moto_yaw, &hcan1, CAN_RxData);
-//            status.gimbal_status[0] = 1;
-//            break;
-//        }
-				 case CAN_YAW_9025_MOTOR_ID:
-        {
-		  	encoder_data_receive(&YAW_9025,CAN_RxData);
-//            status.gimbal_status[0] = 1;
-            break;
-        }
-        case CHASSIS_MSG_ID:
-        {
-            chassis.msg_handle(ID, CAN_RxData);
-            //  can_msg_read(Rx1Message.StdId,CAN1_Rx_data);
-            break;
-        }
-
-        case POWER_CONTROL_ID:
-        {
-            Power_data_handler(ID, CAN_RxData);
-            status.power_control = 1;
-            break;
-        }
-
-
-        default:
-        {
-            break;
-        }
-			}		
-				
-}
-
-
-static void User_can2_callback(uint32_t ID, uint8_t* CAN_RxData)
-{
-    switch (ID)
-    {
-			case CAN_YAW_6020_MOTOR_ID:
-        {
-            encoder_data_handler(&moto_yaw, &hcan2, CAN_RxData);
-						follow_yaw_data = GildeAverageValueFilter(moto_yaw.ecd, RM6020_array);
-            status.gimbal_status[0] = 1;
-            break;
-					
-					
-        }
-				
-				case TIMU_PALSTANCE_ID:
-        {
-            T_imu_calcu(ID, CAN_RxData);
-            status.gyro_status[0] = 1;
-        }
-        case TIMU_ANGLE_ID:
-        {
-            T_imu_calcu(ID, CAN_RxData);
-            status.gyro_status[1] = 1;
-            break;
-        }
-
-        case CAN_PIT_MOTOR_ID:
-        {
-            encoder_data_handler(&moto_pit, &hcan2, CAN_RxData);
-            status.gimbal_status[1] = 1;
-            /* 当机械零点在pit轴运动范围内,拓展编码值范围 */
-            //            if( gimbal.pid.pit_ecd_fdb < 5000 )  //确定电机编码值在零点附近时，当正向越界，从8191到1阶跃
-            //            {
-            //                gimbal.pid.pit_ecd_fdb += 8191;
-            //            }
-            break;
-        }
-				
-			 case CAN_TRIGGER_MOTOR1_ID: // 上枪管拨盘2006
-        {
-            motor_trigger.msg_cnt++ <= 50 ? get_moto_offset(&motor_trigger, &hcan2, CAN_RxData) : encoder_data_handler(&motor_trigger, &hcan2, CAN_RxData);
-            status.gimbal_status[2] = 1;
-            break;
-        }
-			case TIMU_9025_ID:
-        {
-            T_imu_calcu(ID, CAN_RxData);
-            break;
-        }
-			case CAN_3508_L_ID:
-			case CAN_3508_R_ID:
-		  	{
-														
-            static uint8_t i;
-            i = ID- CAN_3508_L_ID;
-            encoder_data_handler(&moto_fric[i],&hcan2,CAN_RxData);
-            status.moto_fric[i] = 1;
-            break;		
-				}
-
-		default:
-        {
-            break;
-        }
-				
-    }
-}
-
-
-/***************CALLBACK***********************/
 
 /**
  * @brief     get motor initialize offset value

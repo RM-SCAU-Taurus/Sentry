@@ -45,7 +45,7 @@ uint8_t spin_R=1;
 uint8_t close_flag =0;
 hit_check_e hit_flag = hit_save;
 
-
+#define angle
 /* 圆周率 */
 #ifndef PI
 #define PI 3.14159265358979323846f
@@ -400,14 +400,18 @@ void vsn_gimbal_ref_calc(void) {
                 gimbal.pid.yaw_angle_6020_ref += rc.ch1 * scale.ch1;
             } 
 						
-						else if (ctrl_mode == AUTO_MODE)
+						else if (ctrl_mode == AUTO_MODE || ctrl_mode == PROTECT_MODE)
 						{
+							#ifdef angle
 								static uint8_t protect_mode;
 								static uint8_t error_times;
+								static ctrl_mode_e last_mode;
 								{
 								vision_ctrl.speed_yaw = data_limit(vision_ctrl.speed_yaw, 250, -250);
                 gimbal.pid.yaw_spd_9025_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
 //                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要
+									if(last_mode != AUTO_MODE)
+										close_flag=0;
 									if(     
 										 (( ABSv(moto_yaw.ecd - encoder_L) < 10 ||  ABSv(moto_yaw.ecd - encoder_R) <100  )
 										&& (close_flag==0) ) || (protect_mode)
@@ -440,6 +444,44 @@ void vsn_gimbal_ref_calc(void) {
                                     
                                     	
 								    gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
+									last_mode = ctrl_mode;
+									#else
+							
+								static uint8_t error_times;
+								{
+								vision_ctrl.speed_yaw = data_limit(vision_ctrl.speed_yaw, 250, -250);
+                gimbal.pid.yaw_spd_9025_ref  = vision_ctrl.speed_yaw * 16.3835f;//由导航控制
+//                gimbal.pid.pit_spd_ref  = vision.pit_angle_error; //pitch暂不需要
+									if(     
+										 (( ABSv(moto_yaw.ecd - encoder_L) < 10 ||  ABSv(moto_yaw.ecd - encoder_R) <10 )
+										&& (close_flag==0) )
+										)
+									{
+												scan_dir = -scan_dir;
+												close_flag =1;
+												
+									}
+									if(  ABSv(moto_yaw.ecd - encoder_CENTER) < 10)
+									{close_flag =0;
+									}
+			
+									
+									
+									if(vision_ctrl.speed_yaw && scan_dir==1)
+									gimbal.pid.yaw_spd_6020_ref = scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp *2;
+									else if(vision_ctrl.speed_yaw && scan_dir==-1) 
+									gimbal.pid.yaw_spd_6020_ref = scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp;
+						
+									else 
+									gimbal.pid.yaw_spd_6020_ref = scan_dir * scan_speed ;	
+
+                                    
+                                    	
+								    gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
+									
+									#endif
+									
+									
 
 									}
 									/***************************NEW***************************/

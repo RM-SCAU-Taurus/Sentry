@@ -58,6 +58,12 @@ typedef struct
     float yaw_angle_6020_fdb;
     float yaw_angle_6020_err;
 		
+		float yaw_ecd_6020_ref;
+    float yaw_ecd_6020_fdb;
+    float yaw_ecd_6020_err;
+		
+		
+		
     float yaw_angle_9025_ref;
     float yaw_angle_9025_fdb;
     float yaw_angle_9025_err;			

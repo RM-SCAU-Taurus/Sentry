@@ -95,6 +95,7 @@ __PID_EXT pid_t pid_pit_angle;
 __PID_EXT pid_t pid_pit_spd;
 // YAW 轴 角度速度串级
 __PID_EXT pid_t pid_yaw_angle_6020;
+__PID_EXT pid_t pid_yaw_ecd_6020;
 __PID_EXT pid_t pid_yaw_spd_6020;
 
 __PID_EXT pid_t pid_yaw_angle_9025;

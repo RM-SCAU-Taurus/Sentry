@@ -85,10 +85,6 @@ void gimbal_param_init(void)
     PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 800, 512,
                     pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
 
-		
-		
-		    PID_struct_init(&pid_9025_i, POSITION_PID, 50, 0,
-                    0.0f, 0.0f, 0.0f);
 										
     scale.ch1 = RC_CH1_SCALE;
     scale.ch2 = RC_CH2_SCALE;
@@ -207,6 +203,7 @@ static void Gimbal_MODE_PROTECT_callback(void)
     for (uint8_t i = 0; i < 2; i++)
         gimbal.current[i] = 0;
 	pid_yaw_angle_9025.iout=0;	
+	vsn_gimbal_ref_calc();
 }
 
 
@@ -217,6 +214,7 @@ static void Gimbal_MODE_REMOTER_callback(void)
 		
     vision_ctrl.yaw = imu_data.yaw;
     vision.status = vFIRST_LOST;
+		
 }
 
 static void Gimbal_MODE_AUTO_callback(void)
@@ -270,8 +268,15 @@ void gimbal_pid_calcu(void)
     // 速度反馈：陀螺仪WZ
 
     /*------------------------下yaw轴串级pid计算------------------------*/
+    if(0)
+		{
 
-     if (gimbal.pid.yaw_angle_6020_ref < 0)
+        gimbal.pid.yaw_spd_6020_fdb = imu_data.wz; // 陀螺仪速度反馈
+        pid_calc(&pid_yaw_spd_6020, gimbal.pid.yaw_spd_6020_fdb, gimbal.pid.yaw_spd_6020_ref);
+		}
+    
+		else{
+		if (gimbal.pid.yaw_angle_6020_ref < 0)
             gimbal.pid.yaw_angle_6020_ref += 360;
         else if (gimbal.pid.yaw_angle_6020_ref > 360)
             gimbal.pid.yaw_angle_6020_ref -= 360; // 目标值限幅
@@ -283,7 +288,7 @@ void gimbal_pid_calcu(void)
         gimbal.pid.yaw_spd_6020_ref = pid_yaw_angle_6020.pos_out;
         gimbal.pid.yaw_spd_6020_fdb = imu_data.wz; // 陀螺仪速度反馈
         pid_calc(&pid_yaw_spd_6020, gimbal.pid.yaw_spd_6020_fdb, gimbal.pid.yaw_spd_6020_ref);
-
+			}
         gimbal.current[0] = pid_yaw_spd_6020.pos_out;
     
 
@@ -321,17 +326,7 @@ void gimbal_pid_calcu(void)
 				{pid_yaw_spd_9025.pos_out = 0 ;	
 					test_i++;
 				}
-
 		disconnect_flag = imu_9025.wz;
-	
-
-//     if(	clean_wz == disconnect_flag)
-//		 {	
-//			 pid_yaw_spd_9025.pos_out = 0 ;	
-//			 test_i++;
-//		 }
-		disconnect_flag =	clean_wz;
-	
     gimbal.current[2] = pid_yaw_spd_9025.pos_out;
 #endif
     memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current)); // 赋值电流结果进CAN发送缓冲

@@ -92,6 +92,8 @@ typedef struct
     int16_t   spd_error;
     int16_t   position_ref;
     float 	  position_error;
+		int16_t   yaw_bet_position_ref;//两个yaw间角度
+    float 	  yaw_bet_position_error;
     float     angle_error;
 	  float     angle_dif_degree;
 

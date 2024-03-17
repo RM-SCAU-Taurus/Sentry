@@ -150,12 +150,14 @@ static Chassis_Base *chassis_mode_switch(void)
 
 static void CHASSIS_MODE_PROTECT_callback(void)
 {
-    chassis.position_ref = GIMBAL_YAW_CENTER_OFFSET;
-    chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
-    chassis.angle_dif_degree = chassis.position_error * (360.0f / 8191.0f);
+    
+
     chassis.spd_input.vx = 0;
     chassis.spd_input.vy = 0;
     chassis.spd_input.vw = 0;
+
+	
+	
 }
 
 static void CHASSIS_MODE_AUTO_callback(void)
@@ -165,9 +167,7 @@ static void CHASSIS_MODE_AUTO_callback(void)
 //    chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
 		chassis.position_error = circle_error(chassis.position_ref, YAW_9025.encoder, 360);
     chassis.angle_error = chassis.position_error * (2.0f * PI /360.0f);
-    chassis.angle_dif_degree = chassis.position_error * (360.0f / 360.0f);
-    gimbal.yaw_imu_offset = imu_9025.yaw - chassis.angle_dif_degree;
-	
+
 	
 	  chassis.spd_input.vx = 1.0f * (float)(chassis_ctrl.vx * cos(chassis.angle_error) - (-1.0f) * (chassis_ctrl.vy) * sin(chassis.angle_error));
     chassis.spd_input.vy = 1.0f * (float)(chassis_ctrl.vx * sin(chassis.angle_error) - (1.0f) * (chassis_ctrl.vy) * cos(chassis.angle_error));
@@ -183,7 +183,7 @@ static void CHASSIS_MODE_FOLL_ROTA_callback(void)
 //    chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
 		chassis.position_error = circle_error(chassis.position_ref, YAW_9025.encoder, 360);
     chassis.angle_error = chassis.position_error * (2.0f * PI /360.0f);
-    chassis.angle_dif_degree = chassis.position_error * (360.0f / 360.0f);
+   
 		
 //		chassis.angle_error = 0;
 		
@@ -214,6 +214,11 @@ static void CHASSIS_MODE_FOLL_ROTA_callback(void)
 
 static void ChassisOdom_calc(void)
 {
+		
+			chassis.yaw_bet_position_ref = 178.0f;
+		chassis.yaw_bet_position_error = circle_error(chassis.yaw_bet_position_ref, moto_yaw.ecd, 8191.0f);
+		chassis.angle_dif_degree = chassis.yaw_bet_position_error * (360.0f / 8191.0f);
+	
     chassis.odom.x += chassis.spd_fdb.vx * 0.001f;
     chassis.odom.y += chassis.spd_fdb.vy * 0.001f;
     
@@ -222,7 +227,7 @@ static void ChassisOdom_calc(void)
     chassis_odom.vw_fdb = chassis.spd_fdb.vw;
     chassis_odom.x_fdb = chassis.odom.x;
     chassis_odom.y_fdb = chassis.odom.y;
-		chassis_odom.diff_base_to_gimbal = chassis.angle_error;
+		chassis_odom.diff_base_to_gimbal = chassis.angle_dif_degree;
 
     PowerParam_Update();
     if (supercap.volage > SUPERCAP_DISCHAGER_VOLAGE)

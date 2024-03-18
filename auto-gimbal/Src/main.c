@@ -116,6 +116,7 @@ int main(void)
   MX_USART3_UART_Init();
   MX_CRC_Init();
   MX_TIM5_Init();
+	ust_tim_start();
 //  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 //    can_device_init();
@@ -231,6 +232,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //    HAL_IncTick();
 //		FreeRTOSRunTimeTicks++;
 	}
+	 if (htim->Instance == TIM5)
+   {
+     prv_ust.overflow_cnt++;
+		}
+ 
   /* USER CODE END Callback 1 */
 }
 

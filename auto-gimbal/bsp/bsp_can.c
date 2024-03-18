@@ -10,6 +10,7 @@
 #include "protocol_camp.h"
 #include "bsp_Mf_Motor.h"
 #include "math_calcu.h"
+#include "us_tim.h"
 
 CAN_TxHeaderTypeDef Tx1Message;
 CAN_RxHeaderTypeDef Rx1Message;
@@ -558,6 +559,7 @@ void can1_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 		txmailbox =CAN_TX_MAILBOX2;
 	}
 	HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, (uint32_t *)txmailbox);
+	//	ust_delay(100);
 	
 }
 
@@ -611,6 +613,7 @@ void can2_send_message(int16_t TX_ID, int16_t iq1, int16_t iq2, int16_t iq3, int
 		txmailbox =CAN_TX_MAILBOX2;
 	}
 	HAL_CAN_AddTxMessage(&hcan2, &Tx2Message, CAN2_Tx_data, (uint32_t *)txmailbox);
+	//	ust_delay(100);
 }
 
 
@@ -658,7 +661,7 @@ void send_judge_msg(int16_t TX_ID, CAN_HandleTypeDef *hcan)
 		MailBox =CAN_TX_MAILBOX2;
 	}
 	HAL_CAN_AddTxMessage(&hcan1, &TxMessage, judeg_msg_uint8_t, (uint32_t *)MailBox);
-	
+	//	ust_delay(100);
 }
 /**
  * @brief  init the can transmit and receive
@@ -776,6 +779,6 @@ void send_message_mf(int16_t TX_ID,uint8_t Command_byte,int16_t iq1,int16_t iq2,
 	}
 	HAL_CAN_AddTxMessage(&hcan1, &Tx1Message, CAN1_Tx_data, (uint32_t *)txmailbox);
 	
-	
+//	ust_delay(100);
 }
 

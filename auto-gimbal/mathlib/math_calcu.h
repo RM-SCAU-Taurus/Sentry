@@ -47,6 +47,12 @@ typedef struct
     float frame_period; //Ê±¼ä¼ä¸ô
 } ramp_function_source_t;
 
+typedef struct {
+    float cutoff_freq1;
+    float b01, b11, b21, a11, a21;
+    float delay_element_11, delay_element_21;
+} Lpf2p;
+
 extern ramp_function_source_t chassis_x_ramp;
 extern ramp_function_source_t chassis_y_ramp;
 extern ramp_function_source_t chassis_w_ramp;

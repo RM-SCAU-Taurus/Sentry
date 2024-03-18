@@ -13,8 +13,11 @@
 #include "math.h"
 #include "data_processing.h"
 #include <stdlib.h>
-
+#include <stdbool.h>
 #define window 5 // 滑动窗口大小
+
+
+#define M_PI_F 3.14159265358979f
 
 ramp_function_source_t chassis_x_ramp;
 ramp_function_source_t chassis_y_ramp;
@@ -214,3 +217,56 @@ void medianFilter(float *signal, float *result, uint8_t N)
 
 	free(temp);
 }
+
+
+
+
+
+
+void Lpf2p_SetCutoffFreq(Lpf2p *lpf, float sample_freq, float cutoff_freq) {
+    float fr = 0;
+    float ohm = 0;
+    float c = 0;
+
+    fr = sample_freq / cutoff_freq;
+    ohm = tanf(M_PI_F / fr);
+    c = 1.0f + 2.0f * cosf(M_PI_F / 4.0f) * ohm + ohm * ohm;
+
+    lpf->cutoff_freq1 = cutoff_freq;
+
+    if (lpf->cutoff_freq1 > 0.0f) {
+        lpf->b01 = ohm * ohm / c;
+        lpf->b11 = 2.0f * lpf->b01;
+        lpf->b21 = lpf->b01;
+        lpf->a11 = 2.0f * (ohm * ohm - 1.0f) / c;
+        lpf->a21 = (1.0f - 2.0f * cosf(M_PI_F / 4.0f) * ohm + ohm * ohm) / c;
+    }
+}
+
+float Lpf2p_Apply(Lpf2p *lpf, float sample) {
+    float delay_element_0 = 0, output = 0;
+    if (lpf->cutoff_freq1 <= 0.0f) {
+        // no filtering
+        return sample;
+    } else {
+        delay_element_0 = sample - lpf->delay_element_11 * lpf->a11 - lpf->delay_element_21 * lpf->a21;
+        // do the filtering
+        if (isnan(delay_element_0) || isinf(delay_element_0)) {
+            // don't allow bad values to propagate via the filter
+            delay_element_0 = sample;
+        }
+        output = delay_element_0 * lpf->b01 + lpf->delay_element_11 * lpf->b11 + lpf->delay_element_21 * lpf->b21;
+
+        lpf->delay_element_21 = lpf->delay_element_11;
+        lpf->delay_element_11 = delay_element_0;
+
+        // return the value. Should be no need to check limits
+        return output;
+    }
+}
+/*int main() {
+    Lpf2p lpf;
+    Lpf2p_SetCutoffFreq(&lpf, 1000.0f, 100.0f); // Sample frequency of 1000 Hz, cutoff frequency of 100 Hz
+    float filtered_value = Lpf2p_Apply(&lpf, 1.0f); // Applying filter to input value of 1.0
+    return 0;
+}*/

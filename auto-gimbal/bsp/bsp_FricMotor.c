@@ -101,7 +101,7 @@ void Fric_unprotect(void)
 
 	fric.Fric_Pid_Set[0].fric_spd_fdb = moto_fric[0].speed_rpm;
 	fric.Fric_Pid_Set[1].fric_spd_fdb = moto_fric[1].speed_rpm;
-	FricMotor_speed_set(test);
+	FricMotor_speed_set(30);
 	pid_calc(&l_pid_spd, fric.Fric_Pid_Set[0].fric_spd_fdb, fric.Fric_Pid_Set[0].fric_spd_ref);
 	pid_calc(&r_pid_spd, fric.Fric_Pid_Set[1].fric_spd_fdb, fric.Fric_Pid_Set[1].fric_spd_ref);
 		motor_cur.fric_cur[0] = l_pid_spd.pos_out;

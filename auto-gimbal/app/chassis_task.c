@@ -47,7 +47,7 @@ static void Chassis_queue_send(void);
 static void ROTATE_State_Check(void);
 static Chassis_Base *chassis_mode_switch(void);
 /**********测试变量声明********/
-float yaw_center = 80;
+float yaw_center = 275;
 uint8_t flag_out_ROTATE=0;
 uint8_t flag_in_ROTATE=0;
 
@@ -183,10 +183,6 @@ static void CHASSIS_MODE_FOLL_ROTA_callback(void)
 //    chassis.position_error = circle_error(chassis.position_ref, moto_yaw.ecd, 8191);
 		chassis.position_error = circle_error(chassis.position_ref, YAW_9025.encoder, 360);
     chassis.angle_error = chassis.position_error * (2.0f * PI /360.0f);
-   
-		
-//		chassis.angle_error = 0;
-		
     chassis.spd_input.vx = 1.0f * (float)(rc.ch4 * scale.ch4 * cos(chassis.angle_error) - (1.0f) * (rc.ch3) * scale.ch3 * sin(chassis.angle_error));
     chassis.spd_input.vy = 1.0f * (float)(-rc.ch4 * scale.ch4 * sin(chassis.angle_error) - (1.0f) * (rc.ch3) * scale.ch3 * cos(chassis.angle_error));
     chassis.spd_input.vy = -chassis.spd_input.vy; // 换模式加-
@@ -215,7 +211,7 @@ static void CHASSIS_MODE_FOLL_ROTA_callback(void)
 static void ChassisOdom_calc(void)
 {
 		
-			chassis.yaw_bet_position_ref = 178.0f;
+		chassis.yaw_bet_position_ref = 178.0f;
 		chassis.yaw_bet_position_error = circle_error(chassis.yaw_bet_position_ref, moto_yaw.ecd, 8191.0f);
 		chassis.angle_dif_degree = chassis.yaw_bet_position_error * (360.0f / 8191.0f);
 	

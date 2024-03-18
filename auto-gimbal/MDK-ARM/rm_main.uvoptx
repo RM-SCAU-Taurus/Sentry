@@ -101,7 +101,9 @@
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
         <bEvRecOn>1</bEvRecOn>
-        <nTsel>2</nTsel>
+        <bSchkAxf>0</bSchkAxf>
+        <bTchkAxf>0</bTchkAxf>
+        <nTsel>3</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -363,82 +365,82 @@
         <Ww>
           <count>0</count>
           <WinNumber>2</WinNumber>
-          <ItemText>pid_yaw_ecd_6020,0x0A</ItemText>
+          <ItemText>scan_dir</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>2</WinNumber>
-          <ItemText>gimbal.pid.yaw_ecd_6020_ref</ItemText>
+          <ItemText>protect_mode</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>2</WinNumber>
-          <ItemText>gimbal.pid.yaw_spd_6020_ref</ItemText>
+          <ItemText>close_flag</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>2</WinNumber>
-          <ItemText>scan_speed</ItemText>
+          <ItemText>gimbal.pid.yaw_angle_6020_ref</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>2</WinNumber>
-          <ItemText>scan_dir</ItemText>
+          <ItemText>moto_yaw.ecd,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>2</WinNumber>
-          <ItemText>gimbal.pid.yaw_spd_6020_ref</ItemText>
+          <ItemText>vision.status</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>2</WinNumber>
-          <ItemText>vision_ctrl.speed_yaw</ItemText>
+          <ItemText>Fric_Pid_Set[0].fric_spd_ref</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>2</WinNumber>
-          <ItemText>gimbal.current[0],0x0A</ItemText>
+          <ItemText>Fric_Pid_Set</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>2</WinNumber>
-          <ItemText>close_flag</ItemText>
+          <ItemText>YAW_9025,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>2</WinNumber>
-          <ItemText>chassis_odom.diff_base_to_gimbal</ItemText>
+          <ItemText>gimbal_initFlag</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>2</WinNumber>
-          <ItemText>gimbal.pid.yaw_angle_6020_ref</ItemText>
+          <ItemText>pid_yaw_ecd_6020</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>2</WinNumber>
-          <ItemText>ctrl_mode</ItemText>
+          <ItemText>error_time,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>2</WinNumber>
-          <ItemText>vision_ctrl.speed_yaw</ItemText>
+          <ItemText>pid_yaw_ecd_6020</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>2</WinNumber>
-          <ItemText>moto_yaw.ecd,0x0A</ItemText>
+          <ItemText>imu_data.yaw</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>2</WinNumber>
-          <ItemText>chassis.yaw_bet_position_ref</ItemText>
+          <ItemText>follow_yaw_data</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>2</WinNumber>
-          <ItemText>chassis.angle_dif_degree</ItemText>
+          <ItemText>GIMBAL_YAW_9025_OFFSET</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

@@ -47,7 +47,7 @@ static void Chassis_queue_send(void);
 static void ROTATE_State_Check(void);
 static Chassis_Base *chassis_mode_switch(void);
 /**********测试变量声明********/
-float yaw_center = 275;
+float yaw_center = 326;
 uint8_t flag_out_ROTATE=0;
 uint8_t flag_in_ROTATE=0;
 

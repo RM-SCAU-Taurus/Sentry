@@ -34,6 +34,7 @@ void TriggerMotor_init(void)
 
 static void TriggerMotor_pidcal(void)
 {
+
     //    shoot.barrel.pid.trigger_hz_fdb = Fric_hz;
     //		shoot.barrel.pid.trigger_hz_ref = 1000.0f/shoot.trigger_period ;
     //    pid_calc(&pid_trigger_hz, shoot.barrel.pid.trigger_hz_fdb, shoot.barrel.pid.trigger_hz_ref);
@@ -42,6 +43,8 @@ static void TriggerMotor_pidcal(void)
     shoot.barrel.pid.trigger_spd_fdb = motor_trigger.speed_rpm;
     pid_calc(&pid_trigger_spd, shoot.barrel.pid.trigger_spd_fdb, shoot.barrel.pid.trigger_spd_ref);
     shoot.barrel.current = pid_trigger_spd.pos_out; // 速度环
+
+
 
     motor_cur.trigger_cur = shoot.barrel.current;
 }
@@ -198,7 +201,21 @@ void Trigger_SINGLE_or_SERIES(void)
                 shoot_last_time = shoot_time;
                 last_total_ecd = motor_trigger.total_ecd;
             }
-            shoot.barrel.pid.trigger_spd_ref = TRIGGER_10hz;
+							
+//									static uint8_t back;
+//									static uint16_t cnt;
+//									if(motor_trigger.given_current >9000 || back == 1 )	
+//									{
+//										cnt++;
+//										if(back == 0)
+//										{shoot.barrel.pid.trigger_spd_ref = -TRIGGER_10hz;
+//										back=1;
+//										}
+//										if(cnt>500 && back == 1)
+//										back=0;
+//									}
+//									else
+										shoot.barrel.pid.trigger_spd_ref = TRIGGER_10hz;
 
             /* 获取射击周期 */
         }

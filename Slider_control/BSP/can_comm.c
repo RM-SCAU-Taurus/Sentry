@@ -126,7 +126,7 @@ void Fric_control(void){
 				pid_calc(&pid_spd[1],fric.Fric_Pid_Set[1].fric_spd_fdb,fric.Fric_Pid_Set[1].fric_spd_ref);
 				fric_cur[0] = pid_spd[0].pos_out;
 				fric_cur[1] = pid_spd[1].pos_out;
-//				HAL_IWDG_Refresh(&hiwdg);
+				HAL_IWDG_Refresh(&hiwdg);
 }
 
 void mode_check(void){
@@ -178,6 +178,6 @@ void mode_check(void){
 	 }
 	 
 
-//		HAL_IWDG_Refresh(&hiwdg);
+		HAL_IWDG_Refresh(&hiwdg);
  
  }

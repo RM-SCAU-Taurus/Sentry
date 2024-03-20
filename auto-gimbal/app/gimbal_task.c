@@ -41,6 +41,8 @@ extern moto_mf_t YAW_9025;
 extern uint8_t flag_out_ROTATE;
 extern uint8_t flag_in_ROTATE;
 extern uint8_t protect_mode;
+extern float scan_dir;
+extern uint8_t close_flag;
 /**********静态函数声明********/
 static void gimbal_pid_calcu(void);
 static void Gimbal_MODE_PROTECT_callback(void);
@@ -74,10 +76,10 @@ void gimbal_param_init(void)
     PID_struct_init(&pid_pit_spd, POSITION_PID, 28000, 10000,
                     pid_pit_spd_P, pid_pit_spd_I, pid_pit_spd_D);
     /* YAW 轴 */
-    PID_struct_init(&pid_yaw_angle_6020, POSITION_PID, 8000, 0,
+    PID_struct_init(&pid_yaw_angle_6020, POSITION_PID, 8000, 0 ,
                     pid_yaw_angle_6020_P, pid_yaw_angle_6020_I, pid_yaw_angle_6020_D);
-		    PID_struct_init(&pid_yaw_ecd_6020, POSITION_PID, 8000, 0,
-                    5.0f, 0.0f, 0.0f);
+		    PID_struct_init(&pid_yaw_ecd_6020, POSITION_PID, 8000, 1000,
+                    2.0f, 0.0f, 0.0f);
     PID_struct_init(&pid_yaw_spd_6020, POSITION_PID, 28000, 20000,
                     pid_yaw_spd_6020_P, pid_yaw_spd_6020_I, pid_yaw_spd_6020_D);
 	
@@ -286,7 +288,8 @@ void gimbal_pid_calcu(void)
 			if(  ABS(follow_yaw_data - 178)<100)
 			{	
 				protect_mode=0;
-				
+				scan_dir = -scan_dir;
+				close_flag=0;
 			}
 			gimbal.pid.yaw_angle_6020_ref = imu_data.yaw;
 		}
@@ -339,11 +342,12 @@ void gimbal_pid_calcu(void)
     pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);
 		
 	}
-				if(imu_9025.wz == disconnect_flag)
-				{pid_yaw_spd_9025.pos_out = 0 ;	
+				if(clean_wz == disconnect_flag)
+			{
+				pid_yaw_spd_9025.pos_out = 0 ;	
 					test_i++;
 				}
-		disconnect_flag = imu_9025.wz;
+		disconnect_flag = clean_wz;
     gimbal.current[2] = pid_yaw_spd_9025.pos_out;
 #endif
     memcpy(motor_cur.gimbal_cur, gimbal.current, sizeof(gimbal.current)); // 赋值电流结果进CAN发送缓冲

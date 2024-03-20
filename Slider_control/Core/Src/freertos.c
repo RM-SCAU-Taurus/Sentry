@@ -159,7 +159,7 @@ void Can_common(void const * argument)
   for(;;)
   {
 			taskENTER_CRITICAL();
-		mode_check();
+//		mode_check();
 		can_out();
 		taskEXIT_CRITICAL();
     osDelay(2);

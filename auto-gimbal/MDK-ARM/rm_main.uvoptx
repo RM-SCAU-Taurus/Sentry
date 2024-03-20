@@ -213,7 +213,7 @@
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pid_yaw_spd_9025</ItemText>
+          <ItemText>pid_yaw_spd_9025,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
@@ -441,6 +441,41 @@
           <count>15</count>
           <WinNumber>2</WinNumber>
           <ItemText>GIMBAL_YAW_9025_OFFSET</ItemText>
+        </Ww>
+        <Ww>
+          <count>16</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>ctrl_mode</ItemText>
+        </Ww>
+        <Ww>
+          <count>17</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>gimbal.current[2]</ItemText>
+        </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>lock_flag</ItemText>
+        </Ww>
+        <Ww>
+          <count>19</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>vision_ctrl.speed_yaw</ItemText>
+        </Ww>
+        <Ww>
+          <count>20</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>pid_yaw_spd_6020,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>21</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>motor_trigger,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>22</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>shoot.barrel.current,0x0A</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

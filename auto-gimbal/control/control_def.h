@@ -72,6 +72,8 @@
 /* 拨盘频率 */
 #define TRIGGER_PERIOD    200  //射击周期（ms）	15HZ66.7ms 11HZ 90ms
 #define TRIGGER_10hz    2400  //速度环
+#define TRIGGER_15hz    3500  //速度环
+#define TRIGGER_20hz    4500  //速度环
 /*-----------------------------chassis---------------------------*/
 #define RC_CH4_SCALE    12     
 #define RC_CH3_SCALE    12
@@ -108,12 +110,12 @@
 #define FIGHT_OFFSET_ERR            ( -1.0f * GIMBAL_YAW_BETWEEN_ECD / 8191 * 2 * PI )
 
 /* YAW轴PID系数 */
-#define pid_yaw_angle_6020_P 120.0f//180
+#define pid_yaw_angle_6020_P 180.0f//180
 #define pid_yaw_angle_6020_I 0.0f
 #define pid_yaw_angle_6020_D 0.0f
 
 #define pid_yaw_spd_6020_P 12.0f//20
-#define pid_yaw_spd_6020_I 0.0f//0.3
+#define pid_yaw_spd_6020_I 0.1f//0.3
 #define pid_yaw_spd_6020_D 0.0f
 
 #define pid_yaw_angle_9025_P 0.0f//180

@@ -35,8 +35,11 @@ typedef enum{
 
 scandir dir_6020 = TURN_R;
 #define encoder_L 2000
-#define encoder_R 6600
+#define encoder_R 6400
 #define encoder_CENTER 178
+
+
+
 float scan_speed = 0.1f;
 float Kp=0.005f;
 float scan_dir = 1.0f;
@@ -434,9 +437,9 @@ void vsn_gimbal_ref_calc(void) {
 									{close_flag =0;
 									}
 									if(vision_ctrl.speed_yaw && scan_dir==1)
-									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp *2;
+									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed;
 									else if(vision_ctrl.speed_yaw && scan_dir==-1) 
-									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed * vision_ctrl.speed_yaw *Kp;
+									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed;
 									else 
 									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed ;
 								} 									

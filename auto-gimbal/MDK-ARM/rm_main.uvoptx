@@ -360,6 +360,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>Game_Robot_Status,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>38</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>T_imu_calcu</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -476,6 +481,16 @@
           <count>22</count>
           <WinNumber>2</WinNumber>
           <ItemText>shoot.barrel.current,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>23</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>imu_data</ItemText>
+        </Ww>
+        <Ww>
+          <count>24</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>moto_pit</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

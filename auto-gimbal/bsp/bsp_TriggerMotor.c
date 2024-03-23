@@ -202,20 +202,25 @@ void Trigger_SINGLE_or_SERIES(void)
                 last_total_ecd = motor_trigger.total_ecd;
             }
 							
-//									static uint8_t back;
-//									static uint16_t cnt;
-//									if(motor_trigger.given_current >9000 || back == 1 )	
-//									{
-//										cnt++;
-//										if(back == 0)
-//										{shoot.barrel.pid.trigger_spd_ref = -TRIGGER_10hz;
-//										back=1;
-//										}
-//										if(cnt>500 && back == 1)
-//										back=0;
-//									}
-//									else
-										shoot.barrel.pid.trigger_spd_ref = TRIGGER_10hz;
+									if(rc.sw2 == RC_DN)
+									{	static uint8_t back;
+									static uint16_t cnt;
+									if( (motor_trigger.speed_rpm >0 && motor_trigger.speed_rpm <50) || back == 1 )	
+									{
+										cnt++;
+										if(back == 0)
+										{shoot.barrel.pid.trigger_spd_ref = -1000;
+										back=1;
+										}
+										if( (cnt>2&& back == 1) )
+										back=0;
+									}
+									else
+//										shoot.barrel.pid.trigger_spd_ref = TRIGGER_20hz;
+									shoot.barrel.pid.trigger_spd_ref = shoot.trigger_hz;
+									
+									
+								}
 
             /* 获取射击周期 */
         }

@@ -100,7 +100,9 @@ typedef struct
     barrel_param_t      barrel;
     uint16_t            shoot_speed;		//射速
     float               trigger_period;	//拨盘拨出一颗子弹的周期，体现射频
+		float               trigger_hz;
     uint8_t             shoot_speed_vision;//发给视觉的射速档位
+		
 } shoot_t;
 
 typedef struct {

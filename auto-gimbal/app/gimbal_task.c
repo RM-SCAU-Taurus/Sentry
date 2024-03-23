@@ -86,7 +86,7 @@ void gimbal_param_init(void)
 	
       PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 5000, 500,
 
-                  5.0f, 0.0f, 0.0f);
+                  3.0f, 0.0f, 0.0f);
 			PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 1024, 512,
                     pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
 
@@ -285,7 +285,7 @@ void gimbal_pid_calcu(void)
         gimbal.pid.yaw_spd_6020_fdb = imu_data.wz; // 陀螺仪速度反馈
         pid_calc(&pid_yaw_spd_6020, gimbal.pid.yaw_spd_6020_fdb, gimbal.pid.yaw_spd_6020_ref);
 			
-			if(  ABS(follow_yaw_data - 178)<100)
+			if(  ABS(follow_yaw_data - 178)<300)
 			{	
 				protect_mode=0;
 				scan_dir = -scan_dir;
@@ -344,8 +344,12 @@ void gimbal_pid_calcu(void)
 	}
 				if(clean_wz == disconnect_flag)
 			{
-				pid_yaw_spd_9025.pos_out = 0 ;	
+				
 					test_i++;
+					if(test_i>2)
+					{	pid_yaw_spd_9025.pos_out = 0 ;	
+						test_i=0;
+					}
 				}
 		disconnect_flag = clean_wz;
     gimbal.current[2] = pid_yaw_spd_9025.pos_out;

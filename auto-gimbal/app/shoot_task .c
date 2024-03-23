@@ -32,6 +32,7 @@ extern vision_ctrl_info_t vision_ctrl;
 static void ShootParam_Update(void);
 static shoot_class_parent_t *shoot_mode_check(void);
 static void Shoot_power_check(void);
+static void Shoot_hz_ctrl(void);
 /**********宏定义声明**********/
 #define __SHOOT_TASK_GLOBALS
 /**********结构体定义**********/
@@ -90,23 +91,9 @@ static shoot_class_parent_t *shoot_mode_check(void)
     }
     /* 更新裁判系统参数 */
     ShootParam_Update();
-    // 让导航控制射频
-    if (vision_ctrl.shoot_cmd != 0 && vision_ctrl.shoot_cmd > 0)
-    {
-        if (vision_ctrl.shoot_cmd > 25) // 最大25hz
-        {
-            shoot.trigger_period = 40;
-        }
-        else
-        {
-            shoot.trigger_period = (1 / vision_ctrl.shoot_cmd) * 1000; // 视觉直接发hz
-        }
-    }
-    else
-    {
-        shoot.trigger_period = TRIGGER_PERIOD;
-    }
-
+    /* 让导航控制射频 */
+		Shoot_hz_ctrl(); 
+		
     static shoot_class_parent_t *p_return = NULL;
 
     switch (ctrl_mode)
@@ -198,4 +185,22 @@ static void ShootParam_Update(void)
     shoot.barrel.heat_remain = shoot.barrel.heat_max - shoot.barrel.heat; //
     //   		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用
 		
+}
+
+static void Shoot_hz_ctrl(void){
+	    if (vision_ctrl.shoot_cmd != 0 && vision_ctrl.shoot_cmd > 0)
+    {
+        if (vision_ctrl.shoot_cmd > 20) // 最大25hz
+        {
+            shoot.trigger_hz = 20;
+        }
+        else
+        {
+            shoot.trigger_hz = vision_ctrl.shoot_cmd; // 视觉直接发hz
+        }
+    }
+    else
+    {
+        shoot.trigger_hz = TRIGGER_20hz;
+    }
 }

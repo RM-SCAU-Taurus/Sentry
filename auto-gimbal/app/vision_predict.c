@@ -410,7 +410,7 @@ void vsn_gimbal_ref_calc(void) {
 							#ifdef angle
 								
 								static ctrl_mode_e last_mode;
-								static uint16_t error_time;
+								
 								
 								vision_ctrl.speed_yaw = data_limit(vision_ctrl.speed_yaw, 250, -250);
                 gimbal.pid.yaw_spd_9025_ref  = vision_ctrl.speed_yaw * 16.3835f;//”…µº∫Ωøÿ÷∆

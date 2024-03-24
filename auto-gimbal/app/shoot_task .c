@@ -202,5 +202,6 @@ static void Shoot_hz_ctrl(void){
     else
     {
         shoot.trigger_hz = TRIGGER_20hz;
+//			shoot.trigger_hz = TRIGGER_25hz;
     }
 }

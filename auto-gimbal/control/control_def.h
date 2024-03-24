@@ -74,6 +74,7 @@
 #define TRIGGER_10hz    2400  //速度环
 #define TRIGGER_15hz    3500  //速度环
 #define TRIGGER_20hz    4500  //速度环
+#define TRIGGER_25hz    5500  //速度环
 /*-----------------------------chassis---------------------------*/
 #define RC_CH4_SCALE    12     
 #define RC_CH3_SCALE    12

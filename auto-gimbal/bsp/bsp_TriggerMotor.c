@@ -22,6 +22,7 @@ float shoot_spd = 2000;
 extern TaskHandle_t can_msg_send_task_t;
 uint8_t shoot_enable_flag = 0;
 int shoot_number = 0;
+uint16_t tritestaa = 2;
 uint32_t last_total_ecd;
 float Fric_hz;
 void TriggerMotor_init(void)
@@ -212,7 +213,7 @@ void Trigger_SINGLE_or_SERIES(void)
 										{shoot.barrel.pid.trigger_spd_ref = -1000;
 										back=1;
 										}
-										if( (cnt>2&& back == 1) )
+										if( (cnt>2 && back == 1) )
 										back=0;
 									}
 									else

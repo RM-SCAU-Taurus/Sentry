@@ -87,7 +87,7 @@ void gimbal_param_init(void)
       PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 5000, 500,
 
                   3.0f, 0.0f, 0.0f);
-			PID_struct_init(&pid_yaw_spd_9025, POSITION_PID, 1024, 512,
+			PID_struct_init(&pid_yaw_spd_9025, POSITION_PID,1024, 512,
                     pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
 
 										
@@ -336,7 +336,7 @@ void gimbal_pid_calcu(void)
 		
 		
 		gimbal.pid.yaw_spd_9025_ref = -pid_yaw_angle_9025.pos_out;
-//    gimbal.pid.yaw_spd_9025_fdb = YAW_9025.wspeed; // 陀螺仪速度反馈
+//    gimbal.pid.yaw_spd_9025_fdb = YAW_9025.wspeed; /    / 陀螺仪速度反馈
 //		gimbal.pid.yaw_spd_9025_fdb = imu_9025.wz; // 陀螺仪速度反馈		
 		gimbal.pid.yaw_spd_9025_fdb =	clean_wz;
     pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);

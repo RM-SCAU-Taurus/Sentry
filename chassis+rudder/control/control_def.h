@@ -219,7 +219,7 @@
 #define SPEED_55W		4200.0f
 #define SPEED_60W		4500.0f
 #define SPEED_80W		5000.0f
-#define SPEED_100W      6300.0f
+#define SPEED_100W      7300.0f
 #define SPEED_120W      6700.0f
 #define SPEED_SUPERCAP  8000.0f
 

@@ -111,20 +111,20 @@
 #define FIGHT_OFFSET_ERR            ( -1.0f * GIMBAL_YAW_BETWEEN_ECD / 8191 * 2 * PI )
 
 /* YAW轴PID系数 */
-#define pid_yaw_angle_6020_P 180.0f//180
+#define pid_yaw_angle_6020_P 450.0f//180
 #define pid_yaw_angle_6020_I 0.0f
-#define pid_yaw_angle_6020_D 0.0f
+#define pid_yaw_angle_6020_D 50.0f
 
-#define pid_yaw_spd_6020_P 12.0f//20
-#define pid_yaw_spd_6020_I 0.1f//0.3
+#define pid_yaw_spd_6020_P 15.0f//20
+#define pid_yaw_spd_6020_I 0.05f//0.3
 #define pid_yaw_spd_6020_D 0.0f
 
 #define pid_yaw_angle_9025_P 0.0f//180
 #define pid_yaw_angle_9025_I 0.0f
 #define pid_yaw_angle_9025_D 0.0f
 
-#define pid_yaw_spd_9025_P 2.0f//20
-#define pid_yaw_spd_9025_I 0.005f//0.3
+#define pid_yaw_spd_9025_P 1.0f//20
+#define pid_yaw_spd_9025_I 0.001f//0.3
 #define pid_yaw_spd_9025_D 0.0f
 
 /* PIT轴PID系数 */

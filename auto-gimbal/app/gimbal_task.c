@@ -67,6 +67,7 @@ static Gimbal_Derived Drv_AUTO;
 int8_t choose_pid_flag = 0, goback_flag = 0;
 uint16_t cnt_9025=0;
 uint16_t test_i =0;
+float err_gim;
 void gimbal_param_init(void)
 {
     memset(&gimbal, 0, sizeof(gimbal_t));
@@ -138,7 +139,8 @@ void gimbal_task(void const *argu)
         /* 云台串级PID */
         gimbal_pid_calcu();
         osSignalSet(can_msg_send_task_t, GIMBAL_MOTOR_MSG_SEND);
-//        DataWave(&huart3);
+			err_gim = ABS(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb);
+       DataWave(&huart3);
         taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
     }

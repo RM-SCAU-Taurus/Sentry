@@ -40,7 +40,7 @@ scandir dir_6020 = TURN_R;
 
 
 
-float scan_speed = 0.1f;
+float scan_speed = 0.05f;
 float Kp=0.005f;
 float scan_dir = 1.0f;
 uint8_t spin_L=0;

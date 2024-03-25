@@ -210,15 +210,15 @@ void Trigger_SINGLE_or_SERIES(void)
 									{
 										cnt++;
 										if(back == 0)
-										{shoot.barrel.pid.trigger_spd_ref = -1000;
+										{	shoot.barrel.pid.trigger_spd_ref = -1000;
 										back=1;
 										}
-										if( (cnt>2 && back == 1) )
+										if( (cnt>5 && back == 1) )
 										back=0;
 									}
 									else
-//										shoot.barrel.pid.trigger_spd_ref = TRIGGER_20hz;
-									shoot.barrel.pid.trigger_spd_ref = shoot.trigger_hz;
+									shoot.barrel.pid.trigger_spd_ref = TRIGGER_20hz;
+//									shoot.barrel.pid.trigger_spd_ref = shoot.trigger_hz;
 									
 									
 								}

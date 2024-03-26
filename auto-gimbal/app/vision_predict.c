@@ -37,10 +37,26 @@ scandir dir_6020 = TURN_R;
 #define encoder_L 2000
 #define encoder_R 6400
 #define encoder_CENTER 178
+#define TOLO 1.5f
 
+/* sin信号发生器 */
+ /*调试视觉绝对速度时用
+ 注释底盘，调成位置环YAW
+ 效果：自动摇头*/
+ FGT_sin_t pit_scan =
+    {
+        .Td = 1,
+        .time = 0,
+        .max = 24,
+        .min =-24,
+        .dc = -11.25f,
+        .T = 1000,
+        .A = 3.75f,
+        .phi = 0,
+        .out = 0};
+		
 
-
-float scan_speed = 0.05f;
+float scan_speed = 0.06f;
 float Kp=0.005f;
 float scan_dir = 1.0f;
 uint8_t spin_L=0;
@@ -444,7 +460,10 @@ void vsn_gimbal_ref_calc(void) {
 									gimbal.pid.yaw_angle_6020_ref += scan_dir * scan_speed ;
 								} 									
                                     	
-								  gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
+//								  gimbal.pid.pit_angle_ref  = vision.pit_angle_error;	
+//									FGT_sin_cal(&test_s);
+								gimbal.pid.pit_angle_ref  = FGT_sin_cal(&pit_scan);
+									
 									
 									last_mode = ctrl_mode;
 									#else
@@ -472,7 +491,7 @@ static void vsn_shoot_enable(void) {
 		switch (vision.mode) {
         case vMODE_AUTO:
         case vMODE_ANTISPIN: {
-            if (ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb) <vision_ctrl.shoot_yaw_tole && 
+            if (ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb) < vision_ctrl.shoot_yaw_tole && 
                 ABSv(gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb) < 5.0f) {
                 vision.shoot_enable = 1;
             } else {
@@ -494,7 +513,7 @@ static void vsn_shoot_enable(void) {
         }
         case vMODE_bENERGY:
         case vMODE_sENERGY: {
-            if (ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb) <vision_ctrl.shoot_yaw_tole && 
+            if (ABSv(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb) < vision_ctrl.shoot_yaw_tole && 
                 ABSv(gimbal.pid.pit_angle_ref - gimbal.pid.pit_angle_fdb) < 1.0f) {
                 vision.shoot_enable = 1;
             } else {

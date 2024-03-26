@@ -797,14 +797,14 @@
           <GroupName>Application/Comm</GroupName>
           <Files>
             <File>
-              <FileName>comm_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\comm_task.c</FilePath>
-            </File>
-            <File>
               <FileName>judgesend_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\judgesend_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>comm_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\comm_task.c</FilePath>
             </File>
             <File>
               <FileName>vision_send_task.c</FileName>

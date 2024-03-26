@@ -131,6 +131,7 @@ typedef __packed struct
     uint16_t blue_7_robot_HP;
     uint16_t blue_outpost_HP;
     uint16_t blue_base_HP;
+
 } ext_game_robot_HP_t;
 
 /* 飞镖发射状态：0x0004。发送频率：飞镖发射后发送，发送范围：所有机器人。*/

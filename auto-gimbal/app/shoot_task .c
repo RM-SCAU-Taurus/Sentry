@@ -188,20 +188,21 @@ static void ShootParam_Update(void)
 }
 
 static void Shoot_hz_ctrl(void){
-	    if (vision_ctrl.shoot_cmd != 0 && vision_ctrl.shoot_cmd > 0)
-    {
-        if (vision_ctrl.shoot_cmd > 20) // 最大25hz
+
+     
+        if (vision_ctrl.shoot_cmd == 20) // 最大25hz
         {
-            shoot.trigger_hz = 20;
+            shoot.trigger_hz = TRIGGER_20hz;
         }
-        else
+        else if(vision_ctrl.shoot_cmd == 10)
         {
-            shoot.trigger_hz = vision_ctrl.shoot_cmd; // 视觉直接发hz
+            shoot.trigger_hz = TRIGGER_10hz; // 视觉直接发hz
         }
-    }
-    else
-    {
-        shoot.trigger_hz = TRIGGER_20hz;
-//			shoot.trigger_hz = TRIGGER_25hz;
-    }
+				else if(vision_ctrl.shoot_cmd == 0 )
+				{	
+						shoot.trigger_hz = TRIGGER_20hz; // 视觉直接发hz
+				}
+				else
+					shoot.trigger_hz = TRIGGER_20hz;
+
 }

@@ -432,20 +432,22 @@ void game_data_handler(robot_judge_msg_t *robot_judge_msg_e)
         Game_Status.Enemy_Sentry_HP = robot_judge_msg_e->RobotHP_data.blue_7_robot_HP;  // 敌方哨兵
         Game_Status.Self_outpost_HP = robot_judge_msg_e->RobotHP_data.red_outpost_HP;   // 我方前哨战
         Game_Status.Enemy_outpost_HP = robot_judge_msg_e->RobotHP_data.blue_outpost_HP; // 敌方前哨战
+				Game_Status.self_base_HP =  robot_judge_msg_e->RobotHP_data.red_base_HP;
     }
     else
     {
         Game_Status.Enemy_Sentry_HP = robot_judge_msg_e->RobotHP_data.red_7_robot_HP;  // 敌方哨兵
         Game_Status.Enemy_outpost_HP = robot_judge_msg_e->RobotHP_data.red_outpost_HP; // 敌方前哨战
         Game_Status.Self_outpost_HP = robot_judge_msg_e->RobotHP_data.blue_outpost_HP; // 我方前哨战
+				Game_Status.self_base_HP =  robot_judge_msg_e->RobotHP_data.blue_base_HP;
     }
     Game_Status.commd_keyboard = robot_judge_msg_e->Robot_command_Data.commd_keyboard;
     Game_Status.target_robot_ID = robot_judge_msg_e->Robot_command_Data.target_robot_ID;
     Game_Status.target_position_x = robot_judge_msg_e->Robot_command_Data.target_position_x;
     Game_Status.target_position_y = robot_judge_msg_e->Robot_command_Data.target_position_y;
     Game_Status.target_position_z = robot_judge_msg_e->Robot_command_Data.target_position_z;
-    Game_Status.red_y = robot_judge_msg_e->Radar_Data.red_y;
-    Game_Status.red_confiden = robot_judge_msg_e->Radar_Data.red_confiden;
+//    Game_Status.red_y = robot_judge_msg_e->Radar_Data.red_y;
+//    Game_Status.red_confiden = robot_judge_msg_e->Radar_Data.red_confiden;
 		
 		
 }

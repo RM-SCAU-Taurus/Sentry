@@ -67,7 +67,6 @@ static Gimbal_Derived Drv_AUTO;
 int8_t choose_pid_flag = 0, goback_flag = 0;
 uint16_t cnt_9025=0;
 uint16_t test_i =0;
-float err_gim;
 void gimbal_param_init(void)
 {
     memset(&gimbal, 0, sizeof(gimbal_t));
@@ -87,7 +86,7 @@ void gimbal_param_init(void)
 	
       PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 5000, 500,
 
-                  3.0f, 0.0f, 0.0f);
+                  1.0f, 0.0f, 0.0f);
 			PID_struct_init(&pid_yaw_spd_9025, POSITION_PID,1024, 512,
                     pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
 
@@ -103,21 +102,7 @@ void gimbal_param_init(void)
 }
 
 /* ================================== TEST PARAM ================================== */
-/* sin信号发生器 */
-// 调试视觉绝对速度时用
-// 注释底盘，调成位置环YAW
-// 效果：自动摇头
-// FGT_sin_t test_s =
-//    {
-//        .Td = 1,
-//        .time = 0,
-//        .max = GIMBAL_YAW_CENTER_OFFSET + 800,
-//        .min = GIMBAL_YAW_CENTER_OFFSET - 800,
-//        .dc = GIMBAL_YAW_CENTER_OFFSET,
-//        .T = 800,
-//        .A = 250,
-//        .phi = 0,
-//        .out = 0};
+
 /* ================================== TEST PARAM ================================== */
 
 /**
@@ -139,8 +124,7 @@ void gimbal_task(void const *argu)
         /* 云台串级PID */
         gimbal_pid_calcu();
         osSignalSet(can_msg_send_task_t, GIMBAL_MOTOR_MSG_SEND);
-			err_gim = ABS(gimbal.pid.yaw_angle_6020_ref - gimbal.pid.yaw_angle_6020_fdb);
-       DataWave(&huart3);
+//       DataWave(&huart3);
         taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
     }

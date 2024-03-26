@@ -72,7 +72,7 @@ void can_msg_send_task(void const *argu)
             if (event.value.signals & GIMBAL_MOTOR_MSG_SEND)
             {
                 
-                can2_send_message(GIMBAL_CAN_TX_ID, motor_cur.gimbal_cur[0], motor_cur.gimbal_cur[1], 0, 0);
+               can2_send_message(GIMBAL_CAN_TX_ID, motor_cur.gimbal_cur[0], motor_cur.gimbal_cur[1], 0, 0);
                 if (++mf_times >= 2)
                 {
                     send_message_mf(CAN_9025_YAW_TX_ID, TORQUE_COMMAND, motor_cur.gimbal_cur[2], 0,0);

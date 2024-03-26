@@ -117,8 +117,9 @@ typedef struct
 		float Enemy_Sentry_HP;//敌方哨兵血量
 		float Enemy_outpost_HP;
 		float Self_outpost_HP;
-		float red_y;
-		float red_confiden;
+//		float red_y;
+//		float red_confiden;
+		float self_base_HP;
 } Game_Status_t;
 // vision control message
 typedef struct

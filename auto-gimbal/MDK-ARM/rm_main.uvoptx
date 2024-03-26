@@ -202,6 +202,46 @@
           <WinNumber>2</WinNumber>
           <ItemText>pid_yaw_spd_9025</ItemText>
         </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>vision_ctrl.shoot_yaw_tole</ItemText>
+        </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>shoot.trigger_hz</ItemText>
+        </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>vision_ctrl.shoot_cmd</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>vision_ctrl</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>gimbal.pid.pit_angle_ref</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>vision_ctrl.shoot_cmd</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>imu_data.pitch</ItemText>
+        </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>chassis_odom.gimbal_yaw_rate_imu</ItemText>
+        </Ww>
       </WatchWindow2>
       <MemoryWindow1>
         <Mm>
@@ -651,8 +691,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\app\comm_task.c</PathWithFileName>
-      <FilenameWithoutPath>comm_task.c</FilenameWithoutPath>
+      <PathWithFileName>..\app\judgesend_task.c</PathWithFileName>
+      <FilenameWithoutPath>judgesend_task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -663,8 +703,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\app\judgesend_task.c</PathWithFileName>
-      <FilenameWithoutPath>judgesend_task.c</FilenameWithoutPath>
+      <PathWithFileName>..\app\comm_task.c</PathWithFileName>
+      <FilenameWithoutPath>comm_task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

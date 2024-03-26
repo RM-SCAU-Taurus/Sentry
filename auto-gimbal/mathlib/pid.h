@@ -85,9 +85,28 @@ void PID_struct_init(
     float 	ki,
     float 	kd);
 
+typedef struct {
+    float K1;
+    float K2;
+    float Last_DeltIn;
+    float Now_DeltIn;
+    float Out;
+    float OutMax;
+} FeedForward_Typedef;
+
+typedef struct {
+    float k;
+    float Last_ref;
+    float Now_ref;
+    float Out;
+    float OutMax;
+} D_AGL_FeedForward_Typedef;
+
+
 float pid_calc(pid_t* pid, float fdb, float ref);
 void abs_limit(float *a, float ABS_MAX,float offset);
-
+void D_AGL_FeedForward_Calc(D_AGL_FeedForward_Typedef *AGL_FF,float now_Ref,float period,float K);
+void FeedForward_Calc(FeedForward_Typedef *FF, float Now_DeltIn);
 /* -------------------------------------- Gimbal -------------------------------------- */
 // PIT 轴 位置速度串级
 __PID_EXT pid_t pid_pit_ecd;

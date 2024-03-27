@@ -224,7 +224,8 @@ void D_AGL_FeedForward_Calc(D_AGL_FeedForward_Typedef *AGL_FF,float now_Ref,floa
 		
 		if( AGL_FF->xie >0.5 || AGL_FF->xie <-0.5 )
 		AGL_FF->Out = 0;
-		
+		if( AGL_FF->xie <0.0000005|| AGL_FF->xie >-0.0000005 )
+		AGL_FF->Out = 0;
 }
 
 // static void f_Changing_Integral_Rate(pid_t *pid,float ScalarB,float ScalarA)

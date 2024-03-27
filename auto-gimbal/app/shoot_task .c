@@ -157,19 +157,7 @@ static void Shoot_power_check(void)
 /* 发射器裁判系统数据更新 */
 static void ShootParam_Update(void)
 {
-//    /* 更新裁判系统数据 */
-//    if (Game_Robot_Status.shooter_id1_17mm_speed_limit != 0)
-//    {
-//        shoot.shoot_speed = Game_Robot_Status.shooter_id1_17mm_speed_limit;          //
-//        shoot.barrel.heat_max = Game_Robot_Status.shooter_id1_17mm_cooling_limit;    //
-//        shoot.barrel.cooling_rate = Game_Robot_Status.shooter_id1_17mm_cooling_rate; //
-//    }
-//    /* 更新 模拟裁判系统 数据 */
-//    shoot.barrel.heat -= shoot.barrel.cooling_rate * SHOOT_PERIOD * 0.001f; //
-//    if (shoot.barrel.heat < 0)
-//        shoot.barrel.heat = 0;
-//    shoot.barrel.heat_remain = shoot.barrel.heat_max - shoot.barrel.heat; //
-//    //   		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用
+
 		
 		    /* 更新裁判系统数据 */
     if (Game_Robot_Status.shooter_barrel_cooling_value != 0)

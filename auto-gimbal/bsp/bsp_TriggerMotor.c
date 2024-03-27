@@ -183,7 +183,7 @@ void Trigger_SINGLE_or_SERIES(void)
     static uint32_t shoot_time, shoot_last_time; // 计算射击周期
 
     frequency_cnt++;
-		
+			
  /* 利用遥控器切换单发连发模式 */
             if( rc_FSM_check(RC_LEFT_LU) )  //遥控器上电前，左拨杆置左上
             {
@@ -193,15 +193,19 @@ void Trigger_SINGLE_or_SERIES(void)
             {
                 shoot.stir_mode = STIR_MODE_SERIES;  //连发
             }
+						else
+						{
+								shoot.stir_mode = STIR_MODE_SERIES;  //连发
+						}	
             frequency_cnt++;
             shoot.barrel.pid.trigger_ecd_error = shoot.barrel.pid.trigger_ecd_ref - shoot.barrel.pid.trigger_ecd_fdb;
-            if(0)  //拨盘单发模式
+            if( shoot.stir_mode == STIR_MODE_SINGLE)  //拨盘单发模式
             {
-                    if( ( rc.mouse.l == 0 && ctrl_mode == AUTO_MODE )|| \
-                    ( rc.ch5 == 0 && ctrl_mode == REMOTER_MODE ) )
+                    if( ( rc.mouse.l <50 && ctrl_mode == AUTO_MODE )|| \
+                    ( rc.ch5 < 50 && ctrl_mode == REMOTER_MODE ) )
                     shoot_enable = 1;
                 if( shoot_enable \
-                    && (rc.mouse.l || rc.ch5 == 660) \
+                    && (rc.mouse.l || rc.ch5 < -500) \
                     && ABS(shoot.barrel.pid.trigger_ecd_error) < 0.2f * TRIGGER_MOTOR_ECD \
                     )  
                 {
@@ -210,9 +214,10 @@ void Trigger_SINGLE_or_SERIES(void)
                     shoot.barrel.heat += 10;
                 }
             }
-            else if(1)
+            else if( shoot.stir_mode == STIR_MODE_SERIES)
             {
 
+									
                      if(  
 											 (ctrl_mode == REMOTER_MODE|| 
 										 (ctrl_mode == AUTO_MODE&&vision.shoot_enable)) && 
@@ -223,6 +228,7 @@ void Trigger_SINGLE_or_SERIES(void)
                 {
                         frequency_cnt = 0;
                         /* 拨一颗子弹 */
+												
                         shoot.barrel.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;
                         shoot.barrel.heat += 10;
                         /* 获取射击周期 */

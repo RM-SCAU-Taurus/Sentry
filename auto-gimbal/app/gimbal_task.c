@@ -69,7 +69,7 @@ uint16_t cnt_9025=0;
 uint16_t test_i =0;
 D_AGL_FeedForward_Typedef yaw_agl =
 {
-	.k=10000,
+	.k=12000,
 	.OutMax = 5000.0f,
 
 };
@@ -144,7 +144,7 @@ void gimbal_task(void const *argu)
         /* 云台串级PID */
         gimbal_pid_calcu();
         osSignalSet(can_msg_send_task_t, GIMBAL_MOTOR_MSG_SEND);
-//       DataWave(&huart3);
+//      DataWave(&huart3);
         taskEXIT_CRITICAL();
         osDelayUntil(&mode_wake_time, GIMBAL_PERIOD);
     }

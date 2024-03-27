@@ -22,6 +22,8 @@
 																			.base.Fric_action = Fric_unprotect,
 																			.base.Trigger_action = Trigger_SINGLE_or_SERIES,
 																			};		
+	
+																			
 		
 
 		

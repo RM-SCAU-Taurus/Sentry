@@ -43,7 +43,7 @@ void status_task(void const *argu)
 {
   for (;;)
   {
-    // rc.init_status = rc_FSM(status.rc_status);  //更新遥控器的初始状态
+    rc.init_status = rc_FSM(status.rc_status);  //更新遥控器的初始状态
 
     /* 遥控器通信状态检查 */
     // 遥控通信周期大约14ms，此任务，每100ms检查并清除一次中断标志

@@ -100,12 +100,13 @@ typedef struct {
     float Now_ref;
     float Out;
     float OutMax;
+		float xie;
 } D_AGL_FeedForward_Typedef;
 
 
 float pid_calc(pid_t* pid, float fdb, float ref);
 void abs_limit(float *a, float ABS_MAX,float offset);
-void D_AGL_FeedForward_Calc(D_AGL_FeedForward_Typedef *AGL_FF,float now_Ref,float period,float K);
+void D_AGL_FeedForward_Calc(D_AGL_FeedForward_Typedef *AGL_FF,float now_Ref,float period);
 void FeedForward_Calc(FeedForward_Typedef *FF, float Now_DeltIn);
 /* -------------------------------------- Gimbal -------------------------------------- */
 // PIT 轴 位置速度串级

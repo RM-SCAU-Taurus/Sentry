@@ -124,8 +124,8 @@ unsigned char DataScope_Data_Generate(unsigned char Channel_Number)
 extern float vision_yaw_perdict;
 extern float* last_imu_yaw_data;
 extern float err_gim;
-extern FGT_sin_t pit_scan;
-
+extern FGT_sin_t yaw_scan;
+extern D_AGL_FeedForward_Typedef yaw_agl;
 
 		
 				
@@ -150,7 +150,8 @@ void DataWave(UART_HandleTypeDef* huart)
 //    DataScope_Get_Channel_Data(gimbal.pid.pit_spd_fdb);
 //    DataScope_Get_Channel_Data(pid_pit_spd.iout);
 //        
-//    DataScope_Get_Channel_Data(FGT_sin_cal(&pit_scan));
+//    DataScope_Get_Channel_Data(FGT_sin_cal(&yaw_scan));
+	    DataScope_Get_Channel_Data(yaw_agl.xie);
 	 
       DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_ref);
       DataScope_Get_Channel_Data(gimbal.pid.yaw_angle_6020_fdb);

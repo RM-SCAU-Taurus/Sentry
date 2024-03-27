@@ -67,6 +67,26 @@ static Gimbal_Derived Drv_AUTO;
 int8_t choose_pid_flag = 0, goback_flag = 0;
 uint16_t cnt_9025=0;
 uint16_t test_i =0;
+D_AGL_FeedForward_Typedef yaw_agl =
+{
+	.k=10000,
+	.OutMax = 5000.0f,
+
+};
+
+ FGT_sin_t yaw_scan =
+    {
+        .Td = 1,
+        .time = 0,
+        .max = 360,
+        .min =-360,
+        .dc = 100.0f,
+        .T = 2000,
+        .A = 30.0f,
+        .phi = 0,
+        .out = 0};
+		
+				
 void gimbal_param_init(void)
 {
     memset(&gimbal, 0, sizeof(gimbal_t));
@@ -86,8 +106,8 @@ void gimbal_param_init(void)
 	
       PID_struct_init(&pid_yaw_angle_9025, POSITION_PID, 5000, 500,
 
-                  1.0f, 0.0f, 0.0f);
-			PID_struct_init(&pid_yaw_spd_9025, POSITION_PID,1024, 512,
+                  2.0f, 0.0f, 0.0f);
+			PID_struct_init(&pid_yaw_spd_9025, POSITION_PID,812, 512,
                     pid_yaw_spd_9025_P, pid_yaw_spd_9025_I, pid_yaw_spd_9025_D);
 
 										
@@ -195,6 +215,9 @@ static void Gimbal_MODE_PROTECT_callback(void)
         gimbal.current[i] = 0;
 	pid_yaw_angle_9025.iout=0;	
 	vsn_gimbal_ref_calc();
+	
+	 
+	
 }
 
 
@@ -202,6 +225,7 @@ static void Gimbal_MODE_REMOTER_callback(void)
 {
     gimbal.pid.pit_angle_ref += rc.ch2 * scale.ch2;
     gimbal.pid.yaw_angle_6020_ref += rc.ch1 * scale.ch1;
+//	  gimbal.pid.yaw_angle_6020_ref = FGT_sin_cal(&yaw_scan);
 		
     vision_ctrl.yaw = imu_data.yaw;
     vision.status = vFIRST_LOST;
@@ -290,7 +314,10 @@ void gimbal_pid_calcu(void)
         gimbal.pid.yaw_angle_6020_err = circle_error(gimbal.pid.yaw_angle_6020_ref, gimbal.pid.yaw_angle_6020_fdb, 360);
         pid_calc(&pid_yaw_angle_6020, gimbal.pid.yaw_angle_6020_fdb, gimbal.pid.yaw_angle_6020_fdb + gimbal.pid.yaw_angle_6020_err);
 
-        gimbal.pid.yaw_spd_6020_ref = pid_yaw_angle_6020.pos_out;
+				D_AGL_FeedForward_Calc(&yaw_agl,(gimbal.pid.yaw_angle_6020_fdb + gimbal.pid.yaw_angle_6020_err),GIMBAL_PERIOD);
+					
+				
+        gimbal.pid.yaw_spd_6020_ref = pid_yaw_angle_6020.pos_out + yaw_agl.Out;
         gimbal.pid.yaw_spd_6020_fdb = imu_data.wz; // 陀螺仪速度反馈
         pid_calc(&pid_yaw_spd_6020, gimbal.pid.yaw_spd_6020_fdb, gimbal.pid.yaw_spd_6020_ref);
 			}

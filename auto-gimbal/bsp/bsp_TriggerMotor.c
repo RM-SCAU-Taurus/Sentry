@@ -25,9 +25,14 @@ int shoot_number = 0;
 uint16_t tritestaa = 2;
 uint32_t last_total_ecd;
 float Fric_hz;
+
+
+ uint16_t frequency_cnt = 0;           // 射频计算
+		
+#define AGL	
 void TriggerMotor_init(void)
 {
-    PID_struct_init(&pid_trigger_hz, POSITION_PID, 6800, 0,
+    PID_struct_init(&pid_trigger_ecd, POSITION_PID, 6800, 0,
                     PID_TRIGGER_ECD_P, PID_TRIGGER_ECD_I, PID_TRIGGER_ECD_D);
     PID_struct_init(&pid_trigger_spd, POSITION_PID, 10000, 5500,
                     PID_TRIGGER_SPD_P, PID_TRIGGER_SPD_I, PID_TRIGGER_SPD_D);
@@ -35,12 +40,11 @@ void TriggerMotor_init(void)
 
 static void TriggerMotor_pidcal(void)
 {
-
-    //    shoot.barrel.pid.trigger_hz_fdb = Fric_hz;
-    //		shoot.barrel.pid.trigger_hz_ref = 1000.0f/shoot.trigger_period ;
-    //    pid_calc(&pid_trigger_hz, shoot.barrel.pid.trigger_hz_fdb, shoot.barrel.pid.trigger_hz_ref);
-    //    shoot.barrel.pid.trigger_spd_ref = pid_trigger_hz.pos_out; // 位置环
-
+		#ifdef AGL
+    shoot.barrel.pid.trigger_ecd_fdb = motor_trigger.total_ecd;
+    pid_calc(&pid_trigger_ecd, shoot.barrel.pid.trigger_ecd_fdb, shoot.barrel.pid.trigger_ecd_ref);
+    shoot.barrel.pid.trigger_spd_ref = pid_trigger_ecd.pos_out;  //位置环
+		#endif
     shoot.barrel.pid.trigger_spd_fdb = motor_trigger.speed_rpm;
     pid_calc(&pid_trigger_spd, shoot.barrel.pid.trigger_spd_fdb, shoot.barrel.pid.trigger_spd_ref);
     shoot.barrel.current = pid_trigger_spd.pos_out; // 速度环
@@ -95,7 +99,8 @@ void TriggerMotor_control(void)
         }
         else if (shoot.stir_mode == STIR_MODE_SERIES)
         {
-
+							
+						#ifdef AGL
             //            if (
             //                (ctrl_mode == REMOTER_MODE ||
             //                 (ctrl_mode == AUTO_MODE && vision.shoot_enable)) &&
@@ -114,6 +119,7 @@ void TriggerMotor_control(void)
             //                shoot_last_time = shoot_time;
             //            }
 
+						#else
             if (
                 (ctrl_mode == REMOTER_MODE ||
                  (ctrl_mode == AUTO_MODE && vision.shoot_enable)) &&
@@ -138,6 +144,7 @@ void TriggerMotor_control(void)
                 /* 获取射击周期 */
             }
 
+						#endif
             if ((ctrl_mode == AUTO_MODE && !vision.shoot_enable) || shoot.barrel.heat_remain < MIN_HEAT)
             {
                 shoot.barrel.pid.trigger_spd_ref = 0;
@@ -152,6 +159,92 @@ void TriggerMotor_control(void)
     }
     TriggerMotor_pidcal();
 }
+
+#ifdef AGL
+
+void Trigger_STOP_or_PROTECT(void)
+{
+         frequency_cnt=0;
+            shoot.barrel.shoot_period = 0;
+					
+            pid_trigger_ecd.set[0] = motor_trigger.total_ecd;
+						shoot.barrel.pid.trigger_ecd_ref=motor_trigger.total_ecd;
+            pid_trigger_spd.iout  = 0;
+            motor_cur.trigger_cur = 0;
+	
+	TriggerMotor_pidcal();
+	
+}
+
+void Trigger_SINGLE_or_SERIES(void)
+{
+    
+    static uint8_t shoot_enable = 1;             // 打能量机关单发使能标志
+    static uint32_t shoot_time, shoot_last_time; // 计算射击周期
+
+    frequency_cnt++;
+		
+ /* 利用遥控器切换单发连发模式 */
+            if( rc_FSM_check(RC_LEFT_LU) )  //遥控器上电前，左拨杆置左上
+            {
+                shoot.stir_mode = STIR_MODE_SINGLE;  //单发
+            }
+            else if( rc_FSM_check(RC_LEFT_RU) )  //遥控器上电前，左拨杆置右上
+            {
+                shoot.stir_mode = STIR_MODE_SERIES;  //连发
+            }
+            frequency_cnt++;
+            shoot.barrel.pid.trigger_ecd_error = shoot.barrel.pid.trigger_ecd_ref - shoot.barrel.pid.trigger_ecd_fdb;
+            if(0)  //拨盘单发模式
+            {
+                    if( ( rc.mouse.l == 0 && ctrl_mode == AUTO_MODE )|| \
+                    ( rc.ch5 == 0 && ctrl_mode == REMOTER_MODE ) )
+                    shoot_enable = 1;
+                if( shoot_enable \
+                    && (rc.mouse.l || rc.ch5 == 660) \
+                    && ABS(shoot.barrel.pid.trigger_ecd_error) < 0.2f * TRIGGER_MOTOR_ECD \
+                    )  
+                {
+                    shoot_enable = 0;
+                    shoot.barrel.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;
+                    shoot.barrel.heat += 10;
+                }
+            }
+            else if(1)
+            {
+
+                     if(  
+											 (ctrl_mode == REMOTER_MODE|| 
+										 (ctrl_mode == AUTO_MODE&&vision.shoot_enable)) && 
+                    frequency_cnt * SHOOT_PERIOD >= shoot.trigger_period //射频控制
+                    && ABS(shoot.barrel.pid.trigger_ecd_error) < 0.8f * TRIGGER_MOTOR_ECD //拨盘误差控制
+                   &&shoot.barrel.heat_remain>=MIN_HEAT  //热量控制
+										 )//一个周期打一颗  射频控制  
+                {
+                        frequency_cnt = 0;
+                        /* 拨一颗子弹 */
+                        shoot.barrel.pid.trigger_ecd_ref += TRIGGER_MOTOR_ECD;
+                        shoot.barrel.heat += 10;
+                        /* 获取射击周期 */
+                        shoot_time = osKernelSysTick();
+                        shoot.barrel.shoot_period = shoot_time - shoot_last_time;
+                        shoot_last_time = shoot_time;
+                    }
+								if((ctrl_mode == AUTO_MODE&&!vision.shoot_enable)||shoot.barrel.heat_remain<MIN_HEAT )
+								{
+								shoot.barrel.pid.trigger_ecd_ref=motor_trigger.total_ecd;
+								pid_trigger_spd.iout  = 0;
+								motor_cur.trigger_cur = 0;
+								}
+            
+						}
+						
+						TriggerMotor_pidcal();
+						
+}
+
+
+#else
 void Trigger_STOP_or_PROTECT(void)
 {
     shoot.barrel.pid.trigger_spd_ref = 0;
@@ -236,3 +329,6 @@ void Trigger_SINGLE_or_SERIES(void)
 
     TriggerMotor_pidcal();
 }
+
+
+#endif

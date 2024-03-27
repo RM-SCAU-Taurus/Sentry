@@ -205,6 +205,7 @@ void FeedForward_Calc(FeedForward_Typedef *FF, float Now_DeltIn)
     FF->Out = FF->Now_DeltIn * FF->K1 + (FF->Now_DeltIn - FF->Last_DeltIn) * FF->K2;
     FF->Last_DeltIn = FF->Now_DeltIn;
     abs_limit(&(FF->Out), FF->OutMax, 0);
+		
 }
 
 /**********************************************************************************************************
@@ -214,12 +215,16 @@ void FeedForward_Calc(FeedForward_Typedef *FF, float Now_DeltIn)
  *        ActualValue    PID计算反馈量（当前真实检测值）
  *返 回 值: PID反馈计算输出值
  **********************************************************************************************************/
-void D_AGL_FeedForward_Calc(D_AGL_FeedForward_Typedef *AGL_FF,float now_Ref,float period,float K)
+void D_AGL_FeedForward_Calc(D_AGL_FeedForward_Typedef *AGL_FF,float now_Ref,float period)
 {
-    AGL_FF->k = K;
     AGL_FF->Now_ref = now_Ref;
-    AGL_FF->Out = AGL_FF->k *  ( (AGL_FF->Now_ref - AGL_FF->Now_ref) / period );
+		AGL_FF->xie =  (AGL_FF->Now_ref - AGL_FF->Last_ref);
+    AGL_FF->Out = AGL_FF->k *  ( (AGL_FF->Now_ref - AGL_FF->Last_ref) / period );
     AGL_FF->Last_ref = AGL_FF->Now_ref;
+		
+		if( AGL_FF->xie >0.5 || AGL_FF->xie <-0.5 )
+		AGL_FF->Out = 0;
+		
 }
 
 // static void f_Changing_Integral_Rate(pid_t *pid,float ScalarB,float ScalarA)

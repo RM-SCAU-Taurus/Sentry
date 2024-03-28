@@ -130,15 +130,7 @@ static shoot_class_parent_t *shoot_mode_check(void)
         break;
         case RC_DN:
         {
-//						if( ! Trigger_Back(motor_trigger.speed_rpm))
-//            {p_return = (shoot_class_parent_t *)&RC_DN_choice;
-//						motor_trigger.round_cnt=0;
-//						}
-//						else
-//						{p_return = (shoot_class_parent_t *)&RC_DN_back;	
-//						cnt++;
-//						}
-					
+					if(!Trigger_Back(motor_trigger.speed_rpm))
 					p_return = (shoot_class_parent_t *)&RC_DN_choice;
 						
         }

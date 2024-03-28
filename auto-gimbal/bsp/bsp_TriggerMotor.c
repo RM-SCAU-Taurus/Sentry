@@ -25,7 +25,7 @@ int shoot_number = 0;
 uint16_t tritestaa = 2;
 uint32_t last_total_ecd;
 float Fric_hz;
-
+uint16_t flag_b=0;
 
 uint16_t frequency_cnt = 0;           // 射频计算
 		
@@ -164,7 +164,7 @@ void TriggerMotor_control(void)
 
 void Trigger_STOP_or_PROTECT(void)
 {
-         frequency_cnt=0;
+						frequency_cnt=0;
             shoot.barrel.shoot_period = 0;
 					
             pid_trigger_ecd.set[0] = motor_trigger.total_ecd;
@@ -251,8 +251,12 @@ void Trigger_SINGLE_or_SERIES(void)
 
 void Trigger_back_action(void){
 
+	
 	shoot.barrel.pid.trigger_ecd_error = shoot.barrel.pid.trigger_ecd_ref - shoot.barrel.pid.trigger_ecd_fdb;
-	shoot.barrel.pid.trigger_ecd_ref -= TRIGGER_MOTOR_ECD/2;
+	if(ABS(shoot.barrel.pid.trigger_ecd_error) < 0.2f * (TRIGGER_MOTOR_ECD/2))
+	{shoot.barrel.pid.trigger_ecd_ref -= TRIGGER_MOTOR_ECD/2;
+		flag_b++;
+	}
 
 	TriggerMotor_pidcal();
 
@@ -352,13 +356,18 @@ uint8_t Trigger_Back(int16_t speed_rpm)
 {
 	static uint16_t trigger_cnt = 0;
 	if((ABS(speed_rpm)<50 && ABS(motor_cur.trigger_cur) >= 9000&&ABS(motor_trigger.round_cnt)>2)
-		||(trigger_cnt > 0 && trigger_cnt<20))
+		||(trigger_cnt > 0 && trigger_cnt<50))
 	{
 		trigger_cnt ++;
+		pid_trigger_ecd.set[0] = motor_trigger.total_ecd;
+		shoot.barrel.pid.trigger_ecd_ref=motor_trigger.total_ecd;
+    pid_trigger_spd.iout  = 0;
+    motor_cur.trigger_cur = 0;
 		return 1;
 	}
-	else if(trigger_cnt >= 20){
+	else if(trigger_cnt >= 50){
 		trigger_cnt = 0;
+
 		return 0;
 	}
 	else{

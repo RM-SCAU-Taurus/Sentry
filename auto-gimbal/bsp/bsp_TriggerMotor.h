@@ -12,5 +12,7 @@ void TriggerMotor_init(void);
 void TriggerMotor_control(void);
 void Trigger_SINGLE_or_SERIES(void);
 void Trigger_STOP_or_PROTECT(void);
+uint8_t Trigger_Back(int16_t speed_rpm);
+void Trigger_back_action(void);
 #endif
 

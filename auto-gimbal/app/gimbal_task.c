@@ -69,7 +69,7 @@ uint16_t cnt_9025=0;
 uint16_t test_i =0;
 D_AGL_FeedForward_Typedef yaw_agl =
 {
-	.k=12000,
+	.k=14000,
 	.OutMax = 5000.0f,
 
 };
@@ -329,7 +329,7 @@ void gimbal_pid_calcu(void)
 
 			static float disconnect_flag;
 
-			if (ctrl_mode ==AUTO_MODE && vision.status == vUNAIMING)
+			if (ctrl_mode ==AUTO_MODE && vision.status == vUNAIMING && vision_ctrl.is_detect != 1 )
     {
 
         gimbal.pid.yaw_spd_9025_fdb = imu_9025.wz; // 陀螺仪速度反馈
@@ -338,19 +338,11 @@ void gimbal_pid_calcu(void)
 		else{
 		
     gimbal.position_ref = GIMBAL_YAW_9025_OFFSET;
-//    gimbal.position_error = circle_error(gimbal.position_ref,moto_yaw.ecd, 8191);
 		gimbal.position_error = circle_error(gimbal.position_ref,follow_yaw_data, 8191);	
     gimbal.angle_error = gimbal.position_error  * (2.0f * PI / 8191.0f);
-//		
-//		gimbal.pid.yaw_angle_9025_fdb = imu_9025.yaw; // 陀螺仪角度反馈
-//		gimbal.pid.yaw_angle_9025_err = circle_error(gimbal.pid.yaw_angle_9025_ref,gimbal.pid.yaw_angle_9025_fdb,360);
     pid_calc(&pid_yaw_angle_9025, gimbal.position_ref,gimbal.position_ref+ gimbal.position_error);
-		 
-		
-		
-		gimbal.pid.yaw_spd_9025_ref = -pid_yaw_angle_9025.pos_out;
-//    gimbal.pid.yaw_spd_9025_fdb = YAW_9025.wspeed; /    / 陀螺仪速度反馈
-//		gimbal.pid.yaw_spd_9025_fdb = imu_9025.wz; // 陀螺仪速度反馈		
+
+		gimbal.pid.yaw_spd_9025_ref = -pid_yaw_angle_9025.pos_out;	
 		gimbal.pid.yaw_spd_9025_fdb =	clean_wz;
     pid_calc(&pid_yaw_spd_9025, gimbal.pid.yaw_spd_9025_fdb, gimbal.pid.yaw_spd_9025_ref);
 		

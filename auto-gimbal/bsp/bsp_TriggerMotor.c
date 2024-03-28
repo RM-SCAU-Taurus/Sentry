@@ -27,7 +27,7 @@ uint32_t last_total_ecd;
 float Fric_hz;
 
 
- uint16_t frequency_cnt = 0;           // 射频计算
+uint16_t frequency_cnt = 0;           // 射频计算
 		
 #define AGL	
 void TriggerMotor_init(void)
@@ -249,6 +249,14 @@ void Trigger_SINGLE_or_SERIES(void)
 						
 }
 
+void Trigger_back_action(void){
+
+	shoot.barrel.pid.trigger_ecd_error = shoot.barrel.pid.trigger_ecd_ref - shoot.barrel.pid.trigger_ecd_fdb;
+	shoot.barrel.pid.trigger_ecd_ref -= TRIGGER_MOTOR_ECD/2;
+
+	TriggerMotor_pidcal();
+
+}
 
 #else
 void Trigger_STOP_or_PROTECT(void)
@@ -338,3 +346,23 @@ void Trigger_SINGLE_or_SERIES(void)
 
 
 #endif
+
+
+uint8_t Trigger_Back(int16_t speed_rpm)
+{
+	static uint16_t trigger_cnt = 0;
+	if((ABS(speed_rpm)<50 && ABS(motor_cur.trigger_cur) >= 9000&&ABS(motor_trigger.round_cnt)>2)
+		||(trigger_cnt > 0 && trigger_cnt<20))
+	{
+		trigger_cnt ++;
+		return 1;
+	}
+	else if(trigger_cnt >= 20){
+		trigger_cnt = 0;
+		return 0;
+	}
+	else{
+		return 0;
+	}
+}
+

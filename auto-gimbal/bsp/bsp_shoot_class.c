@@ -23,10 +23,16 @@
 																			.base.Trigger_action = Trigger_SINGLE_or_SERIES,
 																			};		
 	
-																			
+	shoot_class_child_t RC_DN_back={.base.mode =UNPROTECT_MODE, 
+																			.base.Fric_action = Fric_unprotect,
+																			.base.Trigger_action = Trigger_back_action,
+																			};																			
 		
 
 		
 		
 		
 		
+																			
+																			
+																			

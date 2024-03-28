@@ -151,6 +151,8 @@ typedef struct
 	float speed_yaw;
 	float speed_pit;
 	float shoot_yaw_tole;
+	float is_detect;
+	float perception_yaw;
 }vision_ctrl_info_t;
 
 typedef struct

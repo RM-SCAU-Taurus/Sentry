@@ -222,10 +222,10 @@ void D_AGL_FeedForward_Calc(D_AGL_FeedForward_Typedef *AGL_FF,float now_Ref,floa
     AGL_FF->Out = AGL_FF->k *  ( (AGL_FF->Now_ref - AGL_FF->Last_ref) / period );
     AGL_FF->Last_ref = AGL_FF->Now_ref;
 		
-		if( AGL_FF->xie >0.5 || AGL_FF->xie <-0.5 )
+		if( AGL_FF->xie >0.5 || AGL_FF->xie <-0.5f )
 		AGL_FF->Out = 0;
-		if( AGL_FF->xie <0.0000005|| AGL_FF->xie >-0.0000005 )
-		AGL_FF->Out = 0;
+//		if( AGL_FF->xie <0.0005f || AGL_FF->xie >-0.0005f  )
+//		AGL_FF->Out = 0;
 }
 
 // static void f_Changing_Integral_Rate(pid_t *pid,float ScalarB,float ScalarA)

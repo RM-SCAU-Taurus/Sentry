@@ -24,6 +24,7 @@
 #include "bsp_TriggerMotor.h"
 #include "bsp_judge.h"
 #include "bsp_shoot_class.h"
+#include "bsp_can.h"
 /**********外部变量声明********/
 extern vision_ctrl_info_t vision_ctrl;
 /**********外部函数声明********/
@@ -43,7 +44,7 @@ extern osThreadId can_msg_send_task_t;
 
 /**********测试变量声明********/
 int flag = 0;
-int cnt = 0;
+uint16_t cnt = 0;
 
 void shoot_task(void const *argu)
 {
@@ -129,7 +130,17 @@ static shoot_class_parent_t *shoot_mode_check(void)
         break;
         case RC_DN:
         {
-            p_return = (shoot_class_parent_t *)&RC_DN_choice;
+//						if( ! Trigger_Back(motor_trigger.speed_rpm))
+//            {p_return = (shoot_class_parent_t *)&RC_DN_choice;
+//						motor_trigger.round_cnt=0;
+//						}
+//						else
+//						{p_return = (shoot_class_parent_t *)&RC_DN_back;	
+//						cnt++;
+//						}
+					
+					p_return = (shoot_class_parent_t *)&RC_DN_choice;
+						
         }
         break;
         default:
@@ -171,13 +182,13 @@ static void ShootParam_Update(void)
     if (shoot.barrel.heat < 0)
         shoot.barrel.heat = 0;
     shoot.barrel.heat_remain = shoot.barrel.heat_max - shoot.barrel.heat; //
-    //   		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用
+    //   		shoot.barrel.heat_remain = shoot.barrel.heat_max ;  //无限热量测试用shoot.trigger_period 
 		
 }
 
 static void Shoot_hz_ctrl(void){
 
-     
+			#ifdef __spd
         if (vision_ctrl.shoot_cmd == 20) // 最大25hz
         {
             shoot.trigger_hz = TRIGGER_20hz;
@@ -192,5 +203,14 @@ static void Shoot_hz_ctrl(void){
 				}
 				else
 					shoot.trigger_hz = TRIGGER_20hz;
-
+		 #else
+					if (vision_ctrl.shoot_cmd !=0) // 最大25hz
+        {
+						shoot.trigger_period = 1000/vision_ctrl.shoot_cmd;
+				}
+				else
+					shoot.trigger_period  = 50; //20hz
+			
+				
+		 #endif
 }

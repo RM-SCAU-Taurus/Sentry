@@ -115,7 +115,7 @@
 #define pid_yaw_angle_6020_I 0.0f
 #define pid_yaw_angle_6020_D 0.0f
 
-#define pid_yaw_spd_6020_P 8.0f//20
+#define pid_yaw_spd_6020_P 15.0f//20
 #define pid_yaw_spd_6020_I 0.1f//0.3
 #define pid_yaw_spd_6020_D 0.0f
 

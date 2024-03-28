@@ -55,7 +55,7 @@ FGT_sin_t pit_scan =
         .phi = 0,
         .out = 0};
 
-float scan_speed = 0.06f;
+float scan_speed = 0.1f;
 float Kp = 0.005f;
 float scan_dir = 1.0f;
 uint8_t spin_L = 0;
